@@ -16,8 +16,14 @@
       box-sizing: border-box;
     }
 
+    html {
+      background: #0b0d10;
+    }
+
     body {
       margin: 0;
+      min-height: 100vh;
+
       font-family:
         -apple-system,
         BlinkMacSystemFont,
@@ -27,8 +33,8 @@
         Arial,
         sans-serif;
 
-      background: #f7f7f7;
-      color: #111;
+      background: #0b0d10;
+      color: #ffffff;
     }
 
     /* =========================
@@ -36,8 +42,8 @@
     ========================= */
 
     header {
-      background: #ffffff;
-      border-bottom: 1px solid #e8e8e8;
+      background: #0b0d10;
+      border-bottom: 1px solid #252a31;
     }
 
     .header-inner {
@@ -54,7 +60,7 @@
       font-size: 24px;
       font-weight: 800;
       text-decoration: none;
-      color: #111;
+      color: #ffffff;
     }
 
     .logo span {
@@ -63,13 +69,14 @@
 
     .home-link {
       text-decoration: none;
-      color: #666;
+      color: #9ca3af;
       font-size: 14px;
       font-weight: 600;
+      transition: color 0.2s ease;
     }
 
     .home-link:hover {
-      color: #111;
+      color: #f7931a;
     }
 
     /* =========================
@@ -79,20 +86,20 @@
     main {
       max-width: 1000px;
       margin: 0 auto;
-      padding: 36px 20px 60px;
+      padding: 42px 20px 65px;
     }
 
     h1 {
-      margin: 0 0 10px;
+      margin: 0 0 12px;
       text-align: center;
-      font-size: 30px;
+      font-size: 32px;
     }
 
     .subtitle {
-      margin: 0 0 28px;
+      margin: 0 0 30px;
       text-align: center;
-      color: #666;
-      line-height: 1.6;
+      color: #9ca3af;
+      line-height: 1.7;
     }
 
     /* =========================
@@ -101,45 +108,75 @@
 
     .disclosure {
       max-width: 760px;
-      margin: 0 auto 28px;
+      margin: 0 auto 30px;
       padding: 14px 18px;
 
-      background: #fff7e8;
-      border: 1px solid #f3d6a5;
+      background: #17130d;
+      border: 1px solid #5a3a12;
       border-radius: 10px;
 
+      color: #d1d5db;
       font-size: 14px;
       line-height: 1.6;
       text-align: center;
     }
 
     .disclosure strong {
-      color: #d46b00;
+      color: #f7931a;
+    }
+
+    /* =========================
+       SECTIONS
+    ========================= */
+
+    .shopping-section,
+    .products-section {
+      background: #15181d;
+      border: 1px solid #252a31;
+      border-radius: 16px;
+
+      box-shadow:
+        0 8px 30px rgba(0, 0, 0, 0.25);
+    }
+
+    .shopping-section {
+      padding: 30px 20px;
+      margin-bottom: 30px;
+    }
+
+    .products-section {
+      padding: 32px 20px 38px;
+    }
+
+    .shopping-section h2,
+    .products-section h2 {
+      margin: 0;
+      text-align: center;
+      font-size: 22px;
+    }
+
+    .shopping-section h2 {
+      margin-bottom: 22px;
+    }
+
+    .products-section h2 {
+      margin-bottom: 30px;
     }
 
     /* =========================
        COUPANG BANNER
     ========================= */
 
-    .shopping-section {
-      background: #ffffff;
-      border-radius: 16px;
-      padding: 30px 20px;
-      margin-bottom: 30px;
-
-      box-shadow: 0 3px 14px rgba(0, 0, 0, 0.05);
-    }
-
-    .shopping-section h2 {
-      margin: 0 0 22px;
-      text-align: center;
-      font-size: 22px;
-    }
-
     .banner-wrapper {
       display: flex;
       justify-content: center;
       overflow: hidden;
+      border-radius: 8px;
+    }
+
+    .banner-wrapper a {
+      display: block;
+      max-width: 100%;
     }
 
     .banner-wrapper img {
@@ -150,32 +187,13 @@
 
     /* =========================
        PRODUCT GRID
+       PC: 5 × 3
     ========================= */
-
-    .products-section {
-      background: #ffffff;
-      border-radius: 16px;
-      padding: 30px 20px;
-
-      box-shadow: 0 3px 14px rgba(0, 0, 0, 0.05);
-    }
-
-    .products-section h2 {
-      margin: 0 0 28px;
-      text-align: center;
-      font-size: 22px;
-    }
-
-    /*
-      PC
-      5 columns × 3 rows
-    */
 
     .product-grid {
       display: grid;
       grid-template-columns: repeat(5, 120px);
       justify-content: center;
-
       gap: 28px 38px;
     }
 
@@ -183,6 +201,8 @@
       width: 120px;
       height: 240px;
       overflow: hidden;
+      border-radius: 8px;
+      background: #ffffff;
     }
 
     .product-item iframe {
@@ -197,23 +217,20 @@
     ========================= */
 
     @media (max-width: 800px) {
-
       .product-grid {
         grid-template-columns: repeat(3, 120px);
         gap: 24px 32px;
       }
-
     }
 
     /* =========================
        MOBILE
-       3 columns × 5 rows
+       3 × 5
     ========================= */
 
     @media (max-width: 520px) {
-
       main {
-        padding: 26px 12px 45px;
+        padding: 30px 12px 50px;
       }
 
       .header-inner {
@@ -225,7 +242,7 @@
       }
 
       h1 {
-        font-size: 26px;
+        font-size: 27px;
       }
 
       .subtitle {
@@ -234,7 +251,8 @@
 
       .shopping-section,
       .products-section {
-        padding: 24px 10px;
+        padding-left: 10px;
+        padding-right: 10px;
       }
 
       .product-grid {
@@ -251,15 +269,13 @@
         transform: scale(0.833333);
         transform-origin: top left;
       }
-
     }
 
-    /*
-      Very small phones
-    */
+    /* =========================
+       VERY SMALL PHONES
+    ========================= */
 
     @media (max-width: 340px) {
-
       .product-grid {
         grid-template-columns: repeat(3, 92px);
         gap: 16px 4px;
@@ -274,7 +290,6 @@
         transform: scale(0.766667);
         transform-origin: top left;
       }
-
     }
 
     /* =========================
@@ -282,12 +297,20 @@
     ========================= */
 
     footer {
+      background: #0b0d10;
+      border-top: 1px solid #1d2127;
+
       text-align: center;
       padding: 30px 20px 40px;
-      color: #888;
+
+      color: #6b7280;
       font-size: 13px;
+      line-height: 1.7;
     }
 
+    .bitcoin {
+      color: #f7931a;
+    }
   </style>
 </head>
 
@@ -314,7 +337,7 @@
 
   <p class="subtitle">
     BTCBack을 통해 평소처럼 쇼핑하세요.<br>
-    Bitcoin 리워드 기능을 준비하고 있습니다.
+    <span class="bitcoin">Bitcoin</span> 리워드 기능을 준비하고 있습니다.
   </p>
 
 
@@ -323,12 +346,9 @@
   ========================== -->
 
   <div class="disclosure">
-
     <strong>[광고]</strong>
-
     이 페이지는 쿠팡 파트너스 활동의 일환으로,
     이에 따른 일정액의 수수료를 제공받습니다.
-
   </div>
 
 
@@ -369,9 +389,7 @@
 
     <h2>🛍️ 추천 상품</h2>
 
-
     <div class="product-grid">
-
 
       <!-- 1 -->
       <div class="product-item">
@@ -385,7 +403,6 @@
         </iframe>
       </div>
 
-
       <!-- 2 -->
       <div class="product-item">
         <iframe
@@ -397,7 +414,6 @@
           referrerpolicy="unsafe-url">
         </iframe>
       </div>
-
 
       <!-- 3 -->
       <div class="product-item">
@@ -411,7 +427,6 @@
         </iframe>
       </div>
 
-
       <!-- 4 -->
       <div class="product-item">
         <iframe
@@ -423,7 +438,6 @@
           referrerpolicy="unsafe-url">
         </iframe>
       </div>
-
 
       <!-- 5 -->
       <div class="product-item">
@@ -437,7 +451,6 @@
         </iframe>
       </div>
 
-
       <!-- 6 -->
       <div class="product-item">
         <iframe
@@ -449,7 +462,6 @@
           referrerpolicy="unsafe-url">
         </iframe>
       </div>
-
 
       <!-- 7 -->
       <div class="product-item">
@@ -463,7 +475,6 @@
         </iframe>
       </div>
 
-
       <!-- 8 -->
       <div class="product-item">
         <iframe
@@ -475,7 +486,6 @@
           referrerpolicy="unsafe-url">
         </iframe>
       </div>
-
 
       <!-- 9 -->
       <div class="product-item">
@@ -489,7 +499,6 @@
         </iframe>
       </div>
 
-
       <!-- 10 -->
       <div class="product-item">
         <iframe
@@ -501,7 +510,6 @@
           referrerpolicy="unsafe-url">
         </iframe>
       </div>
-
 
       <!-- 11 -->
       <div class="product-item">
@@ -515,7 +523,6 @@
         </iframe>
       </div>
 
-
       <!-- 12 -->
       <div class="product-item">
         <iframe
@@ -527,7 +534,6 @@
           referrerpolicy="unsafe-url">
         </iframe>
       </div>
-
 
       <!-- 13 -->
       <div class="product-item">
@@ -541,7 +547,6 @@
         </iframe>
       </div>
 
-
       <!-- 14 -->
       <div class="product-item">
         <iframe
@@ -553,7 +558,6 @@
           referrerpolicy="unsafe-url">
         </iframe>
       </div>
-
 
       <!-- 15 -->
       <div class="product-item">
@@ -567,7 +571,6 @@
         </iframe>
       </div>
 
-
     </div>
 
   </section>
@@ -576,10 +579,8 @@
 
 
 <footer>
-
   © 2026 BTCBack<br>
-  쇼핑하고 Bitcoin 받기
-
+  쇼핑하고 <span class="bitcoin">Bitcoin</span> 받기
 </footer>
 
 

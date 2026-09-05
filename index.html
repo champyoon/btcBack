@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BTCBack</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 720px;
+      text-align: center;
+    }
+
+    .logo {
+      font-size: 52px;
+      font-weight: bold;
+      margin-bottom: 12px;
+    }
+
+    .logo span {
+      color: #f7931a;
+    }
+
+    .headline {
+      font-size: 32px;
+      margin-bottom: 16px;
+    }
+
+    .description {
+      font-size: 18px;
+      line-height: 1.7;
+      color: #ccc;
+      margin-bottom: 36px;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 36px;
+    }
+
+    .card {
+      background: #1c1c1c;
+      border: 1px solid #333;
+      border-radius: 16px;
+      padding: 24px 16px;
+    }
+
+    .icon {
+      font-size: 36px;
+      margin-bottom: 12px;
+    }
+
+    .card h3 {
+      font-size: 17px;
+      margin-bottom: 8px;
+    }
+
+    .card p {
+      font-size: 14px;
+      color: #aaa;
+      line-height: 1.5;
+    }
+
+    .status {
+      display: inline-block;
+      background: #222;
+      border: 1px solid #444;
+      border-radius: 999px;
+      padding: 10px 18px;
+      color: #bbb;
+      font-size: 14px;
+    }
+
+    footer {
+      margin-top: 40px;
+      font-size: 12px;
+      color: #666;
+    }
+
+    @media (max-width: 640px) {
+      .logo {
+        font-size: 42px;
+      }
+
+      .headline {
+        font-size: 26px;
+      }
+
+      .flow {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+    <div class="logo">
+      BTC<span>Back</span> ₿
+    </div>
+
+    <h1 class="headline">
+      쇼핑하고 Bitcoin 받기
+    </h1>
+
+    <p class="description">
+      평소처럼 쇼핑하세요.<br />
+      일상적인 소비가 Bitcoin 리워드로 돌아오는 서비스를 준비하고 있습니다.
+    </p>
+
+    <section class="flow">
+      <div class="card">
+        <div class="icon">🛒</div>
+        <h3>쇼핑하기</h3>
+        <p>제휴 쇼핑몰에서 평소처럼 상품을 구매합니다.</p>
+      </div>
+
+      <div class="card">
+        <div class="icon">₿</div>
+        <h3>Bitcoin 적립</h3>
+        <p>구매 활동에 따라 Bitcoin 리워드를 적립합니다.</p>
+      </div>
+
+      <div class="card">
+        <div class="icon">⚡</div>
+        <h3>내 지갑으로 받기</h3>
+        <p>향후 Lightning을 통해 개인 지갑으로 받을 수 있도록 준비합니다.</p>
+      </div>
+    </section>
+
+    <div class="status">
+      🚧 현재 서비스 준비 중입니다
+    </div>
+
+    <footer>
+      © 2026 BTCBack
+    </footer>
+  </main>
+</body>
+</html>

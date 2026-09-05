@@ -39,22 +39,6 @@
       color: #f7931a;
     }
 
-    .disclosure {
-      background: #fff8e8;
-      color: #333;
-      border: 1px solid #f7931a;
-      border-radius: 10px;
-      padding: 12px 16px;
-      margin-bottom: 24px;
-      font-size: 14px;
-      line-height: 1.6;
-      text-align: left;
-    }
-
-    .disclosure strong {
-      color: #e46f00;
-    }
-
     .headline {
       font-size: 32px;
       margin-bottom: 16px;
@@ -64,35 +48,7 @@
       font-size: 18px;
       line-height: 1.7;
       color: #ccc;
-      margin-bottom: 28px;
-    }
-
-    .coupang-section {
       margin-bottom: 36px;
-    }
-
-    .coupang-section h2 {
-      font-size: 20px;
-      margin-bottom: 16px;
-    }
-
-    .coupang-banner {
-      width: 100%;
-      overflow: hidden;
-    }
-
-    .coupang-banner img {
-      display: block;
-      width: 100%;
-      max-width: 728px;
-      height: auto;
-      margin: 0 auto;
-    }
-
-    .coupang-notice {
-      margin-top: 10px;
-      font-size: 12px;
-      color: #888;
     }
 
     .flow {
@@ -107,6 +63,18 @@
       border: 1px solid #333;
       border-radius: 16px;
       padding: 24px 16px;
+    }
+
+    .card-link {
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .card-link:hover {
+      transform: translateY(-4px);
+      border-color: #f7931a;
     }
 
     .icon {
@@ -125,8 +93,25 @@
       line-height: 1.5;
     }
 
+    .shop-button {
+      display: inline-block;
+      margin-top: 6px;
+      background: #f7931a;
+      color: #111;
+      text-decoration: none;
+      font-weight: bold;
+      padding: 14px 24px;
+      border-radius: 999px;
+      transition: transform 0.2s ease;
+    }
+
+    .shop-button:hover {
+      transform: translateY(-2px);
+    }
+
     .status {
       display: inline-block;
+      margin-top: 28px;
       background: #222;
       border: 1px solid #444;
       border-radius: 999px;
@@ -163,12 +148,6 @@
       BTC<span>Back</span> ₿
     </div>
 
-    <div class="disclosure">
-      <strong>[광고]</strong>
-      이 페이지는 쿠팡 파트너스 활동의 일환으로,
-      이에 따른 일정액의 수수료를 제공받습니다.
-    </div>
-
     <h1 class="headline">
       쇼핑하고 Bitcoin 받기
     </h1>
@@ -178,34 +157,12 @@
       일상적인 소비가 Bitcoin 리워드로 돌아오는 서비스를 준비하고 있습니다.
     </p>
 
-    <section class="coupang-section">
-      <h2>🛒 쿠팡에서 쇼핑하기</h2>
-
-      <div class="coupang-banner">
-        <a
-          href="https://link.coupang.com/a/gNKP0JhfMa"
-          target="_blank"
-          rel="noopener"
-          referrerpolicy="unsafe-url"
-        >
-          <img
-            src="https://ads-partners.coupang.com/banners/1026300?trackingCode=AF7466415&subId=&traceId=V0-301-879dd1202e5c73b2-I1026300&w=728&h=90"
-            alt="쿠팡 파트너스 배너"
-          />
-        </a>
-      </div>
-
-      <p class="coupang-notice">
-        배너를 통해 쿠팡으로 이동할 수 있습니다.
-      </p>
-    </section>
-
     <section class="flow">
-      <div class="card">
+      <a href="shopping.html" class="card card-link">
         <div class="icon">🛒</div>
         <h3>쇼핑하기</h3>
         <p>제휴 쇼핑몰에서 평소처럼 상품을 구매합니다.</p>
-      </div>
+      </a>
 
       <div class="card">
         <div class="icon">₿</div>

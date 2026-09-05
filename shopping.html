@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BTCBack Shopping</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #fff;
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 820px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .logo {
+      font-size: 36px;
+      font-weight: bold;
+    }
+
+    .logo span {
+      color: #f7931a;
+    }
+
+    .back-link {
+      color: #aaa;
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.2s ease;
+    }
+
+    .back-link:hover {
+      color: #fff;
+    }
+
+    .disclosure {
+      background: #fff8e8;
+      color: #333;
+      border: 1px solid #f7931a;
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 36px;
+      font-size: 14px;
+      line-height: 1.6;
+      text-align: left;
+    }
+
+    .disclosure strong {
+      color: #e46f00;
+    }
+
+    .section {
+      margin-bottom: 48px;
+    }
+
+    .section h2 {
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+
+    .coupang-banner {
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .coupang-banner img {
+      display: block;
+      width: 100%;
+      max-width: 728px;
+      height: auto;
+      margin: 0 auto;
+    }
+
+    .product-list {
+      display: grid;
+      grid-template-columns: repeat(5, 120px);
+      gap: 24px 16px;
+      justify-content: center;
+      align-items: start;
+    }
+
+    .product-list iframe {
+      display: block;
+      width: 120px;
+      height: 240px;
+      border: 0;
+    }
+
+    footer {
+      margin-top: 48px;
+      font-size: 12px;
+      color: #666;
+    }
+
+    @media (max-width: 720px) {
+      .product-list {
+        grid-template-columns: repeat(3, 120px);
+      }
+    }
+
+    @media (max-width: 440px) {
+      body {
+        padding: 16px;
+      }
+
+      .topbar {
+        flex-direction: column;
+      }
+
+      .logo {
+        font-size: 32px;
+      }
+
+      .product-list {
+        grid-template-columns: repeat(2, 120px);
+        gap: 20px 14px;
+      }
+    }
+
+    @media (max-width: 300px) {
+      .product-list {
+        grid-template-columns: 120px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+
+    <div class="topbar">
+      <div class="logo">
+        BTC<span>Back</span> ₿
+      </div>
+
+      <a href="index.html" class="back-link">
+        ← 홈으로
+      </a>
+    </div>
+
+    <div class="disclosure">
+      <strong>[광고]</strong>
+      이 페이지는 쿠팡 파트너스 활동의 일환으로,
+      이에 따른 일정액의 수수료를 제공받습니다.
+    </div>
+
+    <section class="section">
+      <h2>🛒 쿠팡에서 쇼핑하기</h2>
+
+      <div class="coupang-banner">
+        <a
+          href="https://link.coupang.com/a/gNKP0JhfMa"
+          target="_blank"
+          rel="noopener"
+          referrerpolicy="unsafe-url"
+        >
+          <img
+            src="https://ads-partners.coupang.com/banners/1026300?trackingCode=AF7466415&subId=&traceId=V0-301-879dd1202e5c73b2-I1026300&w=728&h=90"
+            alt="쿠팡 파트너스 배너"
+          />
+        </a>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>🏎️ 추천 상품</h2>
+
+      <div class="product-list">
+
+        <!-- 1 -->
+        <iframe
+          src="https://coupa.ng/cpgxdH"
+          width="120"
+          height="240"
+          frameborder="0"
+          scrolling="no"
+          referrerpolicy="unsafe-url"
+        ></iframe>
+
+        <!-- 2 -->
+        <iframe
+          src="https://coupa.ng/cpgxqo"
+          width="120"
+          height="240"
+          frameborder="0"
+          scrolling="no"
+          referrerpolicy="unsafe-url"
+        ></iframe>
+
+        <!-- 3 -->
+        <iframe
+          src="https://coupa.ng/cpgxsg"
+          width="120"
+          height="240"
+          frameborder="0"
+          scrolling="no"
+          referrerpolicy="unsafe-url"
+        ></iframe>
+
+        <!-- 4 -->
+        <iframe
+          src="https://coupa.ng/cpgxdH"
+          width="120"
+          height="240"
+          frameborder="0"
+          scrolling="no"
+          referrerpolicy="unsafe-url"
+        ></iframe>
+
+        <!-- 5 -->
+        <iframe
+          src="https://coupa.ng/cpgxqo"
+          width="120"
+          height="240"
+          frameborder="0"
+          scrolling="no"
+          referrerpolicy="unsafe-url"
+        ></iframe>
+
+        <!-- 6 -->
+        <iframe
+          src="https://coupa.ng/cpgxsg"
+          width="120"
+          height="240"
+          frameborder="0"
+          scrolling="no"
+          referrerpolicy="unsafe-url"
+        ></iframe>
+
+        <!-- 7 -->
+        <iframe
+          src="https://coupa.ng/cpgxdH"
+          width="120"
+          height="240"
+          frameborder="0"
+          scrolling="no"
+          referrerpolicy="unsafe-url"
+        ></iframe>
+
+        <!-- 8 -->
+        <iframe
+          src="https://coupa.ng/cpgxqo"
+          width="120"
+          height="240"
+          frameborder="0"
+          scrolling="no"
+          referrerpolicy="unsafe-url"
+        ></iframe>
+
+        <!-- 9 -->
+        <iframe
+          src="https://coupa.ng/cpgxsg"
+          width="120"
+          height="240"
+          frameborder="0"
+          scrolling="no"
+          referrerpolicy="unsafe-url"
+        ></iframe>
+
+        <!-- 10 -->
+        <iframe
+          src="https://coupa.ng/cpgxdH"
+          width="120"
+          height="240"
+          frameborder="0"
+          scrolling="no"
+          referrerpolicy="unsafe-url"
+        ></iframe>
+
+        <!-- 11 -->
+        <iframe
+          src="https://coupa.ng/cpgxqo"
+          width="120"
+          height="240"
+          frameborder="0"
+          scrolling="no"
+          referrerpolicy="unsafe-url"
+        ></iframe>
+
+        <!-- 12 -->
+        <iframe
+          src="https://coupa.ng/cpgxsg"
+          width="120"
+          height="240"
+          frameborder="0"
+          scrolling="no"
+          referrerpolicy="unsafe-url"
+        ></iframe>
+
+        <!-- 13 -->
+        <iframe
+          src="https://coupa.ng/cpgxdH"
+          width="120"
+          height="240"
+          frameborder="0"
+          scrolling="no"
+          referrerpolicy="unsafe-url"
+        ></iframe>
+
+        <!-- 14 -->
+        <iframe
+          src="https://coupa.ng/cpgxqo"
+          width="120"
+          height="240"
+          frameborder="0"
+          scrolling="no"
+          referrerpolicy="unsafe-url"
+        ></iframe>
+
+        <!-- 15 -->
+        <iframe
+          src="https://coupa.ng/cpgxsg"
+          width="120"
+          height="240"
+          frameborder="0"
+          scrolling="no"
+          referrerpolicy="unsafe-url"
+        ></iframe>
+
+      </div>
+    </section>
+
+    <footer>
+      © 2026 BTCBack
+    </footer>
+
+  </main>
+</body>
+</html>

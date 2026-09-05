@@ -1,189 +1,1729 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BTCBack</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>BTCBack | 쇼핑하고 Bitcoin 받기</title>
+
+  <meta
+    name="description"
+    content="평소처럼 쇼핑하고 Bitcoin 리워드를 적립하세요. 적립된 Bitcoin은 내 지갑으로 받거나 다시 쇼핑에 사용할 수 있습니다."
+  >
 
   <style>
     * {
       box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    }
+
+    html {
+      background: #090b0e;
+      scroll-behavior: smooth;
     }
 
     body {
-      font-family: Arial, sans-serif;
-      background: #111;
-      color: #fff;
+      margin: 0;
       min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
+
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        "Noto Sans KR",
+        Arial,
+        sans-serif;
+
+      background:
+        radial-gradient(
+          circle at 50% 25%,
+          rgba(247, 147, 26, 0.05),
+          transparent 35%
+        ),
+        #090b0e;
+
+      color: #ffffff;
     }
 
-    .container {
-      width: 100%;
-      max-width: 720px;
-      text-align: center;
+    a {
+      color: inherit;
+    }
+
+    /* ==================================================
+       HEADER
+    ================================================== */
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+
+      background: rgba(9, 11, 14, 0.96);
+      backdrop-filter: blur(12px);
+
+      border-bottom: 1px solid #252a31;
+    }
+
+    .header-inner {
+      max-width: 1180px;
+      height: 72px;
+
+      margin: 0 auto;
+      padding: 0 24px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 30px;
+    }
+
+    .brand {
+      text-decoration: none;
+      flex-shrink: 0;
     }
 
     .logo {
-      font-size: 52px;
-      font-weight: bold;
-      margin-bottom: 12px;
+      font-size: 27px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      color: #ffffff;
+      line-height: 1;
     }
 
     .logo span {
       color: #f7931a;
     }
 
-    .headline {
-      font-size: 32px;
-      margin-bottom: 16px;
+    .tagline {
+      margin-top: 5px;
+      color: #747b86;
+      font-size: 10px;
     }
 
-    .description {
-      font-size: 18px;
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 38px;
+    }
+
+    nav a {
+      position: relative;
+      padding: 27px 0 23px;
+
+      color: #c4c9d0;
+      text-decoration: none;
+
+      font-size: 14px;
+      font-weight: 500;
+
+      transition: color 0.2s ease;
+    }
+
+    nav a:hover,
+    nav a.active {
+      color: #ffffff;
+    }
+
+    nav a.active {
+      color: #f7931a;
+    }
+
+    nav a.active::after {
+      content: "";
+
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 14px;
+
+      height: 2px;
+
+      background: #f7931a;
+      border-radius: 10px;
+    }
+
+    .header-shopping-button {
+      min-width: 120px;
+      padding: 12px 22px;
+
+      background: #f7931a;
+      color: #111111;
+
+      border-radius: 10px;
+
+      text-align: center;
+      text-decoration: none;
+
+      font-size: 14px;
+      font-weight: 900;
+
+      transition:
+        transform 0.2s ease,
+        background 0.2s ease;
+    }
+
+    .header-shopping-button:hover {
+      background: #ffa52e;
+      transform: translateY(-1px);
+    }
+
+    /* ==================================================
+       HERO
+    ================================================== */
+
+    .hero {
+      max-width: 1180px;
+
+      margin: 0 auto;
+      padding: 42px 24px 28px;
+
+      text-align: center;
+    }
+
+    .eyebrow {
+      margin-bottom: 12px;
+
+      color: #969da8;
+      font-size: 10px;
+      letter-spacing: 6px;
+    }
+
+    .hero h1 {
+      margin: 0;
+
+      font-size: clamp(36px, 4.6vw, 58px);
+      line-height: 1.15;
+
+      letter-spacing: -2px;
+    }
+
+    .hero h1 span {
+      color: #f7931a;
+    }
+
+    .hero-description {
+      margin: 14px auto 0;
+
+      color: #b2b8c1;
+
+      font-size: 17px;
       line-height: 1.7;
-      color: #ccc;
-      margin-bottom: 36px;
+    }
+
+    /* ==================================================
+       MAIN FLOW
+    ================================================== */
+
+    .flow-section {
+      max-width: 1180px;
+
+      margin: 0 auto;
+      padding: 0 24px 10px;
     }
 
     .flow {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      margin-bottom: 36px;
+
+      grid-template-columns:
+        1fr
+        48px
+        1fr
+        48px
+        0.9fr
+        78px
+        1.2fr;
+
+      gap: 10px;
+
+      align-items: center;
     }
 
-    .card {
-      background: #1c1c1c;
-      border: 1px solid #333;
-      border-radius: 16px;
-      padding: 24px 16px;
+    /* ==================================================
+       STEP 1 / STEP 2
+    ================================================== */
+
+    .step-card {
+      height: 458px;
+
+      padding: 24px 20px 18px;
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      text-align: center;
+
+      background:
+        linear-gradient(
+          180deg,
+          #171a1f 0%,
+          #101318 100%
+        );
+
+      border: 1px solid #363c45;
+      border-radius: 18px;
+
+      box-shadow:
+        0 18px 45px rgba(0, 0, 0, 0.22);
     }
 
-    .card-link {
+    .step-card.clickable {
       text-decoration: none;
-      color: inherit;
       cursor: pointer;
-      transition: transform 0.2s ease, border-color 0.2s ease;
+
+      transition:
+        transform 0.2s ease,
+        border-color 0.2s ease;
     }
 
-    .card-link:hover {
-      transform: translateY(-4px);
+    .step-card.clickable:hover {
+      transform: translateY(-3px);
       border-color: #f7931a;
     }
 
-    .icon {
-      font-size: 36px;
-      margin-bottom: 12px;
+    .step-number {
+      width: 54px;
+      height: 54px;
+
+      margin-bottom: 17px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      border: 2px solid #f7931a;
+      border-radius: 50%;
+
+      color: #f7931a;
+
+      font-size: 23px;
+      font-weight: 900;
     }
 
-    .card h3 {
-      font-size: 17px;
-      margin-bottom: 8px;
+    .step-card h2 {
+      margin: 0 0 12px;
+
+      font-size: 23px;
+      line-height: 1.3;
+
+      letter-spacing: -0.7px;
     }
 
-    .card p {
+    .step-card p {
+      margin: 0;
+
+      color: #b7bdc6;
+
+      font-size: 15px;
+      line-height: 1.75;
+    }
+
+    .step-spacer {
+      flex: 1;
+    }
+
+    .main-icon {
+      height: 120px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cart-icon {
+      font-size: 83px;
+      line-height: 1;
+    }
+
+    .btc-icon {
+      color: #f7931a;
+
+      font-size: 108px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    /* ==================================================
+       PARTNERS
+    ================================================== */
+
+    .partners {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .partner {
+      padding: 6px 9px;
+
+      background: #1a1e24;
+
+      border: 1px solid #404650;
+      border-radius: 7px;
+
+      color: #d1d5db;
+
+      font-size: 10px;
+    }
+
+    .partner.active {
+      background: #ffffff;
+      border-color: #ffffff;
+
+      color: #e9462c;
+
+      font-weight: 900;
+    }
+
+    .shopping-link-hint {
+      margin-top: 14px;
+
+      color: #f7931a;
+
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    /* ==================================================
+       NORMAL ARROWS
+    ================================================== */
+
+    .arrow {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      color: #f7931a;
+
+      font-size: 47px;
+      font-weight: 300;
+
+      text-shadow:
+        0 0 16px rgba(247, 147, 26, 0.25);
+    }
+
+    /* ==================================================
+       STEP 3
+    ================================================== */
+
+    .choice-column {
+      display: flex;
+      flex-direction: column;
+
+      justify-content: center;
+      align-items: center;
+
+      min-width: 0;
+    }
+
+    .choice-diamond {
+      width: 170px;
+      height: 170px;
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      transform: rotate(45deg);
+
+      background:
+        linear-gradient(
+          145deg,
+          #171a1f,
+          #0f1216
+        );
+
+      border: 2px solid #f7931a;
+      border-radius: 17px;
+
+      box-shadow:
+        0 0 22px rgba(247, 147, 26, 0.07);
+    }
+
+    .choice-inner {
+      transform: rotate(-45deg);
+
+      width: 145px;
+
+      text-align: center;
+    }
+
+    .choice-number {
+      width: 50px;
+      height: 50px;
+
+      margin: 0 auto 13px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      border: 2px solid #f7931a;
+      border-radius: 50%;
+
+      color: #f7931a;
+
+      font-size: 21px;
+      font-weight: 900;
+    }
+
+    .choice-title {
+      color: #ffffff;
+
+      font-size: 16px;
+      font-weight: 900;
+      line-height: 1.45;
+    }
+
+    .choice-caption {
+      margin-top: 40px;
+
+      color: #aeb5bf;
+
+      text-align: center;
+
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    /* ==================================================
+       REAL BRANCH CONNECTOR
+    ================================================== */
+
+    .branch-connector {
+      width: 78px;
+      height: 420px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .branch-svg {
+      width: 78px;
+      height: 420px;
+      overflow: visible;
+    }
+
+    .branch-path {
+      fill: none;
+
+      stroke: #f7931a;
+      stroke-width: 4;
+
+      stroke-linecap: round;
+      stroke-linejoin: round;
+
+      filter:
+        drop-shadow(
+          0 0 6px rgba(247, 147, 26, 0.3)
+        );
+    }
+
+    .mobile-branch {
+      display: none;
+    }
+
+    /* ==================================================
+       OPTION STACK
+    ================================================== */
+
+    .option-stack {
+      display: flex;
+      flex-direction: column;
+
+      gap: 12px;
+
+      width: 100%;
+    }
+
+    .option-card {
+      width: 100%;
+      min-height: 185px;
+
+      padding: 22px;
+
+      display: grid;
+
+      grid-template-columns:
+        minmax(0, 1fr)
+        92px;
+
+      gap: 15px;
+
+      align-items: center;
+
+      border-radius: 18px;
+
+      overflow: hidden;
+    }
+
+    .option-wallet {
+      background:
+        linear-gradient(
+          135deg,
+          #101c17,
+          #10171a
+        );
+
+      border: 1px solid #15965a;
+    }
+
+    .option-shopping {
+      background:
+        linear-gradient(
+          135deg,
+          #101923,
+          #10171d
+        );
+
+      border: 1px solid #1977c1;
+    }
+
+    .option-content {
+      min-width: 0;
+    }
+
+    .option-heading {
+      display: flex;
+      align-items: center;
+
+      gap: 11px;
+
+      margin-bottom: 15px;
+    }
+
+    .option-number {
+      width: 50px;
+      height: 50px;
+
+      flex: 0 0 50px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      border-radius: 50%;
+
+      font-size: 16px;
+      font-weight: 900;
+
+      white-space: nowrap;
+    }
+
+    .option-wallet .option-number {
+      color: #2be280;
+      border: 2px solid #2be280;
+    }
+
+    .option-shopping .option-number {
+      color: #399cff;
+      border: 2px solid #399cff;
+    }
+
+    .option-title {
+      min-width: 0;
+
+      color: #ffffff;
+
+      font-size: 20px;
+      font-weight: 900;
+      line-height: 1.35;
+
+      word-break: keep-all;
+    }
+
+    .option-description {
+      margin: 0;
+
+      color: #b5bbc5;
+
       font-size: 14px;
-      color: #aaa;
+      line-height: 1.65;
+
+      word-break: keep-all;
+    }
+
+    .option-icon {
+      position: relative;
+
+      width: 92px;
+      height: 92px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      font-size: 68px;
+    }
+
+    .option-wallet .option-icon {
+      color: #ffffff;
+
+      font-size: 75px;
+      font-weight: 900;
+    }
+
+    .lightning-badge {
+      position: absolute;
+
+      right: 1px;
+      bottom: 3px;
+
+      width: 39px;
+      height: 39px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      background: #f7931a;
+
+      border-radius: 50%;
+
+      color: #ffffff;
+
+      font-size: 20px;
+    }
+
+    .option-or {
+      align-self: center;
+
+      padding: 6px 23px;
+
+      color: #dddddd;
+
+      border: 1px solid #8d621d;
+      border-radius: 999px;
+
+      background: #151718;
+
+      font-size: 12px;
+      line-height: 1;
+    }
+
+    /* ==================================================
+       LOOP
+    ================================================== */
+
+    .loop-area {
+      position: relative;
+
+      margin-top: 8px;
+      padding-top: 16px;
+    }
+
+    .loop-line {
+      position: relative;
+
+      width: calc(100% - 120px);
+      height: 42px;
+
+      margin: 0 auto;
+
+      border-bottom: 4px solid #f7931a;
+      border-left: 4px solid #f7931a;
+      border-right: 4px solid #f7931a;
+
+      border-radius: 0 0 22px 22px;
+    }
+
+    .loop-line::before {
+      content: "↑";
+
+      position: absolute;
+
+      left: -16px;
+      top: -27px;
+
+      color: #f7931a;
+
+      font-size: 39px;
+      line-height: 1;
+    }
+
+    .loop-label {
+      position: relative;
+
+      width: fit-content;
+
+      margin: -2px auto 0;
+      padding: 10px 24px;
+
+      background: #f7931a;
+      color: #111111;
+
+      border-radius: 999px;
+
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .loop-caption {
+      margin-top: 13px;
+
+      color: #939ba6;
+
+      text-align: center;
+
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    /* ==================================================
+       FEATURES
+    ================================================== */
+
+    .features {
+      max-width: 1100px;
+
+      margin: 32px auto 0;
+      padding: 26px 24px;
+
+      display: grid;
+
+      grid-template-columns:
+        repeat(4, 1fr);
+
+      gap: 18px;
+
+      border-top: 1px solid #252a31;
+    }
+
+    .feature {
+      display: flex;
+      align-items: center;
+
+      gap: 14px;
+
+      min-height: 65px;
+
+      padding-right: 15px;
+
+      border-right: 1px solid #282d33;
+    }
+
+    .feature:last-child {
+      border-right: none;
+    }
+
+    .feature-icon {
+      width: 48px;
+
+      flex: 0 0 48px;
+
+      text-align: center;
+
+      color: #f7931a;
+
+      font-size: 33px;
+    }
+
+    .feature-title {
+      margin-bottom: 5px;
+
+      color: #ffffff;
+
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .feature-description {
+      color: #959ca6;
+
+      font-size: 12px;
       line-height: 1.5;
     }
 
-    .shop-button {
-      display: inline-block;
-      margin-top: 6px;
-      background: #f7931a;
-      color: #111;
-      text-decoration: none;
-      font-weight: bold;
-      padding: 14px 24px;
-      border-radius: 999px;
-      transition: transform 0.2s ease;
+    /* ==================================================
+       CTA
+    ================================================== */
+
+    .cta {
+      padding: 10px 24px 46px;
+
+      text-align: center;
     }
 
-    .shop-button:hover {
+    .cta-button {
+      display: inline-block;
+
+      padding: 15px 29px;
+
+      background: #f7931a;
+      color: #111111;
+
+      border-radius: 10px;
+
+      text-decoration: none;
+
+      font-size: 16px;
+      font-weight: 900;
+
+      transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+    }
+
+    .cta-button:hover {
+      background: #ffa52e;
       transform: translateY(-2px);
     }
 
-    .status {
-      display: inline-block;
-      margin-top: 28px;
-      background: #222;
-      border: 1px solid #444;
-      border-radius: 999px;
-      padding: 10px 18px;
-      color: #bbb;
-      font-size: 14px;
+    .cta-caption {
+      margin-top: 13px;
+
+      color: #747b86;
+
+      font-size: 11px;
+    }
+
+    /* ==================================================
+       FAQ / FOOTER
+    ================================================== */
+
+    .faq {
+      max-width: 850px;
+
+      margin: 0 auto;
+      padding: 0 24px 40px;
+
+      color: #777f89;
+
+      text-align: center;
+
+      font-size: 12px;
+      line-height: 1.7;
     }
 
     footer {
-      margin-top: 40px;
+      padding: 26px 24px 36px;
+
+      border-top: 1px solid #1e2228;
+
+      color: #686f79;
+
+      text-align: center;
+
       font-size: 12px;
-      color: #666;
+      line-height: 1.7;
     }
 
-    @media (max-width: 640px) {
-      .logo {
-        font-size: 42px;
+    footer span {
+      color: #f7931a;
+    }
+
+    /* ==================================================
+       TABLET
+    ================================================== */
+
+    @media (max-width: 1050px) {
+
+      .flow {
+        grid-template-columns:
+          minmax(210px, 1fr)
+          45px
+          minmax(210px, 1fr)
+          45px
+          minmax(190px, 0.9fr);
+
+        row-gap: 25px;
       }
 
-      .headline {
-        font-size: 26px;
+      .branch-connector {
+        display: none;
+      }
+
+      .mobile-branch {
+        grid-column: 1 / -1;
+
+        display: block;
+
+        color: #f7931a;
+
+        text-align: center;
+
+        font-size: 42px;
+        letter-spacing: 45px;
+        line-height: 1;
+      }
+
+      .option-stack {
+        grid-column: 1 / -1;
+
+        display: grid;
+
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+
+        margin-top: 0;
+      }
+
+      .option-or {
+        display: none;
+      }
+
+      .option-card {
+        min-height: 190px;
+      }
+    }
+
+    /* ==================================================
+       MOBILE
+    ================================================== */
+
+    @media (max-width: 760px) {
+
+      header {
+        position: static;
+      }
+
+      .header-inner {
+        height: 64px;
+        padding: 0 16px;
+      }
+
+      nav {
+        display: none;
+      }
+
+      .logo {
+        font-size: 23px;
+      }
+
+      .tagline {
+        display: none;
+      }
+
+      .header-shopping-button {
+        min-width: auto;
+
+        padding: 10px 15px;
+
+        font-size: 13px;
+      }
+
+      .hero {
+        padding: 38px 18px 27px;
+      }
+
+      .eyebrow {
+        font-size: 9px;
+        letter-spacing: 4px;
+      }
+
+      .hero h1 {
+        font-size: 36px;
+      }
+
+      .hero-description {
+        font-size: 15px;
+      }
+
+      .flow-section {
+        padding: 0 16px 10px;
       }
 
       .flow {
+        display: flex;
+        flex-direction: column;
+
+        gap: 14px;
+      }
+
+      .step-card {
+        width: 100%;
+        height: 390px;
+      }
+
+      .arrow {
+        height: 48px;
+
+        transform: rotate(90deg);
+
+        font-size: 45px;
+      }
+
+      .choice-column {
+        margin: 10px 0 5px;
+      }
+
+      .choice-diamond {
+        width: 150px;
+        height: 150px;
+      }
+
+      .choice-inner {
+        width: 130px;
+      }
+
+      .choice-caption {
+        margin-top: 37px;
+      }
+
+      .mobile-branch {
+        display: block;
+
+        margin: 5px 0 2px;
+
+        color: #f7931a;
+
+        text-align: center;
+
+        font-size: 38px;
+        letter-spacing: 30px;
+
+        transform: none;
+      }
+
+      .option-stack {
+        width: 100%;
+
+        display: flex;
+        flex-direction: column;
+
+        margin-top: 0;
+      }
+
+      .option-card {
+        min-height: 180px;
+
+        grid-template-columns:
+          minmax(0, 1fr)
+          85px;
+      }
+
+      .option-or {
+        display: block;
+      }
+
+      .loop-line {
+        width: 84%;
+      }
+
+      .loop-label {
+        padding: 9px 18px;
+
+        font-size: 14px;
+      }
+
+      .features {
+        grid-template-columns:
+          1fr 1fr;
+
+        padding: 25px 18px;
+      }
+
+      .feature {
+        border-right: none;
+      }
+    }
+
+    @media (max-width: 470px) {
+
+      .hero h1 {
+        font-size: 32px;
+      }
+
+      .step-card {
+        height: 360px;
+      }
+
+      .option-card {
+        grid-template-columns:
+          minmax(0, 1fr)
+          70px;
+
+        padding: 18px;
+      }
+
+      .option-title {
+        font-size: 17px;
+      }
+
+      .option-number {
+        width: 44px;
+        height: 44px;
+
+        flex-basis: 44px;
+
+        font-size: 14px;
+      }
+
+      .option-icon {
+        width: 68px;
+        height: 68px;
+
+        font-size: 52px;
+      }
+
+      .option-wallet .option-icon {
+        font-size: 57px;
+      }
+
+      .lightning-badge {
+        width: 33px;
+        height: 33px;
+
+        font-size: 17px;
+      }
+
+      .features {
         grid-template-columns: 1fr;
+      }
+
+      .cta-button {
+        width: 100%;
+        max-width: 340px;
       }
     }
   </style>
 </head>
 
+
 <body>
-  <main class="container">
-    <div class="logo">
-      BTC<span>Back</span> ₿
-    </div>
 
-    <h1 class="headline">
-      쇼핑하고 Bitcoin 받기
-    </h1>
 
-    <p class="description">
-      평소처럼 쇼핑하세요.<br />
-      일상적인 소비가 Bitcoin 리워드로 돌아오는 서비스를 준비하고 있습니다.
-    </p>
+<!-- ==================================================
+     HEADER
+================================================== -->
 
-    <section class="flow">
-      <a href="shopping.html" class="card card-link">
-        <div class="icon">🛒</div>
-        <h3>쇼핑하기</h3>
-        <p>제휴 쇼핑몰에서 평소처럼 상품을 구매합니다.</p>
+<header>
+
+  <div class="header-inner">
+
+    <a href="index.html" class="brand">
+
+      <div class="logo">
+        BTC<span>Back</span>
+      </div>
+
+      <div class="tagline">
+        Shop Today. Stack Tomorrow.
+      </div>
+
+    </a>
+
+
+    <nav>
+
+      <a href="index.html" class="active">
+        홈
       </a>
 
-      <div class="card">
-        <div class="icon">₿</div>
-        <h3>Bitcoin 적립</h3>
-        <p>구매 활동에 따라 Bitcoin 리워드를 적립하는 기능을 준비하고 있습니다.</p>
+      <a href="shopping.html">
+        쇼핑하기
+      </a>
+
+      <a href="#about">
+        BTCBack은?
+      </a>
+
+      <a href="#faq">
+        자주 묻는 질문
+      </a>
+
+    </nav>
+
+
+    <a
+      href="shopping.html"
+      class="header-shopping-button"
+    >
+      쇼핑하기 →
+    </a>
+
+  </div>
+
+</header>
+
+
+<!-- ==================================================
+     HERO
+================================================== -->
+
+<section class="hero">
+
+  <div class="eyebrow">
+    SHOP · EARN · RECEIVE · REPEAT
+  </div>
+
+  <h1>
+    쇼핑이 만드는,
+    <span>더 나은 일상</span>
+  </h1>
+
+  <p class="hero-description">
+    평소처럼 쇼핑하고,
+    Bitcoin이 쌓이고,
+    원하는 방식으로 활용하세요.
+  </p>
+
+</section>
+
+
+<!-- ==================================================
+     FLOW
+================================================== -->
+
+<section class="flow-section">
+
+  <div class="flow">
+
+
+    <!-- STEP 1 -->
+
+    <a
+      href="shopping.html"
+      class="step-card clickable"
+    >
+
+      <div class="step-number">
+        1
       </div>
 
-      <div class="card">
-        <div class="icon">⚡</div>
-        <h3>내 지갑으로 받기</h3>
-        <p>향후 Lightning을 통해 개인 지갑으로 받을 수 있도록 준비합니다.</p>
-      </div>
-    </section>
+      <h2>
+        쇼핑하기
+      </h2>
 
-    <div class="status">
-      🚧 현재 서비스 준비 중입니다
+      <p>
+        제휴 쇼핑몰에서<br>
+        평소처럼 상품을<br>
+        구매합니다.
+      </p>
+
+      <div class="step-spacer"></div>
+
+      <div class="main-icon cart-icon">
+        🛒
+      </div>
+
+      <div class="partners">
+
+        <span class="partner active">
+          coupang
+        </span>
+
+        <span class="partner">
+          Amazon
+        </span>
+
+        <span class="partner">
+          iHerb
+        </span>
+
+        <span class="partner">
+          ···
+        </span>
+
+      </div>
+
+      <div class="shopping-link-hint">
+        쇼핑하러 가기 →
+      </div>
+
+    </a>
+
+
+    <!-- ARROW 1 -> 2 -->
+
+    <div class="arrow">
+      →
     </div>
 
-    <footer>
-      © 2026 BTCBack
-    </footer>
-  </main>
+
+    <!-- STEP 2 -->
+
+    <div class="step-card">
+
+      <div class="step-number">
+        2
+      </div>
+
+      <h2>
+        Bitcoin 적립
+      </h2>
+
+      <p>
+        구매 활동에 따라<br>
+        Bitcoin 리워드가<br>
+        적립됩니다.
+      </p>
+
+      <div class="step-spacer"></div>
+
+      <div class="main-icon btc-icon">
+        ₿
+      </div>
+
+    </div>
+
+
+    <!-- ARROW 2 -> 3 -->
+
+    <div class="arrow">
+      →
+    </div>
+
+
+    <!-- STEP 3 -->
+
+    <div class="choice-column">
+
+      <div class="choice-diamond">
+
+        <div class="choice-inner">
+
+          <div class="choice-number">
+            3
+          </div>
+
+          <div class="choice-title">
+            원하는 방식으로<br>
+            사용하세요
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="choice-caption">
+        적립된 Bitcoin을<br>
+        어떻게 사용하시겠어요?
+      </div>
+
+    </div>
+
+
+    <!-- ==================================================
+         3 -> 3-1 / 3-2 BRANCH
+    ================================================== -->
+
+    <div class="branch-connector">
+
+      <svg
+        class="branch-svg"
+        viewBox="0 0 78 420"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+      >
+
+        <defs>
+
+          <marker
+            id="arrowhead"
+            markerWidth="8"
+            markerHeight="8"
+            refX="6"
+            refY="4"
+            orient="auto"
+          >
+
+            <path
+              d="M0,0 L8,4 L0,8"
+              fill="none"
+              stroke="#f7931a"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+
+          </marker>
+
+        </defs>
+
+
+        <!-- 3번에서 중앙으로 -->
+        <path
+          class="branch-path"
+          d="M0 210 H28"
+        />
+
+
+        <!-- 위쪽 3-1 분기 -->
+        <path
+          class="branch-path"
+          d="M28 210 V92 H70"
+          marker-end="url(#arrowhead)"
+        />
+
+
+        <!-- 아래쪽 3-2 분기 -->
+        <path
+          class="branch-path"
+          d="M28 210 V328 H70"
+          marker-end="url(#arrowhead)"
+        />
+
+      </svg>
+
+    </div>
+
+
+    <!-- MOBILE/TABLET BRANCH SYMBOL -->
+
+    <div class="mobile-branch">
+      ↙ ↘
+    </div>
+
+
+    <!-- ==================================================
+         OPTIONS
+    ================================================== -->
+
+    <div class="option-stack">
+
+
+      <!-- 3-1 -->
+
+      <div class="option-card option-wallet">
+
+        <div class="option-content">
+
+          <div class="option-heading">
+
+            <span class="option-number">
+              3-1
+            </span>
+
+            <div class="option-title">
+              내 지갑으로 받기
+            </div>
+
+          </div>
+
+          <p class="option-description">
+            적립된 Bitcoin을<br>
+            내 Lightning 지갑으로<br>
+            받을 수 있습니다.
+          </p>
+
+        </div>
+
+
+        <div class="option-icon">
+
+          ₿
+
+          <span class="lightning-badge">
+            ⚡
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <div class="option-or">
+        또는
+      </div>
+
+
+      <!-- 3-2 -->
+
+      <div class="option-card option-shopping">
+
+        <div class="option-content">
+
+          <div class="option-heading">
+
+            <span class="option-number">
+              3-2
+            </span>
+
+            <div class="option-title">
+              Bitcoin으로 쇼핑하기
+            </div>
+
+          </div>
+
+          <p class="option-description">
+            적립된 Bitcoin으로<br>
+            다시 쇼핑을 즐길 수 있도록<br>
+            준비하고 있습니다.
+          </p>
+
+        </div>
+
+
+        <div class="option-icon">
+          🛒
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ==================================================
+       LOOP
+  ================================================== -->
+
+  <div class="loop-area">
+
+    <div class="loop-line"></div>
+
+    <div class="loop-label">
+      쇼핑이 다시 이어지는 선순환
+    </div>
+
+    <div class="loop-caption">
+      쇼핑할수록 쌓이는 Bitcoin,
+      더 자유로운 선택의 기회가 됩니다.
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ==================================================
+     FEATURES
+================================================== -->
+
+<section
+  class="features"
+  id="about"
+>
+
+  <div class="feature">
+
+    <div class="feature-icon">
+      ◇
+    </div>
+
+    <div>
+
+      <div class="feature-title">
+        믿을 수 있는 제휴몰
+      </div>
+
+      <div class="feature-description">
+        익숙한 쇼핑몰에서 편하게
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="feature">
+
+    <div class="feature-icon">
+      ₿
+    </div>
+
+    <div>
+
+      <div class="feature-title">
+        Bitcoin 리워드
+      </div>
+
+      <div class="feature-description">
+        쇼핑이 쌓이는 자산으로
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="feature">
+
+    <div class="feature-icon">
+      ⚡
+    </div>
+
+    <div>
+
+      <div class="feature-title">
+        간편한 수령
+      </div>
+
+      <div class="feature-description">
+        Lightning으로 빠르게
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="feature">
+
+    <div class="feature-icon">
+      ↻
+    </div>
+
+    <div>
+
+      <div class="feature-title">
+        더 자유로운 선택
+      </div>
+
+      <div class="feature-description">
+        받거나, 다시 사용하거나
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ==================================================
+     CTA
+================================================== -->
+
+<section class="cta">
+
+  <a
+    href="shopping.html"
+    class="cta-button"
+  >
+    지금 쇼핑하고 Bitcoin을 쌓아보세요 →
+  </a>
+
+  <div class="cta-caption">
+    Shop Today. Stack Tomorrow.
+  </div>
+
+</section>
+
+
+<!-- ==================================================
+     FAQ
+================================================== -->
+
+<section
+  id="faq"
+  class="faq"
+>
+  현재 BTCBack은 서비스 검증 단계이며,
+  Bitcoin 리워드 및 Lightning 지급 기능을 준비하고 있습니다.
+</section>
+
+
+<!-- ==================================================
+     FOOTER
+================================================== -->
+
+<footer>
+
+  © 2026 BTCBack<br>
+
+  쇼핑하고
+  <span>Bitcoin</span>
+  받기
+
+</footer>
+
+
 </body>
 </html>

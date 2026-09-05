@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BTCBack | Bitcoin 적립 신청</title>
+  <meta name="description" content="구매를 완료하셨나요? BTCBack에서 Bitcoin 적립을 신청하세요.">
+  <style>
+    :root { color-scheme:dark; --bg:#0b0c0e; --text:#f2f3f5; --muted:#989da6; --orange:#f7931a; --line:#292c31; }
+    * { box-sizing:border-box; letter-spacing:0; }
+    body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",Arial,sans-serif; -webkit-font-smoothing:antialiased; }
+    a { color:inherit; text-decoration:none; }
+    button,input,select,textarea { font:inherit; }
+    a:focus-visible,button:focus-visible { outline:2px solid var(--orange); outline-offset:5px; }
+    [hidden] { display:none !important; }
+    .container { width:min(1120px,calc(100% - 64px)); margin-inline:auto; }
+    header { border-bottom:1px solid var(--line); }
+    .header-inner { min-height:88px; display:flex; align-items:center; justify-content:space-between; gap:24px; }
+    .logo { font-size:28px; font-weight:800; line-height:1.1; }
+    .logo span { color:var(--orange); }
+    .tagline { margin-top:7px; font-size:10px; color:var(--muted); }
+    nav { display:flex; gap:28px; align-items:center; font-size:13px; color:#b1b5bd; }
+    nav a { padding-block:14px; }
+    nav a:hover { color:var(--orange); }
+    main { max-width:880px; margin:auto; padding:42px 32px 64px; }
+    .steps { padding:0; margin:0 0 40px; list-style:none; display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); }
+    .steps li { position:relative; display:flex; flex-direction:column; align-items:center; gap:10px; text-align:center; color:#858b95; font-size:12px; }
+    .steps li:not(:last-child)::after { content:""; position:absolute; top:15px; left:calc(50% + 24px); width:calc(100% - 48px); height:1px; background:#363a41; }
+    .steps li:not(:last-child)::before { content:""; position:absolute; top:12px; right:calc(-50% + 23px); width:6px; height:6px; border-top:1px solid #363a41; border-right:1px solid #363a41; transform:rotate(45deg); }
+    .step-number { display:grid; place-items:center; width:32px; height:32px; border:1px solid #363a41; border-radius:50%; font-size:12px; background:#141619; }
+    .steps [aria-current="step"] { color:var(--orange); font-weight:700; }
+    [aria-current="step"] .step-number { color:#15100a; border-color:var(--orange); background:var(--orange); }
+    .heading { margin-bottom:28px; }
+    .eyebrow { color:var(--orange); font-size:11px; margin:0 0 12px; }
+    h1 { font-size:30px; line-height:1.5; margin:0 0 12px; word-break:keep-all; }
+    h1 span { color:var(--orange); }
+    .intro { font-size:13px; line-height:1.8; color:var(--muted); margin:0; word-break:keep-all; }
+    .demo-note { border-left:2px solid #9b682e; padding:2px 0 2px 14px; margin:20px 0 0; font-size:12px; line-height:1.8; color:#b8a58d; word-break:keep-all; }
+    .form-panel { border:1px solid #34373d; border-radius:8px; padding:32px; background:linear-gradient(145deg,#1b1d21,#111315 85%); box-shadow:0 12px 28px #00000025,inset 0 1px 0 #ffffff04; }
+    fieldset { margin:0; padding:0; border:0; min-width:0; }
+    fieldset+fieldset { margin-top:28px; padding-top:28px; border-top:1px solid var(--line); }
+    legend { padding:0; font-size:16px; font-weight:650; margin-bottom:20px; }
+    fieldset+fieldset legend { float:left; width:100%; }
+    .fields { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px 24px; clear:both; }
+    .field { min-width:0; }
+    .full { grid-column:1 / -1; }
+    label { display:block; font-size:12px; font-weight:600; margin-bottom:9px; }
+    .optional { color:var(--muted); font-weight:400; }
+    input,select,textarea { display:block; width:100%; min-width:0; border:1px solid #3a3e45; border-radius:6px; background:#101214; color:var(--text); padding:12px 13px; font-size:14px; outline:none; }
+    input,select { min-height:46px; }
+    textarea { min-height:94px; resize:vertical; line-height:1.6; }
+    input::placeholder,textarea::placeholder { color:#717883; opacity:1; }
+    input:focus,select:focus,textarea:focus { border-color:var(--orange); box-shadow:0 0 0 2px #f7931a15; }
+    [aria-invalid="true"] { border-color:#e58888; }
+    .help { font-size:11px; color:var(--muted); line-height:1.8; margin:8px 0 0; word-break:keep-all; overflow-wrap:anywhere; }
+    .error { font-size:12px; color:#f0a0a0; line-height:1.6; margin:7px 0 0; }
+    .notice { padding:20px 0; margin:24px 0 0; border-top:1px solid var(--line); font-size:12px; color:var(--muted); line-height:1.8; word-break:keep-all; }
+    .button { width:100%; min-height:52px; display:flex; align-items:center; justify-content:center; gap:12px; padding:14px 20px; background:var(--orange); border:0; border-radius:6px; color:#15100a; font-size:15px; font-weight:750; cursor:pointer; }
+    .button:hover { background:#ffab43; }
+    .button:disabled { opacity:.5; cursor:not-allowed; }
+    .submit-caption { margin:12px 0 0; font-size:11px; color:#858b95; text-align:center; line-height:1.7; }
+    .success { padding:40px 12px; text-align:center; outline:none; }
+    .success-mark { display:grid; place-items:center; margin:0 auto 20px; width:52px; height:52px; border:1px solid #32644f; border-radius:50%; color:#64d5a3; background:#14201b; font-size:24px; }
+    .success h2 { font-size:23px; line-height:1.6; margin:0 0 14px; word-break:keep-all; }
+    .success p { color:var(--muted); font-size:13px; line-height:1.9; margin:0 0 24px; word-break:keep-all; }
+    .success .button { width:fit-content; margin:auto; }
+    footer { border-top:1px solid var(--line); }
+    .footer-inner { padding-block:24px; display:flex; justify-content:space-between; gap:20px; font-size:11px; color:#747a83; }
+    @media(max-width:700px) {
+      .container { width:calc(100% - 36px); }
+      .header-inner { min-height:78px; gap:16px; }
+      .logo { font-size:24px; } .tagline { font-size:8px; }
+      nav { gap:16px; font-size:12px; }
+      main { padding:30px 18px 42px; }
+      h1 { font-size:24px; }
+      .steps { margin-bottom:30px; }
+      .steps li { font-size:10px; gap:9px; }
+      .steps li:not(:last-child)::after { left:calc(50% + 20px); width:calc(100% - 40px); }
+      .steps li:not(:last-child)::before { right:calc(-50% + 19px); }
+      .form-panel { padding:24px 20px; }
+      .fields { grid-template-columns:1fr; gap:20px; }
+      input,select,textarea { font-size:16px; }
+      .footer-inner { font-size:10px; }
+    }
+    @media(max-width:360px) { nav { gap:10px; font-size:11px; } .form-panel { padding:22px 16px; } h1 { font-size:22px; } }
+  </style>
+</head>
+<body>
+  <header><div class="header-inner container">
+    <a href="index.html" aria-label="BTCBack 메인페이지"><div class="logo">BTC<span>Back</span></div><div class="tagline">Shop Today. Stack Tomorrow.</div></a>
+    <nav aria-label="메인 메뉴"><a href="index.html">메인페이지</a><a href="shopping.html">쇼핑하기</a></nav>
+  </div></header>
+  <main>
+    <ol class="steps" aria-label="Bitcoin 적립 진행 단계">
+      <li><span class="step-number">1</span><span>구매완료</span></li>
+      <li aria-current="step"><span class="step-number">2</span><span>적립신청</span></li>
+      <li><span class="step-number">3</span><span>구매확인</span></li>
+      <li><span class="step-number">4</span><span>리워드확정</span></li>
+      <li><span class="step-number">5</span><span>Bitcoin 지급</span></li>
+    </ol>
+    <div class="heading"><p class="eyebrow">BITCOIN REWARDS</p><h1>구매를 완료하셨나요?<br><span>Bitcoin 적립을 신청하세요.</span></h1><p class="intro">구매 정보와 Bitcoin을 받을 정보를 입력해 주세요.</p><p class="demo-note">현재는 신청 체험용 MVP입니다. 입력한 정보는 서버에 전송되거나 저장되지 않으며, 실제 적립 신청이나 Bitcoin 지급은 진행되지 않습니다.</p></div>
+    <div class="form-panel">
+      <form id="reward-form" novalidate>
+        <fieldset><legend>구매 정보</legend><div class="fields">
+          <div class="field"><label for="store">구매 쇼핑몰</label><select id="store" required aria-describedby="store-error"><option value="">쇼핑몰을 선택하세요</option><option value="coupang">쿠팡</option><option value="amazon">Amazon</option><option value="iherb">iHerb</option><option value="other">기타 쇼핑몰</option></select><p class="error" id="store-error" hidden></p></div>
+          <div class="field"><label for="purchase-date">구매일</label><input id="purchase-date" type="date" required aria-describedby="purchase-date-error"><p class="error" id="purchase-date-error" hidden></p></div>
+          <div class="field"><label for="amount">구매금액 (원)</label><input id="amount" type="text" inputmode="numeric" placeholder="예: 50,000" maxlength="20" required aria-describedby="amount-help amount-error"><p class="help" id="amount-help">원화 기준 실제 결제금액을 입력해 주세요.</p><p class="error" id="amount-error" hidden></p></div>
+          <div class="field"><label for="order">주문번호 <span class="optional">(선택)</span></label><input id="order" type="text" maxlength="100" placeholder="쇼핑몰 주문번호" aria-describedby="order-error"><p class="error" id="order-error" hidden></p></div>
+        </div></fieldset>
+        <fieldset><legend>리워드 수령 정보</legend><div class="fields">
+          <div class="field"><label for="nickname">이름 또는 닉네임</label><input id="nickname" type="text" autocomplete="nickname" maxlength="80" required placeholder="이름 또는 닉네임" aria-describedby="nickname-error"><p class="error" id="nickname-error" hidden></p></div>
+          <div class="field"><label for="email">이메일</label><input id="email" type="email" autocomplete="email" maxlength="254" required placeholder="you@example.com" aria-describedby="email-error"><p class="error" id="email-error" hidden></p></div>
+          <div class="field full"><label for="lightning">Lightning Invoice 또는 Lightning Address</label><textarea id="lightning" rows="3" maxlength="10000" required spellcheck="false" autocapitalize="none" placeholder="name@wallet.com 또는 lnbc..." aria-describedby="lightning-help lightning-error"></textarea><p class="help" id="lightning-help">Lightning Address 또는 BOLT11 invoice를 입력할 수 있습니다. 일반 Bitcoin 주소는 지원하지 않습니다. MVP에서는 기본 형식만 확인하며, 주소의 수신 가능 여부나 invoice의 유효성·만료 여부는 검증하지 않습니다.</p><p class="error" id="lightning-error" hidden></p></div>
+          <div class="field full"><label for="memo">메모 <span class="optional">(선택)</span></label><textarea id="memo" maxlength="1000" rows="3" placeholder="구매 관련 전달할 내용이 있다면 적어 주세요." aria-describedby="memo-error"></textarea><p class="error" id="memo-error" hidden></p></div>
+        </div></fieldset>
+        <p class="notice">구매 취소 또는 반품 시 리워드가 취소될 수 있습니다. 실제 서비스의 적립 조건과 지급 일정은 서비스 제공 시 안내할 예정입니다.</p>
+        <button class="button" id="submit-button" type="submit" disabled>Bitcoin 적립 신청하기 <span aria-hidden="true">→</span></button>
+        <p class="submit-caption">입력 검증 후 신청 완료 화면을 체험할 수 있습니다.</p>
+        <noscript><p class="error">신청 체험을 이용하려면 브라우저에서 JavaScript를 활성화해 주세요.</p></noscript>
+      </form>
+      <section class="success" id="success" tabindex="-1" aria-labelledby="success-title" hidden>
+        <div class="success-mark" aria-hidden="true">✓</div>
+        <h2 id="success-title">신청이 접수되었습니다.<br>구매 확인 후 Bitcoin 리워드를 안내드리겠습니다.</h2>
+        <p>위 메시지는 MVP의 신청 완료 예시입니다.<br>입력한 정보는 전송·저장되지 않았으며, 실제 구매 확인이나 이메일 안내는 진행되지 않습니다.</p>
+        <a class="button" href="shopping.html">쇼핑하기로 돌아가기 <span aria-hidden="true">→</span></a>
+      </section>
+    </div>
+  </main>
+  <footer><div class="footer-inner container"><span>© 2026 BTCBack</span><span>Shop Today. Stack Tomorrow.</span></div></footer>
+  <script>
+    const form = document.getElementById('reward-form');
+    const date = document.getElementById('purchase-date');
+    const fields = [...form.querySelectorAll('input, select, textarea')];
+    const localToday = () => {
+      const now = new Date();
+      return [now.getFullYear(), String(now.getMonth() + 1).padStart(2, '0'), String(now.getDate()).padStart(2, '0')].join('-');
+    };
+    date.max = localToday();
+    const emailLike = value => /^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+$/.test(value);
+    function errorFor(field) {
+      const value = field.value.trim();
+      if (field.required && !value) return '필수 항목입니다. 값을 입력하거나 선택해 주세요.';
+      if (field.maxLength > 0 && value.length > field.maxLength) return `최대 ${field.maxLength}자까지 입력할 수 있습니다.`;
+      if (field.id === 'purchase-date' && (!field.validity.valid || value > localToday())) return '오늘 또는 이전의 올바른 구매일을 선택해 주세요.';
+      if (field.id === 'amount') {
+        const amount = Number(value.replaceAll(',', ''));
+        if (!/^(?:\d+|\d{1,3}(?:,\d{3})+)$/.test(value) || !Number.isSafeInteger(amount) || amount <= 0) return '구매금액을 1원 이상의 정수로 입력해 주세요. (예: 50,000)';
+      }
+      if (field.id === 'email' && (!emailLike(value) || field.validity.typeMismatch)) return '올바른 이메일 주소를 입력해 주세요.';
+      if (field.id === 'lightning') {
+        const invoice = value.replace(/^lightning:/i, '');
+        const sameCase = invoice === invoice.toLowerCase() || invoice === invoice.toUpperCase();
+        const bolt11 = sameCase && /^lnbc(?:\d+[munp]?)?1[02-9ac-hj-np-z]{100,}$/i.test(invoice);
+        if (!emailLike(value) && !bolt11) return 'Lightning Address(name@wallet.com) 또는 lnbc로 시작하는 BOLT11 invoice를 입력해 주세요.';
+      }
+      return '';
+    }
+    function validate(field) {
+      const message = errorFor(field);
+      const error = document.getElementById(`${field.id}-error`);
+      error.textContent = message;
+      error.hidden = !message;
+      field.setAttribute('aria-invalid', String(Boolean(message)));
+      return !message;
+    }
+    fields.forEach(field => {
+      field.addEventListener('input', () => {
+        if (field.getAttribute('aria-invalid') === 'true') validate(field);
+      });
+      field.addEventListener('change', () => {
+        if (field.getAttribute('aria-invalid') === 'true') validate(field);
+      });
+    });
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      date.max = localToday();
+      let firstInvalid;
+      fields.forEach(field => {
+        field.value = field.value.trim();
+        if (!validate(field) && !firstInvalid) firstInvalid = field;
+      });
+      if (firstInvalid) { firstInvalid.focus(); return; }
+      form.reset();
+      form.hidden = true;
+      const success = document.getElementById('success');
+      success.hidden = false;
+      success.focus();
+    });
+    document.getElementById('submit-button').disabled = false;
+  </script>
+</body>
+</html>

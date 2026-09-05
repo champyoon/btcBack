@@ -212,6 +212,76 @@
       border: 0;
     }
 
+    .reward-cta {
+      margin-top: 32px;
+      padding: 30px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      border-top: 1px solid rgba(247, 147, 26, 0.3);
+      border-bottom: 1px solid rgba(247, 147, 26, 0.3);
+      background: linear-gradient(110deg, rgba(247, 147, 26, 0.045), transparent);
+      box-shadow: 0 0 24px rgba(247, 147, 26, 0.025);
+    }
+
+    .reward-cta h2 {
+      margin: 0 0 10px;
+      font-size: 22px;
+      line-height: 1.4;
+      word-break: keep-all;
+    }
+
+    .reward-cta p {
+      margin: 0;
+      color: #9ca3af;
+      font-size: 14px;
+      line-height: 1.7;
+      word-break: keep-all;
+    }
+
+    .reward-cta-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      min-height: 52px;
+      padding: 14px 22px;
+      border: 1px solid #f7931a;
+      border-radius: 6px;
+      background: #f7931a;
+      color: #15100a;
+      font-size: 15px;
+      font-weight: 750;
+      line-height: 1.5;
+      text-align: center;
+      text-decoration: none;
+    }
+
+    .reward-cta-button:hover {
+      background: #ffab43;
+      border-color: #ffab43;
+    }
+
+    .reward-cta-button:focus-visible {
+      outline: 2px solid #f7931a;
+      outline-offset: 5px;
+    }
+
+    @media (max-width: 700px) {
+      .reward-cta {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 26px 16px;
+        gap: 20px;
+        text-align: center;
+      }
+
+      .reward-cta-button {
+        width: 100%;
+      }
+    }
+
     /* =========================
        TABLET
     ========================= */
@@ -573,6 +643,14 @@
 
     </div>
 
+  </section>
+
+  <section class="reward-cta" aria-labelledby="reward-cta-title">
+    <div>
+      <h2 id="reward-cta-title">구매를 완료하셨나요?</h2>
+      <p>구매 후 Bitcoin 리워드 적립을 신청할 수 있습니다.</p>
+    </div>
+    <a href="reward.html" class="reward-cta-button">₿ Bitcoin 적립 신청하기</a>
   </section>
 
 </main>

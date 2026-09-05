@@ -93,6 +93,7 @@
       margin: 0 auto;
     }
 
+    /* PC: 5열 */
     .product-list {
       display: grid;
       grid-template-columns: repeat(5, 120px);
@@ -101,7 +102,13 @@
       align-items: start;
     }
 
-    .product-list iframe {
+    .product-item {
+      width: 120px;
+      height: 240px;
+      overflow: hidden;
+    }
+
+    .product-item iframe {
       display: block;
       width: 120px;
       height: 240px;
@@ -114,34 +121,70 @@
       color: #666;
     }
 
+    /* 태블릿: 3열 */
     @media (max-width: 720px) {
       .product-list {
         grid-template-columns: repeat(3, 120px);
+        gap: 20px 12px;
       }
     }
 
+    /* 스마트폰: 3열 유지 + 상품 크기 축소 */
     @media (max-width: 440px) {
       body {
-        padding: 16px;
+        padding: 14px;
       }
 
       .topbar {
-        flex-direction: column;
+        flex-direction: row;
       }
 
       .logo {
-        font-size: 32px;
+        font-size: 30px;
+      }
+
+      .section h2 {
+        font-size: 20px;
       }
 
       .product-list {
-        grid-template-columns: repeat(2, 120px);
-        gap: 20px 14px;
+        grid-template-columns: repeat(3, 100px);
+        gap: 16px 8px;
+      }
+
+      .product-item {
+        width: 100px;
+        height: 200px;
+        overflow: hidden;
+      }
+
+      .product-item iframe {
+        width: 120px;
+        height: 240px;
+        transform: scale(0.8333);
+        transform-origin: top left;
       }
     }
 
-    @media (max-width: 300px) {
+    /* 아주 작은 화면 */
+    @media (max-width: 340px) {
+      body {
+        padding: 10px;
+      }
+
       .product-list {
-        grid-template-columns: 120px;
+        grid-template-columns: repeat(3, 92px);
+        gap: 14px 6px;
+      }
+
+      .product-item {
+        width: 92px;
+        height: 184px;
+      }
+
+      .product-item iframe {
+        transform: scale(0.7667);
+        transform-origin: top left;
       }
     }
   </style>
@@ -189,155 +232,95 @@
 
       <div class="product-list">
 
-        <!-- 1 -->
-        <iframe
-          src="https://coupa.ng/cpgxdH"
-          width="120"
-          height="240"
-          frameborder="0"
-          scrolling="no"
-          referrerpolicy="unsafe-url"
-        ></iframe>
+        <div class="product-item">
+          <iframe src="https://coupa.ng/cpgxdH" width="120" height="240"
+            frameborder="0" scrolling="no"
+            referrerpolicy="unsafe-url"></iframe>
+        </div>
 
-        <!-- 2 -->
-        <iframe
-          src="https://coupa.ng/cpgxqo"
-          width="120"
-          height="240"
-          frameborder="0"
-          scrolling="no"
-          referrerpolicy="unsafe-url"
-        ></iframe>
+        <div class="product-item">
+          <iframe src="https://coupa.ng/cpgxqo" width="120" height="240"
+            frameborder="0" scrolling="no"
+            referrerpolicy="unsafe-url"></iframe>
+        </div>
 
-        <!-- 3 -->
-        <iframe
-          src="https://coupa.ng/cpgxsg"
-          width="120"
-          height="240"
-          frameborder="0"
-          scrolling="no"
-          referrerpolicy="unsafe-url"
-        ></iframe>
+        <div class="product-item">
+          <iframe src="https://coupa.ng/cpgxsg" width="120" height="240"
+            frameborder="0" scrolling="no"
+            referrerpolicy="unsafe-url"></iframe>
+        </div>
 
-        <!-- 4 -->
-        <iframe
-          src="https://coupa.ng/cpgxdH"
-          width="120"
-          height="240"
-          frameborder="0"
-          scrolling="no"
-          referrerpolicy="unsafe-url"
-        ></iframe>
+        <div class="product-item">
+          <iframe src="https://coupa.ng/cpgxdH" width="120" height="240"
+            frameborder="0" scrolling="no"
+            referrerpolicy="unsafe-url"></iframe>
+        </div>
 
-        <!-- 5 -->
-        <iframe
-          src="https://coupa.ng/cpgxqo"
-          width="120"
-          height="240"
-          frameborder="0"
-          scrolling="no"
-          referrerpolicy="unsafe-url"
-        ></iframe>
+        <div class="product-item">
+          <iframe src="https://coupa.ng/cpgxqo" width="120" height="240"
+            frameborder="0" scrolling="no"
+            referrerpolicy="unsafe-url"></iframe>
+        </div>
 
-        <!-- 6 -->
-        <iframe
-          src="https://coupa.ng/cpgxsg"
-          width="120"
-          height="240"
-          frameborder="0"
-          scrolling="no"
-          referrerpolicy="unsafe-url"
-        ></iframe>
+        <div class="product-item">
+          <iframe src="https://coupa.ng/cpgxsg" width="120" height="240"
+            frameborder="0" scrolling="no"
+            referrerpolicy="unsafe-url"></iframe>
+        </div>
 
-        <!-- 7 -->
-        <iframe
-          src="https://coupa.ng/cpgxdH"
-          width="120"
-          height="240"
-          frameborder="0"
-          scrolling="no"
-          referrerpolicy="unsafe-url"
-        ></iframe>
+        <div class="product-item">
+          <iframe src="https://coupa.ng/cpgxdH" width="120" height="240"
+            frameborder="0" scrolling="no"
+            referrerpolicy="unsafe-url"></iframe>
+        </div>
 
-        <!-- 8 -->
-        <iframe
-          src="https://coupa.ng/cpgxqo"
-          width="120"
-          height="240"
-          frameborder="0"
-          scrolling="no"
-          referrerpolicy="unsafe-url"
-        ></iframe>
+        <div class="product-item">
+          <iframe src="https://coupa.ng/cpgxqo" width="120" height="240"
+            frameborder="0" scrolling="no"
+            referrerpolicy="unsafe-url"></iframe>
+        </div>
 
-        <!-- 9 -->
-        <iframe
-          src="https://coupa.ng/cpgxsg"
-          width="120"
-          height="240"
-          frameborder="0"
-          scrolling="no"
-          referrerpolicy="unsafe-url"
-        ></iframe>
+        <div class="product-item">
+          <iframe src="https://coupa.ng/cpgxsg" width="120" height="240"
+            frameborder="0" scrolling="no"
+            referrerpolicy="unsafe-url"></iframe>
+        </div>
 
-        <!-- 10 -->
-        <iframe
-          src="https://coupa.ng/cpgxdH"
-          width="120"
-          height="240"
-          frameborder="0"
-          scrolling="no"
-          referrerpolicy="unsafe-url"
-        ></iframe>
+        <div class="product-item">
+          <iframe src="https://coupa.ng/cpgxdH" width="120" height="240"
+            frameborder="0" scrolling="no"
+            referrerpolicy="unsafe-url"></iframe>
+        </div>
 
-        <!-- 11 -->
-        <iframe
-          src="https://coupa.ng/cpgxqo"
-          width="120"
-          height="240"
-          frameborder="0"
-          scrolling="no"
-          referrerpolicy="unsafe-url"
-        ></iframe>
+        <div class="product-item">
+          <iframe src="https://coupa.ng/cpgxqo" width="120" height="240"
+            frameborder="0" scrolling="no"
+            referrerpolicy="unsafe-url"></iframe>
+        </div>
 
-        <!-- 12 -->
-        <iframe
-          src="https://coupa.ng/cpgxsg"
-          width="120"
-          height="240"
-          frameborder="0"
-          scrolling="no"
-          referrerpolicy="unsafe-url"
-        ></iframe>
+        <div class="product-item">
+          <iframe src="https://coupa.ng/cpgxsg" width="120" height="240"
+            frameborder="0" scrolling="no"
+            referrerpolicy="unsafe-url"></iframe>
+        </div>
 
-        <!-- 13 -->
-        <iframe
-          src="https://coupa.ng/cpgxdH"
-          width="120"
-          height="240"
-          frameborder="0"
-          scrolling="no"
-          referrerpolicy="unsafe-url"
-        ></iframe>
+        <div class="product-item">
+          <iframe src="https://coupa.ng/cpgxdH" width="120" height="240"
+            frameborder="0" scrolling="no"
+            referrerpolicy="unsafe-url"></iframe>
+        </div>
 
-        <!-- 14 -->
-        <iframe
-          src="https://coupa.ng/cpgxqo"
-          width="120"
-          height="240"
-          frameborder="0"
-          scrolling="no"
-          referrerpolicy="unsafe-url"
-        ></iframe>
+        <div class="product-item">
+          <iframe src="https://coupa.ng/cpgxqo" width="120" height="240"
+            frameborder="0" scrolling="no"
+            referrerpolicy="unsafe-url"></iframe>
+        </div>
 
-        <!-- 15 -->
-        <iframe
-          src="https://coupa.ng/cpgxsg"
-          width="120"
-          height="240"
-          frameborder="0"
-          scrolling="no"
-          referrerpolicy="unsafe-url"
-        ></iframe>
+        <div class="product-item">
+          <iframe src="https://coupa.ng/cpgxsg" width="120" height="240"
+            frameborder="0" scrolling="no"
+            referrerpolicy="unsafe-url"></iframe>
+        </div>
 
       </div>
     </section>

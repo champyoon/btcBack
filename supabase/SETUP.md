@@ -10,7 +10,7 @@
 
 - 쇼핑몰은 화면의 선택 이름(예: 쿠팡)으로 저장합니다. 구매금액 `52,000`은 숫자 `52000`으로 변환합니다. 선택 항목의 빈 값은 SQL NULL입니다.
 - UUID, 접수 시각, pending 상태는 DB가 생성합니다. 공개 클라이언트는 이 세 열을 지정할 수 없습니다.
-- anon은 입력 열에 INSERT만 할 수 있습니다. SELECT/UPDATE/DELETE 권한과 정책은 없습니다. authenticated에도 권한을 부여하지 않습니다.
+- anon은 입력 열에 INSERT만 할 수 있습니다. SELECT/UPDATE/DELETE 권한과 정책은 없습니다. 아래 관리자 설정을 적용하면 admin_users에 등록된 authenticated 사용자만 조회와 상태 변경을 할 수 있습니다.
 - 성공 응답을 받기 전에는 성공 화면을 표시하지 않습니다. INSERT 뒤 `.select()`를 붙이지 마세요. 조회 권한이 필요해집니다.
 - 관리자는 Supabase Table Editor에서 내용을 확인합니다. 신청 저장 자체가 이메일 발송이나 Bitcoin 지급을 수행하지 않습니다.
 - Lightning은 기본 형식만 검사합니다. invoice 서명/만료, 지급 가능 여부는 별도의 지급 과정에서 확인해야 합니다.
@@ -42,7 +42,64 @@ where schemaname = 'public' and tablename = 'reward_requests';
 -- Expected: one INSERT policy for anon, with status = 'pending'.
 ```
 
-실제 프로젝트 연결 정보는 미설정 상태이므로, 실제 저장과 RLS는 위 설정 후 확인해 주세요.
+실제 저장 및 프로젝트에 적용된 RLS는 위 설정 후 확인해 주세요.
+
+## 관리자 설정
+
+1. 기존 `reward_requests`가 있는 프로젝트의 SQL Editor에서 **`admin_setup.sql` 전체**를 한 번 실행합니다. `reward_requests.sql`을 다시 실행하지 않습니다. 이 마이그레이션은 기존 신청을 유지합니다. 이미 관리자 테이블이 있거나 기존 status에 허용되지 않은 값이 있으면 트랜잭션 전체가 중단됩니다. 임의로 테이블을 삭제하지 말고 기존 상태를 먼저 확인하세요.
+2. Supabase **Authentication > Users > Add user > Create new user**에서 관리자 이메일과 강력한 비밀번호로 계정을 생성합니다. 이메일 확인 상태도 완료합니다. Email/Password 로그인이 활성화되어 있어야 합니다. 공개 회원가입은 이 기능에 필요하지 않습니다.
+3. 해당 사용자의 UUID를 확인한 뒤 SQL Editor에서 아래 SQL의 UUID를 교체하여 실행합니다. 등록 이메일은 auth.users에서 가져오며, 실제 권한 기준은 user_id입니다.
+
+```sql
+insert into public.admin_users (user_id, email)
+select id, email from auth.users
+where id = 'YOUR_ADMIN_USER_UUID'::uuid;
+
+select user_id, email, created_at from public.admin_users;
+```
+
+4. `admin-config.js`에는 현재 `reward.html`과 같은 공개 URL·키가 설정되어 있습니다. 프로젝트/키를 바꾸면 두 설정을 함께 갱신합니다. publishable/legacy anon key만 사용하고 service_role/secret key는 넣지 않습니다.
+5. `admin.html`, `admin.js`, `admin-config.js`를 기존 GitHub Pages 방식으로 배포하고 `/admin.html`에서 로그인합니다. 빌드와 별도 서버는 필요 없습니다. 비밀번호와 관리자 세션은 공개 설정 파일에 저장하지 않습니다.
+
+### 권한과 상태
+
+- admin_users는 RLS를 사용하며 authenticated 사용자는 자기 user_id 행만 조회할 수 있습니다. 브라우저에서 관리자 등록·수정·삭제는 불가능합니다. 관리자 추가/해제는 SQL Editor에서만 수행합니다.
+- 관리자 SELECT/UPDATE 정책은 `auth.uid()`와 admin_users를 대조합니다. 이메일 문자열이나 사용자 수정 가능 메타데이터로 권한을 결정하지 않습니다.
+- 비관리자 authenticated 사용자는 신청 SELECT 결과가 빈 배열이고 UPDATE 대상도 0행입니다. anon은 기존 입력 열 INSERT만 유지하며 SELECT/UPDATE/DELETE는 권한 오류입니다. 관리자에게도 DELETE는 허용하지 않습니다.
+- 관리자에게는 `UPDATE(status)` 열 권한만 부여합니다. 이름·이메일·금액·수령 정보 등 신청 본문은 수정할 수 없습니다.
+- CHECK 제약으로 상태 값을 제한하고 트리거로 `pending → purchase_confirmed → reward_confirmed → paid`만 허용합니다. 어느 단계에서든 rejected로 변경할 수 있지만 rejected에서 복원하는 동작은 제공하지 않습니다. paid에서 rejected로 바꾸어도 Bitcoin을 환수하지 않습니다.
+- paid 확인창은 실제 Bitcoin 지급 완료 확인용입니다. 이 페이지는 Bitcoin 송금이나 이메일 발송을 실행하지 않습니다.
+- 상태 변경은 기존 status도 함께 대조합니다. 다른 관리자가 먼저 바꿨거나 권한이 해제되어 0행이 반환되면 실패로 안내합니다. 새로고침하여 확인하세요.
+- 통계는 필터와 무관한 전체 건수이며, 목록은 필터 적용 후 최신순 25건씩 표시합니다. 통계와 목록은 별도 쿼리라 동시 접수 중에는 일시적으로 차이가 날 수 있습니다.
+- 세션은 별도 키 `btcback-admin-auth`로 탭의 sessionStorage에 저장합니다. 로그아웃/세션 종료 시 목록과 상세 내용을 지웁니다. 관리자 권한을 제거하면 DB는 즉시 후속 조회/수정을 차단합니다. 이미 화면에 표시된 데이터는 다음 새로고침/권한 확인 또는 로그아웃 시 지워집니다.
+
+### 관리자 테스트 순서
+
+1. 비로그인 `/admin.html`에서 로그인 화면만 보이는지 확인합니다.
+2. 비밀번호 오류 시 오류 안내가 나오는지 확인합니다.
+3. admin_users에 없는 별도 Auth 계정으로 로그인하면 접근이 거부되는지 확인합니다. 이 계정으로 REST API를 직접 호출해도 신청 SELECT는 빈 결과, UPDATE는 0행이어야 합니다.
+4. 등록된 관리자 계정으로 로그인한 뒤 전체 통계, 6개 필터, 페이지 이동과 상세 정보(주문번호, Lightning, 메모 포함)를 확인합니다.
+5. 테스트 신청에 대해 구매 확인, 리워드 확정, 지급 완료의 확인창을 취소/승인하며 화면 갱신을 확인합니다. **paid는 실제 지급을 완료한 신청에서만 승인하세요.** 반려도 확인합니다.
+6. 두 탭에서 같은 신청을 열고 먼저 한 탭에서 상태를 변경합니다. 다른 탭의 이전 상태 변경은 실패해야 합니다.
+7. 네트워크 요청 차단 시 로그인/목록/상태 변경 오류를 확인합니다. 로그아웃 후 목록과 열린 상세 내용이 지워지는지 확인합니다.
+8. 기존 reward.html의 공개 INSERT가 유지되는지 확인합니다. SQL Editor의 `pg_policies`에서 이 프로젝트에 추가로 적용된 무제한 SELECT/UPDATE 정책이 없는지 확인하세요. 이 SQL은 프로젝트의 기존 INSERT 정책만 재설정하며 알 수 없는 정책을 삭제하지 않습니다.
+
+```sql
+select schemaname, tablename, policyname, roles, cmd, qual, with_check
+from pg_policies where schemaname = 'public'
+and tablename in ('reward_requests', 'admin_users');
+-- reward_requests: anon INSERT, admin SELECT, admin UPDATE only.
+-- admin_users: authenticated SELECT own user_id only.
+
+-- Remove an administrator (does not delete the Auth user):
+-- delete from public.admin_users where user_id = 'USER_UUID'::uuid;
+```
+
+### 관리자 자동 검사
+
+`tests/admin.test.cjs`는 Playwright 모의 Auth/DB로 로그인·권한 차단·필터·상세·상태 변경·확인창·로그아웃을 검증합니다. `tests/admin-sql.test.cjs`는 PGlite PostgreSQL에서 실제 RLS와 열 권한, 상태 전환 트리거를 검증하며, Supabase 프로젝트에는 접속하지 않습니다. PGlite 검사에서만 auth.users/auth.uid()를 최소 구성으로 대체합니다.
+
+개발 도구가 설치되어 있다면 `node tests/admin.test.cjs`, `node tests/admin-sql.test.cjs`로 실행합니다. 별도 설치 위치는 `PLAYWRIGHT_MODULE`, `PGLITE_MODULE`, Chrome 실행 파일은 `CHROME_PATH`로 지정할 수 있습니다. 이 테스트 도구는 배포 파일의 의존성이 아닙니다.
 
 ## 로컬 회귀 검사
 

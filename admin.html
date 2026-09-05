@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>BTCBack | 관리자</title>
+  <style>
+    :root { color-scheme:dark; --bg:#0b0c0e; --text:#f2f3f5; --muted:#989da6; --orange:#f7931a; --line:#292c31; }
+    * { box-sizing:border-box; letter-spacing:0; }
+    body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",Arial,sans-serif; }
+    [hidden] { display:none !important; }
+    a { color:inherit; text-decoration:none; }
+    button,input,select { font:inherit; }
+    button,a,input,select { -webkit-tap-highlight-color:transparent; }
+    button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible { outline:2px solid var(--orange); outline-offset:3px; }
+    button { cursor:pointer; } button:disabled { opacity:.45; cursor:not-allowed; }
+    .container { width:min(1440px,calc(100% - 64px)); margin:auto; }
+    header { border-bottom:1px solid var(--line); }
+    .header-inner { min-height:80px; display:flex; align-items:center; justify-content:space-between; gap:20px; }
+    .logo { font-size:26px; font-weight:800; } .logo span { color:var(--orange); }
+    .brand small { display:block; color:var(--muted); font-size:10px; margin-top:5px; }
+    .header-actions { display:flex; gap:18px; align-items:center; font-size:12px; color:var(--muted); }
+    main { padding:38px 0 64px; }
+    .login { width:min(420px,100%); margin:40px auto; padding:30px; border:1px solid #34373d; border-radius:8px; background:linear-gradient(145deg,#1b1d21,#111315); box-shadow:0 12px 28px #00000025; }
+    h1 { font-size:26px; line-height:1.4; margin:0; } .login h1 { font-size:23px; margin-bottom:24px; }
+    label { font-size:12px; display:block; margin:18px 0 9px; }
+    input,select { background:#101214; border:1px solid #3a3e45; border-radius:6px; color:var(--text); padding:12px; min-height:44px; }
+    input { width:100%; } .login .primary { width:100%; margin-top:24px; }
+    .primary,.secondary,.action { display:inline-flex; align-items:center; justify-content:center; gap:8px; border-radius:6px; padding:11px 15px; min-height:44px; font-size:12px; font-weight:650; border:1px solid var(--line); }
+    .primary { color:#15100a; background:var(--orange); border-color:var(--orange); }
+    .primary:hover { background:#ffab43; }
+    .secondary { background:#17191d; color:var(--text); }
+    .icon { width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
+    .icon-button { padding:10px; width:40px; height:40px; min-height:40px; }
+    .message { font-size:13px; line-height:1.8; padding:14px 0; margin:0; overflow-wrap:anywhere; }
+    .error { color:#f0a0a0; } .success { color:#64d5a3; }
+    .title-row { display:flex; justify-content:space-between; gap:20px; align-items:center; margin-bottom:28px; }
+    .account { color:var(--muted); font-size:12px; overflow-wrap:anywhere; text-align:right; }
+    .stats { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); border-block:1px solid var(--line); padding:24px 0; margin-bottom:26px; gap:20px; }
+    .stat span { display:block; font-size:11px; color:var(--muted); overflow-wrap:anywhere; } .stat strong { display:block; font-size:28px; margin-top:10px; font-weight:650; }
+    .stat:nth-child(2) strong { color:var(--orange); }
+    .toolbar { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:18px; }
+    .filter { display:flex; align-items:center; gap:12px; } .filter label { margin:0; white-space:nowrap; }
+    .table-wrap { overflow:auto; border-block:1px solid var(--line); }
+    table { width:100%; min-width:1000px; border-collapse:collapse; table-layout:fixed; text-align:left; font-size:12px; }
+    th { color:#a1a7b0; font-size:11px; font-weight:500; background:#141619; padding:15px 12px; }
+    td { padding:18px 12px; vertical-align:top; border-top:1px solid var(--line); line-height:1.7; overflow-wrap:anywhere; }
+    td small { display:block; color:var(--muted); font-size:11px; margin-top:5px; }
+    .status { display:inline-block; font-size:10px; color:#b4bac5; border-left:2px solid #717783; padding-left:8px; }
+    .status[data-status="pending"] { color:#edb570; border-color:var(--orange); }
+    .status[data-status="purchase_confirmed"] { color:#74afff; border-color:#74afff; }
+    .status[data-status="reward_confirmed"],.status[data-status="paid"] { color:#64d5a3; border-color:#64d5a3; }
+    .status[data-status="rejected"] { color:#ed9999; border-color:#ed9999; }
+    .actions { display:flex; flex-wrap:wrap; gap:7px; } .action { padding:7px 9px; min-height:36px; font-size:11px; background:#252017; border-color:#6c4d28; color:#edb570; }
+    .action.reject { background:transparent; color:#df9d9d; border-color:#583c3c; }
+    .empty { text-align:center; padding:38px 12px; color:var(--muted); font-size:13px; }
+    .pagination { display:flex; justify-content:space-between; align-items:center; gap:14px; margin-top:18px; color:var(--muted); font-size:12px; }
+    .pagination div { display:flex; gap:10px; align-items:center; }
+    dialog { width:min(620px,calc(100% - 32px)); max-height:85vh; overflow:auto; border:1px solid #3a3e45; border-radius:8px; background:#15181d; color:var(--text); padding:26px; }
+    dialog::backdrop { background:#000a; }
+    .dialog-header { display:flex; justify-content:space-between; align-items:center; gap:12px; } .dialog-header h2 { margin:0; font-size:20px; }
+    dl { display:grid; grid-template-columns:120px minmax(0,1fr); gap:16px; font-size:13px; line-height:1.8; }
+    dt { color:var(--muted); } dd { margin:0; overflow-wrap:anywhere; white-space:pre-wrap; }
+    @media(max-width:800px) { .container { width:calc(100% - 36px); } .stats { grid-template-columns:repeat(3,minmax(0,1fr)); } .title-row { align-items:flex-start; } h1 { font-size:23px; } }
+    @media(max-width:700px) {
+      table { min-width:0; display:block; } colgroup { display:none; }
+      thead { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
+      tbody { display:block; } tr { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px 16px; padding:22px 0; border-bottom:1px solid var(--line); }
+      td { display:block; min-width:0; border:0; padding:0; }
+      td::before { content:attr(data-label); display:block; font-size:10px; color:var(--muted); margin-bottom:6px; }
+      td:nth-child(3),td:last-child { grid-column:1 / -1; }
+      .action { min-height:44px; padding:10px 14px; }
+      .table-wrap { overflow:visible; }
+    }
+    @media(max-width:480px) { .header-inner { min-height:72px; } .header-actions { gap:12px; } .login { padding:24px 20px; margin:10px auto; } input { font-size:16px; } .title-row { flex-direction:column; gap:10px; } .account { text-align:left; } .stats { grid-template-columns:repeat(2,minmax(0,1fr)); } .filter { gap:8px; } select { max-width:190px; font-size:12px; } dl { grid-template-columns:1fr; gap:5px; } dd { margin-bottom:12px; } }
+  </style>
+  <script src="admin-config.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="admin.js" defer></script>
+</head>
+<body>
+  <header><div class="header-inner container"><a class="brand" href="index.html"><div class="logo">BTC<span>Back</span></div><small>Shop Today. Stack Tomorrow.</small></a><div class="header-actions"><a href="index.html">메인페이지</a><button id="logout" class="secondary" hidden>로그아웃</button></div></div></header>
+  <main class="container">
+    <p id="auth-message" class="message error" role="alert" hidden></p>
+    <section class="login" id="login-panel"><h1>관리자 로그인</h1><form id="login-form"><label for="email">이메일</label><input id="email" type="email" autocomplete="username" required maxlength="254"><label for="password">비밀번호</label><input id="password" type="password" autocomplete="current-password" required><button id="login-button" class="primary" disabled>로그인</button></form><noscript><p class="error">JavaScript를 활성화해 주세요.</p></noscript></section>
+    <section id="dashboard" hidden aria-labelledby="dashboard-title">
+      <div class="title-row"><h1 id="dashboard-title">Bitcoin 적립 신청 관리</h1><span id="account" class="account"></span></div>
+      <div class="stats" aria-label="전체 신청 통계"><div class="stat"><span>전체 신청</span><strong id="count-all">-</strong></div><div class="stat"><span>pending</span><strong id="count-pending">-</strong></div><div class="stat"><span>purchase_confirmed</span><strong id="count-purchase_confirmed">-</strong></div><div class="stat"><span>reward_confirmed</span><strong id="count-reward_confirmed">-</strong></div><div class="stat"><span>paid</span><strong id="count-paid">-</strong></div></div>
+      <div class="toolbar"><div class="filter"><label for="status-filter">상태</label><select id="status-filter"><option value="">전체</option><option>pending</option><option>purchase_confirmed</option><option>reward_confirmed</option><option>paid</option><option>rejected</option></select></div><button id="refresh" class="secondary icon-button" title="새로고침" aria-label="새로고침"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5M6 6a8 8 0 0 1 14 6M18 18A8 8 0 0 1 4 12"/></svg></button></div>
+      <p id="dashboard-message" class="message" role="status" hidden></p>
+      <div class="table-wrap" tabindex="0" role="region" aria-label="신청 목록"><table><colgroup><col style="width:15%"><col style="width:16%"><col style="width:19%"><col style="width:11%"><col style="width:15%"><col style="width:7%"><col style="width:17%"></colgroup><thead><tr><th>접수 일시</th><th>구매 정보</th><th>신청자</th><th>구매금액</th><th>상태</th><th>상세</th><th>상태 변경</th></tr></thead><tbody id="requests"></tbody></table></div>
+      <p id="empty" class="empty" hidden>신청 내역이 없습니다.</p><div class="pagination"><span id="page-summary"></span><div><button id="previous" class="secondary icon-button" title="이전 페이지" aria-label="이전 페이지">←</button><span id="page-number">1</span><button id="next" class="secondary icon-button" title="다음 페이지" aria-label="다음 페이지">→</button></div></div>
+    </section>
+  </main>
+  <dialog id="detail"><div class="dialog-header"><h2>신청 상세</h2><button id="close-detail" class="secondary icon-button" aria-label="상세 닫기" title="닫기">×</button></div><dl id="detail-fields"></dl></dialog>
+</body>
+</html>

@@ -66,7 +66,7 @@ select user_id, email, created_at from public.admin_users;
 - admin_users는 RLS를 사용하며 authenticated 사용자는 자기 user_id 행만 조회할 수 있습니다. 브라우저에서 관리자 등록·수정·삭제는 불가능합니다. 관리자 추가/해제는 SQL Editor에서만 수행합니다.
 - 관리자 SELECT/UPDATE 정책은 `auth.uid()`와 admin_users를 대조합니다. 이메일 문자열이나 사용자 수정 가능 메타데이터로 권한을 결정하지 않습니다.
 - 비관리자 authenticated 사용자는 신청 SELECT 결과가 빈 배열이고 UPDATE 대상도 0행입니다. anon은 기존 입력 열 INSERT만 유지하며 SELECT/UPDATE/DELETE는 권한 오류입니다. 관리자에게도 DELETE는 허용하지 않습니다.
-- 관리자에게는 `UPDATE(status)` 열 권한만 부여합니다. 이름·이메일·금액·수령 정보 등 신청 본문은 수정할 수 없습니다.
+- 기본 관리자 설정은 `UPDATE(status)`만 허용합니다. 아래 sats 마이그레이션 적용 후에는 `UPDATE(status, reward_sats)`만 허용합니다. 이름·이메일·구매금액·수령 정보 등 신청 본문은 수정할 수 없습니다.
 - CHECK 제약으로 상태 값을 제한하고 트리거로 `pending → purchase_confirmed → reward_confirmed → paid`만 허용합니다. 어느 단계에서든 rejected로 변경할 수 있지만 rejected에서 복원하는 동작은 제공하지 않습니다. paid에서 rejected로 바꾸어도 Bitcoin을 환수하지 않습니다.
 - paid 확인창은 실제 Bitcoin 지급 완료 확인용입니다. 이 페이지는 Bitcoin 송금이나 이메일 발송을 실행하지 않습니다.
 - 상태 변경은 기존 status도 함께 대조합니다. 다른 관리자가 먼저 바꿨거나 권한이 해제되어 0행이 반환되면 실패로 안내합니다. 새로고침하여 확인하세요.
@@ -101,7 +101,61 @@ and tablename in ('reward_requests', 'admin_users');
 
 개발 도구가 설치되어 있다면 `node tests/admin.test.cjs`, `node tests/admin-sql.test.cjs`로 실행합니다. 별도 설치 위치는 `PLAYWRIGHT_MODULE`, `PGLITE_MODULE`, Chrome 실행 파일은 `CHROME_PATH`로 지정할 수 있습니다. 이 테스트 도구는 배포 파일의 의존성이 아닙니다.
 
-## 로컬 회귀 검사
+## 확정 리워드(sats) 마이그레이션
+
+이미 `admin_setup.sql`을 실행한 환경에서는 **`supabase/reward_sats_migration.sql`만** SQL Editor에서 실행합니다. 기존 관리자 설정 SQL을 다시 실행하지 않습니다. SQL 성공 후 새 `admin.html`과 `admin.js`를 배포하세요. 적용 전 새 화면을 먼저 배포하면 아직 없는 열 때문에 목록 조회가 실패할 수 있습니다.
+
+### 기존 데이터 확인
+
+마이그레이션 첫 SELECT는 쿠팡 외 쇼핑몰과 기존 reward_confirmed/paid 행을 표시합니다. 뒤의 트랜잭션은 다음 경우 전체 중단되어 데이터·권한·트리거 변경을 되돌립니다.
+
+- 쿠팡 외 쇼핑몰이 한 건이라도 있음: 실제 구매 내역을 확인하고 운영자가 정리해야 합니다. 마이그레이션은 쇼핑몰을 임의로 쿠팡으로 바꾸거나 신청을 삭제하지 않습니다.
+- reward_sats에 0/음수가 있음, 또는 기존 reward_confirmed/paid에 reward_sats가 없음: 실제 확정/지급 금액을 확인한 뒤 이력 데이터를 먼저 보완해야 합니다. 임의의 1 sats 등으로 통과시키지 마세요.
+
+이미 확정/지급한 이력이 있어 중단되었다면, **실제 sats 수량을 확인한 경우에만** SQL Editor에서 아래 예시의 `VERIFIED_SATS`와 `REQUEST_UUID`를 교체하여 보완합니다. 이는 마이그레이션 적용 전 운영자의 이력 정리 절차입니다.
+
+```sql
+alter table public.reward_requests
+  add column if not exists reward_sats bigint,
+  add column if not exists reward_confirmed_at timestamptz,
+  add column if not exists paid_at timestamptz;
+
+update public.reward_requests
+set reward_sats = VERIFIED_SATS
+where id = 'REQUEST_UUID'::uuid
+  and status in ('reward_confirmed', 'paid');
+```
+
+역사적 확정/지급 시각도 확인된 기록이 있을 때만 해당 행에 입력하세요. 알 수 없는 과거 시각은 NULL로 두며 `now()`로 위조하지 않습니다. 마이그레이션은 기존 금액과 시각을 덮어쓰지 않고, 이후 새 전환 시점부터 DB의 `now()`를 기록합니다. 사전 보완이 끝나면 마이그레이션 전체를 다시 실행합니다. 성공한 마이그레이션은 한 번만 적용합니다.
+
+### 변경되는 권한과 제약
+
+- nullable `reward_sats bigint`, `reward_confirmed_at timestamptz`, `paid_at timestamptz` 추가. sats는 NULL 또는 1 이상이며 reward_confirmed/paid 상태에서는 양수가 필수입니다.
+- `store_name = '쿠팡'` CHECK로 브라우저를 우회한 다른 쇼핑몰 INSERT도 거부합니다.
+- 테이블·열 권한을 재설정한 뒤 anon에는 기존 신청 입력 열 INSERT만, authenticated에는 SELECT와 `UPDATE(status, reward_sats)`만 부여합니다. 기존 admin_users 기반 RLS는 그대로 유지합니다.
+- anon은 status·sats·확정/지급 시각을 지정할 수 없습니다. 관리자도 개인정보 및 timestamp를 직접 UPDATE할 수 없습니다.
+- 기존 `validate_reward_status_transition()` 함수를 교체하고 `reward_status_transition` 트리거 하나만 유지합니다. UPDATE(status)뿐 아니라 reward_sats 변경도 검사합니다.
+- sats는 `purchase_confirmed → reward_confirmed` 전환과 동시에만 변경 가능합니다. 확정 후 수량 수정, 상태 되돌리기, pending → paid 건너뛰기는 DB에서도 차단합니다.
+- confirmed 시 reward_confirmed_at, paid 시 paid_at을 DB가 기록합니다. rejected로 변경해도 이미 기록된 수량·시각은 보존됩니다.
+
+### 관리자 화면 테스트 순서
+
+1. 관리자 로그인 후 pending 신청을 **구매 확인**하여 purchase_confirmed로 만듭니다.
+2. 해당 행의 **확정 리워드**를 빈 값/0/음수/소수로 두고 **리워드 확정**을 누릅니다. 오류가 표시되고 UPDATE가 전송되지 않아야 합니다.
+3. `350`을 입력하고 **리워드 확정** 확인창을 승인합니다. Network에서 `{ status: 'reward_confirmed', reward_sats: 350 }`의 UPDATE 한 번인지 확인합니다. timestamp는 요청에 없어야 합니다.
+4. 목록/상세에서 `350 sats`, reward_confirmed, DB가 생성한 확정 시각을 확인합니다. 입력창은 더 이상 표시되지 않습니다. 통계·필터도 갱신되어야 합니다.
+5. 지급은 외부 지갑에서 수동으로 진행합니다. **실제 Lightning 지급을 완료한 후에만** 지급 완료 확인창을 승인합니다. paid, 기존 sats·확정 시각, 새 지급 시각을 확인합니다.
+6. 반려·필터·페이지 이동·로그아웃을 확인합니다. 실패나 동시 수정 충돌은 성공으로 표시되지 않아야 합니다.
+
+화면 입력 상한은 JavaScript에서 정확히 처리 가능한 정수인 9,007,199,254,740,991 sats입니다. 시세 API·원화 환산·비율 계산·자동 송금은 없습니다. 지급 완료 기록은 송금의 증명이 아니므로 외부 지갑의 실제 거래 내역과 대조하세요.
+
+### 자동 검증
+
+- `node tests/reward-sats-sql.test.cjs`: 로컬 PGlite에서 충돌 롤백, 이력 보존, 단일 트리거, sats 필수/양수, DB 시각 생성, 순서 제약, 수량 수정 금지, anon/비관리자/관리자 권한, 쿠팡 CHECK를 검사합니다.
+- `node tests/admin.test.cjs`: 모의 Auth/DB로 sats 오류·취소·단일 UPDATE·확정 이후 읽기 전용 표시·시각 표시와 기존 통계/필터/로그아웃/반응형을 검사합니다.
+- 기존 관리자 SQL 검사는 `node tests/admin-sql.test.cjs`로 유지됩니다. 도구 경로 지정은 위 관리자 자동 검사와 동일합니다. 실제 Supabase 마이그레이션이나 송금은 테스트에서 실행하지 않습니다.
+
+## 공개 신청 로컬 회귀 검사
 
 `tests/reward-supabase.test.cjs`는 Playwright로 페이지를 열고 Supabase 클라이언트 경계만 모의 처리합니다. 실제 DB에 접속하지 않습니다. 필수값, 금액 변환, 중복 클릭, 성공/실패, 재시도, 설정 누락, 권한 키 차단, CDN 실패 및 반응형을 검사합니다.
 

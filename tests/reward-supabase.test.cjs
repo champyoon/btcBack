@@ -43,15 +43,22 @@ window.supabase = { createClient: () => ({ from: table => ({ insert: payload => 
       await page.fill('#lightning', 'test@wallet.com');
     };
     await open();
+    assert.equal(await page.locator('#store option').count(), 1);
+    assert.equal(await page.locator('#store option').textContent(), '쿠팡');
     await page.click('#submit-button');
-    assert.equal(await page.locator('[aria-invalid="true"]').count(), 6);
+    assert.equal(await page.locator('[aria-invalid="true"]').count(), 5);
     assert.equal(await page.evaluate(() => calls.length), 0);
     await fill();
     await page.fill('#amount', '-1');
     await page.click('#submit-button');
     assert.equal(await page.evaluate(() => calls.length), 0);
     await page.fill('#amount', '52,000');
-    await page.evaluate(() => { window.delay = 500; });
+    await page.evaluate(() => {
+      window.delay = 500;
+      const option = document.querySelector('#store option');
+      option.value = 'tampered';
+      option.textContent = 'Amazon';
+    });
     await page.evaluate(() => {
       const form = document.getElementById('reward-form');
       form.requestSubmit(); form.requestSubmit();

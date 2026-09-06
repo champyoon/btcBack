@@ -107,7 +107,7 @@
     <div class="form-panel">
       <form id="reward-form" novalidate>
         <fieldset><legend>구매 정보</legend><div class="fields">
-          <div class="field"><label for="store">구매 쇼핑몰</label><select id="store" required aria-describedby="store-error"><option value="">쇼핑몰을 선택하세요</option><option value="coupang">쿠팡</option><option value="amazon">Amazon</option><option value="iherb">iHerb</option><option value="other">기타 쇼핑몰</option></select><p class="error" id="store-error" hidden></p></div>
+          <div class="field"><label for="store">구매 쇼핑몰</label><select id="store" required aria-describedby="store-help store-error"><option value="coupang">쿠팡</option></select><p class="help" id="store-help">현재 BTCBack에서 지원하는 제휴 쇼핑몰입니다.</p><p class="error" id="store-error" hidden></p></div>
           <div class="field"><label for="purchase-date">구매일</label><input id="purchase-date" type="date" required aria-describedby="purchase-date-error"><p class="error" id="purchase-date-error" hidden></p></div>
           <div class="field"><label for="amount">구매금액 (원)</label><input id="amount" type="text" inputmode="numeric" placeholder="예: 50,000" maxlength="20" required aria-describedby="amount-help amount-error"><p class="help" id="amount-help">원화 기준 실제 결제금액을 입력해 주세요.</p><p class="error" id="amount-error" hidden></p></div>
           <div class="field"><label for="order">주문번호 <span class="optional">(선택)</span></label><input id="order" type="text" maxlength="100" placeholder="쇼핑몰 주문번호" aria-describedby="order-error"><p class="error" id="order-error" hidden></p></div>
@@ -119,6 +119,7 @@
           <div class="field full"><label for="memo">메모 <span class="optional">(선택)</span></label><textarea id="memo" maxlength="1000" rows="3" placeholder="구매 관련 전달할 내용이 있다면 적어 주세요." aria-describedby="memo-error"></textarea><p class="error" id="memo-error" hidden></p></div>
         </div></fieldset>
         <p class="notice">구매 취소 또는 반품 시 리워드가 취소될 수 있습니다. 실제 서비스의 적립 조건과 지급 일정은 서비스 제공 시 안내할 예정입니다.</p>
+        <p class="help">리워드 신청 및 지급 처리를 위해 입력한 구매 정보, 이름 또는 닉네임, 이메일, Lightning 지급 정보 및 메모를 저장합니다.</p>
         <p class="error" id="submit-error" role="alert" tabindex="-1" hidden></p>
         <button class="button" id="submit-button" type="submit" disabled>Bitcoin 적립 신청하기 <span aria-hidden="true">→</span></button>
         <p class="submit-caption" id="submit-status" role="status">접수 완료 후 구매 확인을 거쳐 리워드를 안내드립니다.</p>
@@ -126,7 +127,7 @@
       </form>
       <section class="success" id="success" tabindex="-1" aria-labelledby="success-title" hidden>
         <div class="success-mark" aria-hidden="true">✓</div>
-        <h2 id="success-title">신청이 접수되었습니다.<br>구매 확인 후 Bitcoin 리워드를 안내드리겠습니다.</h2>
+        <h2 id="success-title">Bitcoin 리워드 적립 신청이 접수되었습니다.<br>구매 확인 후 Bitcoin 리워드를 안내드리겠습니다.</h2>
         <p>입력하신 구매 정보가 저장되었습니다.<br>접수 완료는 리워드 확정 또는 Bitcoin 지급 완료를 의미하지 않습니다.</p>
         <a class="button" href="shopping.html">쇼핑하기로 돌아가기 <span aria-hidden="true">→</span></a>
       </section>
@@ -224,7 +225,7 @@
       if (firstInvalid) { firstInvalid.focus(); return; }
       const value = id => document.getElementById(id).value.trim();
       const payload = {
-        store_name: document.getElementById('store').selectedOptions[0].textContent.trim(),
+        store_name: '쿠팡',
         purchase_date: value('purchase-date'),
         purchase_amount: Number(value('amount').replaceAll(',', '')),
         order_number: value('order') || null,

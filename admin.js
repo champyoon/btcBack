@@ -4,7 +4,7 @@
   const statuses = ['pending', 'purchase_confirmed', 'reward_confirmed', 'paid', 'rejected'];
   const nextStatus = { pending: 'purchase_confirmed', purchase_confirmed: 'reward_confirmed', reward_confirmed: 'paid' };
   const actionLabels = { purchase_confirmed: '구매 확인', reward_confirmed: '리워드 확정', paid: '지급 완료' };
-  const columns = 'id,created_at,store_name,purchase_date,purchase_amount,order_number,customer_name,email,lightning_destination,memo,status';
+  const columns = 'id,created_at,store_name,purchase_date,purchase_amount,order_number,customer_name,email,lightning_destination,memo,status,reward_sats,reward_confirmed_at,paid_at';
   const pageSize = 25;
   let client, adminId = null, authVersion = 0, loadVersion = 0;
   let page = 0, total = 0, rows = [], loading = false, updating = false, signingIn = false;
@@ -28,7 +28,7 @@
     $('refresh').disabled = busy; $('status-filter').disabled = busy;
     $('previous').disabled = busy || page === 0;
     $('next').disabled = busy || (page + 1) * pageSize >= total;
-    document.querySelectorAll('[data-update]').forEach(button => { button.disabled = busy; });
+    document.querySelectorAll('[data-update], [data-reward-sats]').forEach(control => { control.disabled = busy; });
   }
   const formatTime = value => new Date(value).toLocaleString('ko-KR', { hour12: false });
   const money = value => `${Number(value).toLocaleString('ko-KR')}원`;
@@ -40,6 +40,9 @@
   }
   function details(row) {
     const values = [ ['신청 ID', row.id], ['접수 일시', formatTime(row.created_at)], ['구매 쇼핑몰', row.store_name], ['구매일', row.purchase_date], ['구매금액', money(row.purchase_amount)], ['주문번호', row.order_number], ['이름 / 닉네임', row.customer_name], ['이메일', row.email], ['Lightning 수령 정보', row.lightning_destination], ['메모', row.memo], ['상태', row.status] ];
+    values.push(['확정 리워드', row.reward_sats == null ? '-' : `${row.reward_sats.toLocaleString('ko-KR')} sats`],
+      ['확정 시각', row.reward_confirmed_at ? formatTime(row.reward_confirmed_at) : '-'],
+      ['지급 시각', row.paid_at ? formatTime(row.paid_at) : '-']);
     $('detail-fields').replaceChildren(...values.flatMap(([name, value]) => {
       const dt = document.createElement('dt'), dd = document.createElement('dd');
       dt.textContent = name; dd.textContent = value || '-'; return [dt, dd];
@@ -52,13 +55,28 @@
       cell(tr, formatTime(row.created_at)); cell(tr, row.store_name, row.purchase_date);
       cell(tr, row.customer_name, row.email); cell(tr, money(row.purchase_amount));
       const badge = document.createElement('span'); badge.className = 'status'; badge.dataset.status = row.status; badge.textContent = row.status;
-      cell(tr, '').append(badge);
+      const statusCell = cell(tr, ''); statusCell.append(badge);
+      if (row.reward_sats != null) {
+        const amount = document.createElement('small'); amount.textContent = `확정 리워드: ${row.reward_sats.toLocaleString('ko-KR')} sats`; statusCell.append(amount);
+      }
+      for (const [label, timestamp] of [['확정 시각', row.reward_confirmed_at], ['지급 시각', row.paid_at]]) {
+        if (timestamp) { const time = document.createElement('small'); time.textContent = `${label}: ${formatTime(timestamp)}`; statusCell.append(time); }
+      }
       const detail = document.createElement('button'); detail.className = 'secondary'; detail.textContent = '상세'; detail.addEventListener('click', () => details(row)); cell(tr, '').append(detail);
       const actions = document.createElement('div'); actions.className = 'actions';
+      let satsInput;
+      if (row.status === 'purchase_confirmed') {
+        const label = document.createElement('label'); label.className = 'reward-label'; label.textContent = '확정 리워드';
+        const field = document.createElement('span'); field.className = 'sats-field';
+        satsInput = document.createElement('input'); satsInput.type = 'number'; satsInput.min = '1'; satsInput.step = '1'; satsInput.max = String(Number.MAX_SAFE_INTEGER); satsInput.inputMode = 'numeric';
+        satsInput.dataset.rewardSats = row.id; satsInput.placeholder = '350';
+        const unit = document.createElement('span'); unit.textContent = 'sats';
+        field.append(satsInput, unit); label.append(field); actions.append(label);
+      }
       [nextStatus[row.status], row.status !== 'rejected' ? 'rejected' : null].filter(Boolean).forEach(target => {
         const button = document.createElement('button'); button.className = `action${target === 'rejected' ? ' reject' : ''}`;
         button.dataset.update = target; button.textContent = target === 'rejected' ? '반려' : actionLabels[target];
-        button.addEventListener('click', () => changeStatus(row, target)); actions.append(button);
+        button.addEventListener('click', () => changeStatus(row, target, satsInput)); actions.append(button);
       });
       cell(tr, '').append(actions); return tr;
     }));
@@ -104,18 +122,29 @@
       message('dashboard-message', '목록을 불러오지 못했습니다. 연결과 관리자 권한을 확인한 후 새로고침해 주세요.', true);
     } finally { if (version === loadVersion) { loading = false; controls(); } }
   }
-  async function changeStatus(row, target) {
+  async function changeStatus(row, target, satsInput) {
     if (!adminId || updating || loading) return;
-    const warning = target === 'paid' ? '실제로 Bitcoin 지급을 완료했는지 확인하세요.\n이 작업은 Bitcoin을 전송하지 않습니다.\n\n' : '';
-    if (!window.confirm(`${warning}${row.customer_name}님의 신청을 ${row.status} → ${target} 상태로 변경하시겠습니까?`)) return;
+    const payload = { status: target };
+    if (target === 'reward_confirmed') {
+      const value = satsInput?.value.trim() || '';
+      const sats = Number(value);
+      if (!/^\d+$/.test(value) || !Number.isSafeInteger(sats) || sats < 1) {
+        message('dashboard-message', '확정 리워드를 1 이상의 정수 sats로 입력해 주세요.', true);
+        satsInput?.setAttribute('aria-invalid', 'true'); satsInput?.focus(); return;
+      }
+      satsInput.removeAttribute('aria-invalid'); payload.reward_sats = sats;
+    }
+    const warning = target === 'paid' ? '실제로 Bitcoin Lightning 지급을 완료했는지 확인하세요.\n지급 완료 처리 후 상태는 paid로 기록됩니다. 이 작업은 Bitcoin을 전송하지 않습니다.\n\n' : '';
+    const reward = target === 'reward_confirmed' ? `확정 리워드: ${payload.reward_sats.toLocaleString('ko-KR')} sats\n` : '';
+    if (!window.confirm(`${warning}${reward}${row.customer_name}님의 신청을 ${row.status} → ${target} 상태로 변경하시겠습니까?`)) return;
     updating = true; controls(); const owner = adminId, version = authVersion;
     try {
       // Compare the previous status to avoid overwriting another administrator's update.
-      const { data, error } = await client.from('reward_requests').update({ status: target }).eq('id', row.id).eq('status', row.status).select('id,status');
+      const { data, error } = await client.from('reward_requests').update(payload).eq('id', row.id).eq('status', row.status).select('id,status,reward_sats,reward_confirmed_at,paid_at');
       if (version !== authVersion || owner !== adminId) return;
       if (error) throw error;
       if (data?.length !== 1) throw Object.assign(new Error('Conflict or access revoked'), { code: 'CONFLICT_OR_DENIED' });
-      row.status = data[0].status; render(); await load();
+      Object.assign(row, data[0]); render(); await load();
       if (version === authVersion && !$('dashboard-message').classList.contains('error')) message('dashboard-message', '상태를 변경했습니다.');
     } catch (error) {
       if (version !== authVersion) return;

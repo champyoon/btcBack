@@ -54,6 +54,11 @@
     .status[data-status="rejected"] { color:#ed9999; border-color:#ed9999; }
     .actions { display:flex; flex-wrap:wrap; gap:7px; } .action { padding:7px 9px; min-height:36px; font-size:11px; background:#252017; border-color:#6c4d28; color:#edb570; }
     .action.reject { background:transparent; color:#df9d9d; border-color:#583c3c; }
+    .reward-label { width:100%; margin:0 0 4px; font-size:11px; }
+    .sats-field { display:flex; align-items:center; gap:7px; margin-top:6px; color:var(--muted); }
+    .sats-field input { flex:1; width:0; min-width:0; padding:9px; font-size:13px; }
+    .sats-field > span { flex-shrink:0; white-space:nowrap; }
+    .sats-field input[aria-invalid="true"] { border-color:#ed9999; }
     .empty { text-align:center; padding:38px 12px; color:var(--muted); font-size:13px; }
     .pagination { display:flex; justify-content:space-between; align-items:center; gap:14px; margin-top:18px; color:var(--muted); font-size:12px; }
     .pagination div { display:flex; gap:10px; align-items:center; }

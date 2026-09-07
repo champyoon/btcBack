@@ -106,7 +106,7 @@
     .shopping-hero .subtitle { margin:16px auto 24px; max-width:700px; word-break:keep-all; }
     .hero-benefits { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; padding:0; margin:0 0 24px; list-style:none; }
     .hero-benefits li { padding:6px 10px; border:1px solid #394039; border-radius:6px; background:#141a17; color:#bdcfbf; font-size:11px; line-height:1.5; }
-    .reward-flow { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); list-style:none; max-width:680px; padding:0; margin:0 auto 26px; gap:18px; }
+    .reward-flow { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); list-style:none; max-width:680px; padding:0; margin:0 auto 26px; gap:18px; }
     .reward-flow li { position:relative; text-align:center; color:#c4c9d0; font-size:13px; line-height:1.6; word-break:keep-all; }
     .reward-flow .number { display:block; margin-bottom:5px; font-size:11px; color:#f7931a; }
     .reward-flow li:not(:last-child)::after { content:"→"; position:absolute; top:0; right:-15px; color:#80603a; }
@@ -128,7 +128,6 @@
     ========================= */
 
     .disclosure {
-      max-width: 760px;
       margin: 0 auto 30px;
       padding: 14px 18px;
 
@@ -161,7 +160,7 @@
     }
 
     .shopping-section {
-      padding: 30px 20px;
+      padding: 16px 20px;
       margin-bottom: 30px;
     }
 
@@ -195,13 +194,19 @@
       border-radius: 8px;
     }
 
+    .banner-wrapper + .banner-wrapper {
+      margin-top: 16px;
+    }
+
     .banner-wrapper a {
       display: block;
+      width: 80%;
       max-width: 100%;
     }
 
     .banner-wrapper img {
       display: block;
+      width: 100%;
       max-width: 100%;
       height: auto;
     }
@@ -442,19 +447,36 @@
 
   <section class="shopping-hero" aria-labelledby="shopping-title">
     <h1 id="shopping-title">쿠팡에서 평소처럼 쇼핑하세요.<br><span class="bitcoin">Bitcoin 리워드는 준비 중입니다.</span></h1>
-    <p class="subtitle">BTCBack을 통해 쿠팡으로 이동해 평소처럼 쇼핑할 수 있습니다.<br>현재 쿠팡 구매에 대한 Bitcoin 리워드 제공 가능 여부와 제휴 정책을 검토하고 있습니다.<br>구매 내역 확인은 테스트 단계이며, 리워드 제공 여부와 운영 조건은 아직 정해지지 않았습니다.</p>
+    <p class="subtitle">BTCBack을 통해 쿠팡에서 쇼핑할 수 있습니다.<br>Bitcoin 리워드는 현재 제휴 정책을 검토 중입니다.</p>
     <ul class="hero-benefits" aria-label="BTCBack 이용 장점">
       <li>회원가입 필요 없음</li>
       <li>앱 설치 필요 없음</li>
-      <li>Bitcoin 리워드 검토 중</li>
     </ul>
   </section>
   <ol class="reward-flow" aria-label="쿠팡 쇼핑 및 서비스 준비 안내">
-    <li><span class="number">①</span>BTCBack에서 쿠팡으로 이동</li>
-    <li><span class="number">②</span>쿠팡에서 평소처럼 쇼핑</li>
+    <li><span class="number">①</span>쿠팡으로 이동</li>
+    <li><span class="number">②</span>쇼핑</li>
     <li><span class="number">③</span>구매내역 확인</li>
-    <li><span class="number">④</span>Bitcoin 리워드 서비스 준비 중</li>
   </ol>
+
+
+  <!-- =========================
+       COUPANG SHOPPING
+  ========================== -->
+
+  <section class="shopping-section">
+
+    <div class="banner-wrapper">
+
+      <iframe src="https://coupa.ng/cpi1Ss" width="100%" height="75" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" title="쿠팡 파트너스 상품 검색"></iframe>
+
+    </div>
+
+    <div class="banner-wrapper">
+      <a href="https://link.coupang.com/a/gQ9Epldr52" target="_blank" referrerpolicy="unsafe-url"><img src="https://ads-partners.coupang.com/banners/1026316?trackingCode=AF7466415&subId=&traceId=V0-301-bae0f72e5e59e45f-I1026316&w=728&h=90" alt=""></a>
+    </div>
+
+  </section>
 
 
   <!-- =========================
@@ -466,36 +488,6 @@
     이 페이지는 쿠팡 파트너스 활동의 일환으로,
     이에 따른 일정액의 수수료를 제공받습니다.
   </div>
-
-
-  <!-- =========================
-       COUPANG SHOPPING
-  ========================== -->
-
-  <section class="shopping-section">
-
-    <a class="coupang-cta" href="https://link.coupang.com/a/gNKP0JhfMa" target="_blank" rel="noopener" referrerpolicy="unsafe-url">BTCBack을 통해 쿠팡으로 이동하기 <span aria-hidden="true">→</span></a>
-    <p class="coupang-hint">추천상품에 한정되지 않으며, 쿠팡에서 평소 구매하던 상품을 쇼핑할 수 있습니다.<br>Bitcoin 리워드는 BTCBack이 제공 가능 여부를 검토 중인 서비스이며, 쿠팡이 제공하거나 승인한 서비스가 아닙니다.</p>
-
-    <div class="banner-wrapper">
-
-      <a
-        href="https://link.coupang.com/a/gNKP0JhfMa"
-        target="_blank"
-        rel="noopener"
-        referrerpolicy="unsafe-url"
-      >
-
-        <img
-          src="https://ads-partners.coupang.com/banners/1026300?trackingCode=AF7466415&subId=&traceId=V0-301-879dd1202e5c73b2-I1026300&w=728&h=90"
-          alt="쿠팡에서 쇼핑하기"
-        >
-
-      </a>
-
-    </div>
-
-  </section>
 
 
   <!-- =========================

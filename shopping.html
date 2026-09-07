@@ -106,19 +106,12 @@
     .shopping-hero .subtitle { margin:16px auto 24px; max-width:700px; word-break:keep-all; }
     .hero-benefits { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; padding:0; margin:0 0 24px; list-style:none; }
     .hero-benefits li { padding:6px 10px; border:1px solid #394039; border-radius:6px; background:#141a17; color:#bdcfbf; font-size:11px; line-height:1.5; }
-    .reward-flow { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); list-style:none; max-width:680px; padding:0; margin:0 auto 26px; gap:18px; }
-    .reward-flow li { position:relative; text-align:center; color:#c4c9d0; font-size:13px; line-height:1.6; word-break:keep-all; }
-    .reward-flow .number { display:block; margin-bottom:5px; font-size:11px; color:#f7931a; }
-    .reward-flow li:not(:last-child)::after { content:"→"; position:absolute; top:0; right:-15px; color:#80603a; }
     .shopping-section .coupang-cta { display:flex; align-items:center; justify-content:center; gap:14px; width:fit-content; min-height:54px; margin:0 auto; padding:15px 30px; border:1px solid #f7931a; border-radius:6px; background:#f7931a; color:#15100a; text-decoration:none; font-size:17px; font-weight:750; }
     .coupang-cta:hover { background:#ffab43; }
     .coupang-cta:focus-visible { outline:2px solid #f7931a; outline-offset:5px; }
     .coupang-hint { text-align:center; color:#b1b7c1; font-size:13px; line-height:1.7; margin:13px 0 22px; word-break:keep-all; }
     @media(max-width:520px) {
       .shopping-hero h1 { font-size:27px; }
-      .reward-flow { gap:12px; }
-      .reward-flow li { font-size:11px; }
-      .reward-flow li:not(:last-child)::after { right:-11px; }
       .shopping-section .coupang-cta { width:100%; font-size:16px; padding-inline:16px; }
       .coupang-hint { font-size:12px; }
     }
@@ -238,91 +231,6 @@
       border: 0;
     }
 
-    .reward-cta {
-      --cta-inline-padding: 20px;
-      position: relative;
-      margin-top: 32px;
-      padding: 30px var(--cta-inline-padding);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 24px;
-      border-top: 1px solid transparent;
-      border-bottom: 1px solid transparent;
-      background: linear-gradient(110deg, rgba(247, 147, 26, 0.045), transparent);
-      box-shadow: 0 0 24px rgba(247, 147, 26, 0.025);
-    }
-
-    .reward-cta::before,
-    .reward-cta::after {
-      content: "";
-      position: absolute;
-      inset-inline: var(--cta-inline-padding);
-      height: 1px;
-      background: rgba(247, 147, 26, 0.3);
-      pointer-events: none;
-    }
-
-    .reward-cta::before { top: -1px; }
-    .reward-cta::after { bottom: -1px; }
-
-    .reward-cta h2 {
-      margin: 0 0 10px;
-      font-size: 22px;
-      line-height: 1.4;
-      word-break: keep-all;
-    }
-
-    .reward-cta p {
-      margin: 0;
-      color: #9ca3af;
-      font-size: 14px;
-      line-height: 1.7;
-      word-break: keep-all;
-    }
-
-    .reward-cta-button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      min-height: 52px;
-      padding: 14px 22px;
-      border: 1px solid #f7931a;
-      border-radius: 6px;
-      background: #f7931a;
-      color: #15100a;
-      font-size: 15px;
-      font-weight: 750;
-      line-height: 1.5;
-      text-align: center;
-      text-decoration: none;
-    }
-
-    .reward-cta-button:hover {
-      background: #ffab43;
-      border-color: #ffab43;
-    }
-
-    .reward-cta-button:focus-visible {
-      outline: 2px solid #f7931a;
-      outline-offset: 5px;
-    }
-
-    @media (max-width: 700px) {
-      .reward-cta {
-        --cta-inline-padding: 16px;
-        flex-direction: column;
-        align-items: stretch;
-        padding: 26px var(--cta-inline-padding);
-        gap: 20px;
-        text-align: center;
-      }
-
-      .reward-cta-button {
-        width: 100%;
-      }
-    }
 
     /* =========================
        TABLET
@@ -423,24 +331,30 @@
     .bitcoin {
       color: #f7931a;
     }
+    .site-header { position:sticky; top:0; z-index:10; background:rgba(11,12,14,.95); border-bottom:1px solid #252a31; backdrop-filter:blur(16px); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR",Arial,sans-serif; }
+    .site-header-inner { width:100%; max-width:1416px; height:88px; padding:0 48px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:28px; }
+    .site-brand { display:block; flex-shrink:0; color:#fff; text-decoration:none; }
+    .site-logo { font-size:28px; font-weight:800; line-height:1.1; letter-spacing:0; }
+    .site-logo span { color:#f7931a; }
+    .site-tagline { margin-top:7px; font-size:10px; font-weight:400; line-height:1.5; color:#858b95; }
+    .site-header .site-nav { display:flex; align-items:center; justify-content:flex-end; gap:32px; width:auto; order:0; }
+    .site-header .site-nav a { display:block; padding:14px 0; font-size:13px; font-weight:400; line-height:1.5; letter-spacing:0; white-space:nowrap; color:#b1b5bd; text-decoration:none; background:none; border:0; }
+    .site-header .site-nav a:hover { color:#fff; }
+    .site-header .site-nav a[aria-current="page"] { color:#f7931a; }
+    @media(max-width:850px) {
+      .site-header-inner { height:auto; min-height:108px; padding:15px 20px 0; flex-wrap:wrap; gap:12px; }
+      .site-header .site-nav { width:100%; justify-content:space-between; flex-wrap:wrap; gap:4px 8px; }
+      .site-header .site-nav a { padding:10px 0 13px; font-size:11px; }
+    }
   </style>
 </head>
 
 <body>
 
-<header>
-  <div class="header-inner">
-
-    <a href="index.html" class="logo">
-      BTC<span>Back</span>
-    </a>
-
-    <a href="index.html" class="home-link">
-      ← 홈으로
-    </a>
-
-  </div>
-</header>
+  <header class="site-header"><div class="site-header-inner">
+    <a href="index.html" class="site-brand" aria-label="BTCBack 홈"><div class="site-logo">BTC<span>Back</span></div><div class="site-tagline">Shop Today. Stack Tomorrow.</div></a>
+    <nav class="site-nav" aria-label="메인 메뉴"><a href="index.html">홈</a><a href="shopping.html" aria-current="page">쇼핑하기</a><a href="reward.html">Bitcoin 리워드 신청</a><a href="about.html">BTCBack은?</a></nav>
+  </div></header>
 
 
 <main>
@@ -453,11 +367,6 @@
       <li>앱 설치 필요 없음</li>
     </ul>
   </section>
-  <ol class="reward-flow" aria-label="쿠팡 쇼핑 및 서비스 준비 안내">
-    <li><span class="number">①</span>쿠팡으로 이동</li>
-    <li><span class="number">②</span>쇼핑</li>
-    <li><span class="number">③</span>구매내역 확인</li>
-  </ol>
 
 
   <!-- =========================
@@ -684,13 +593,6 @@
 
   </section>
 
-  <section class="reward-cta" aria-labelledby="reward-cta-title">
-    <div>
-      <h2 id="reward-cta-title">구매를 완료하셨나요?</h2>
-      <p>구매 내역 확인을 위한 테스트 정보를 접수합니다. Bitcoin 리워드 서비스는 준비·검토 중이며, 테스트 참여는 리워드 제공을 의미하지 않습니다.</p>
-    </div>
-    <a href="reward.html" class="reward-cta-button">₿ 구매 검증 테스트 참여하기</a>
-  </section>
 
 </main>
 

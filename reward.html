@@ -28,13 +28,6 @@
     nav a { padding-block:14px; }
     nav a:hover { color:var(--orange); }
     main { max-width:880px; margin:auto; padding:42px 32px 64px; }
-    .steps { padding:0; margin:0 0 40px; list-style:none; display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); }
-    .steps li { position:relative; display:flex; flex-direction:column; align-items:center; gap:10px; text-align:center; color:#858b95; font-size:12px; }
-    .steps li:not(:last-child)::after { content:""; position:absolute; top:15px; left:calc(50% + 24px); width:calc(100% - 48px); height:1px; background:#363a41; }
-    .steps li:not(:last-child)::before { content:""; position:absolute; top:12px; right:calc(-50% + 23px); width:6px; height:6px; border-top:1px solid #363a41; border-right:1px solid #363a41; transform:rotate(45deg); }
-    .step-number { display:grid; place-items:center; width:32px; height:32px; border:1px solid #363a41; border-radius:50%; font-size:12px; background:#141619; }
-    .steps [aria-current="step"] { color:var(--orange); font-weight:700; }
-    [aria-current="step"] .step-number { color:#15100a; border-color:var(--orange); background:var(--orange); }
     .heading { margin-bottom:28px; }
     .eyebrow { color:var(--orange); font-size:11px; margin:0 0 12px; }
     h1 { font-size:30px; line-height:1.5; margin:0 0 12px; word-break:keep-all; }
@@ -78,31 +71,35 @@
       nav { gap:16px; font-size:12px; }
       main { padding:30px 18px 42px; }
       h1 { font-size:24px; }
-      .steps { margin-bottom:30px; }
-      .steps li { font-size:10px; gap:9px; }
-      .steps li:not(:last-child)::after { left:calc(50% + 20px); width:calc(100% - 40px); }
-      .steps li:not(:last-child)::before { right:calc(-50% + 19px); }
       .form-panel { padding:24px 20px; }
       .fields { grid-template-columns:1fr; gap:20px; }
       input,select,textarea { font-size:16px; }
       .footer-inner { font-size:10px; }
     }
     @media(max-width:360px) { nav { gap:10px; font-size:11px; } .form-panel { padding:22px 16px; } h1 { font-size:22px; } }
+    .site-header { position:sticky; top:0; z-index:10; background:rgba(11,12,14,.95); border-bottom:1px solid #252a31; backdrop-filter:blur(16px); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR",Arial,sans-serif; }
+    .site-header-inner { width:100%; max-width:1416px; height:88px; padding:0 48px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:28px; }
+    .site-brand { display:block; flex-shrink:0; color:#fff; text-decoration:none; }
+    .site-logo { font-size:28px; font-weight:800; line-height:1.1; letter-spacing:0; }
+    .site-logo span { color:#f7931a; }
+    .site-tagline { margin-top:7px; font-size:10px; font-weight:400; line-height:1.5; color:#858b95; }
+    .site-header .site-nav { display:flex; align-items:center; justify-content:flex-end; gap:32px; width:auto; order:0; }
+    .site-header .site-nav a { display:block; padding:14px 0; font-size:13px; font-weight:400; line-height:1.5; letter-spacing:0; white-space:nowrap; color:#b1b5bd; text-decoration:none; background:none; border:0; }
+    .site-header .site-nav a:hover { color:#fff; }
+    .site-header .site-nav a[aria-current="page"] { color:#f7931a; }
+    @media(max-width:850px) {
+      .site-header-inner { height:auto; min-height:108px; padding:15px 20px 0; flex-wrap:wrap; gap:12px; }
+      .site-header .site-nav { width:100%; justify-content:space-between; flex-wrap:wrap; gap:4px 8px; }
+      .site-header .site-nav a { padding:10px 0 13px; font-size:11px; }
+    }
   </style>
 </head>
 <body>
-  <header><div class="header-inner container">
-    <a href="index.html" aria-label="BTCBack 메인페이지"><div class="logo">BTC<span>Back</span></div><div class="tagline">Shop Today. Stack Tomorrow.</div></a>
-    <nav aria-label="메인 메뉴"><a href="index.html">메인페이지</a><a href="shopping.html">쇼핑하기</a></nav>
+  <header class="site-header"><div class="site-header-inner">
+    <a href="index.html" class="site-brand" aria-label="BTCBack 홈"><div class="site-logo">BTC<span>Back</span></div><div class="site-tagline">Shop Today. Stack Tomorrow.</div></a>
+    <nav class="site-nav" aria-label="메인 메뉴"><a href="index.html">홈</a><a href="shopping.html">쇼핑하기</a><a href="reward.html" aria-current="page">Bitcoin 리워드 신청</a><a href="about.html">BTCBack은?</a></nav>
   </div></header>
   <main>
-    <ol class="steps" aria-label="구매 검증 테스트 및 서비스 준비 단계">
-      <li><span class="step-number">1</span><span>구매완료</span></li>
-      <li aria-current="step"><span class="step-number">2</span><span>테스트접수</span></li>
-      <li><span class="step-number">3</span><span>구매확인</span></li>
-      <li><span class="step-number">4</span><span>서비스검토</span></li>
-      <li><span class="step-number">5</span><span>준비단계</span></li>
-    </ol>
     <div class="heading"><p class="eyebrow">BITCOIN REWARDS · IN REVIEW</p><h1>구매를 완료하셨나요?<br><span>구매 검증 테스트에 참여하세요.</span></h1><p class="intro">구매 내역 확인을 위한 테스트 정보를 입력해 주세요.</p><p class="demo-note">BTCBack은 쿠팡 구매에 대한 Bitcoin 리워드 제공 가능 여부를 검토하고 있습니다. 현재 정식 리워드 서비스가 아니며, 쿠팡이 제공하거나 승인한 서비스가 아닙니다.</p></div>
     <div class="form-panel">
       <form id="reward-form" novalidate>

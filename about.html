@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BTCBack | 쇼핑하고 Bitcoin 받기</title>
+  <title>BTCBack | 서비스 소개 및 자주 묻는 질문</title>
   <meta name="description" content="평소처럼 쇼핑하고 Bitcoin을 쌓는 새로운 일상. BTCBack에서 Bitcoin 리워드의 가능성을 만나보세요.">
   <style>
     :root { color-scheme: dark; --bg:#0b0c0e; --text:#f2f3f5; --muted:#989da6; --orange:#f7931a; --line:#292c31; --green:#64d5a3; --blue:#74afff; }
@@ -85,9 +85,6 @@
     .feature>.icon { color:#bbbfc6; margin-top:3px; }
     .feature h3 { font-size:13px; margin:0 0 7px; font-weight:600; }
     .feature p { font-size:11px; line-height:1.6; color:var(--muted); margin:0; word-break:keep-all; }
-    .cta { text-align:center; padding:38px 0 44px; }
-    .cta .button { min-height:48px; padding-inline:25px; font-size:14px; }
-    .cta p { font-size:11px; color:#777d86; margin:13px 0 0; }
     .faq { border-top:1px solid var(--line); padding:38px 0 48px; display:grid; grid-template-columns:1fr 2fr; gap:64px; }
     .faq h2 { font-size:23px; margin:0 0 12px; }
     .faq-intro { font-size:12px; color:var(--muted); line-height:1.8; margin:0; }
@@ -161,7 +158,7 @@
       .feature { gap:9px; } .feature h3 { font-size:12px; } .feature p { font-size:10px; }
       .feature>.icon { width:17px; height:17px; }
       .faq { grid-template-columns:1fr; gap:12px; padding-block:28px; }
-      .faq h2 { font-size:21px; } .cta .button { font-size:12px; gap:12px; padding-inline:17px; }
+      .faq h2 { font-size:21px; }
       .footer-inner { font-size:10px; }
     }
     @media(prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } * { transition:none !important; } }
@@ -180,16 +177,6 @@
       .site-header .site-nav { width:100%; justify-content:space-between; flex-wrap:wrap; gap:4px 8px; }
       .site-header .site-nav a { padding:10px 0 13px; font-size:11px; }
     }
-    .flow { grid-template-columns:repeat(3,minmax(0,1fr)); gap:48px; padding:0; align-items:stretch; }
-    #earn { grid-column:auto; margin-top:0; }
-    .flow .step-card:not(:last-child)::after { content:""; position:absolute; left:calc(100% + 9px); top:50%; width:30px; height:1px; background:#80603a; }
-    .flow .step-card:not(:last-child)::before { content:""; position:absolute; left:calc(100% + 32px); top:calc(50% - 3px); width:6px; height:6px; border-top:1px solid #80603a; border-right:1px solid #80603a; transform:rotate(45deg); }
-    @media(min-width:701px) and (max-width:950px) { .flow { gap:48px; } .flow .step-card { padding:22px 14px; height:344px; } }
-    @media(max-width:700px) {
-      .flow { grid-template-columns:minmax(0,1fr); gap:40px; }
-      .flow .step-card:not(:last-child)::after { left:50%; top:calc(100% + 7px); width:1px; height:26px; }
-      .flow .step-card:not(:last-child)::before { left:calc(50% - 3px); top:calc(100% + 26px); transform:rotate(135deg); }
-    }
   </style>
 </head>
 <body>
@@ -203,34 +190,25 @@
   </defs></svg>
   <header class="site-header"><div class="site-header-inner">
     <a href="index.html" class="site-brand" aria-label="BTCBack 홈"><div class="site-logo">BTC<span>Back</span></div><div class="site-tagline">Shop Today. Stack Tomorrow.</div></a>
-    <nav class="site-nav" aria-label="메인 메뉴"><a href="index.html" aria-current="page">홈</a><a href="shopping.html">쇼핑하기</a><a href="reward.html">Bitcoin 리워드 신청</a><a href="about.html">BTCBack은?</a></nav>
+    <nav class="site-nav" aria-label="메인 메뉴"><a href="index.html">홈</a><a href="shopping.html">쇼핑하기</a><a href="reward.html">Bitcoin 리워드 신청</a><a href="about.html" aria-current="page">BTCBack은?</a></nav>
   </div></header>
   <main>
-    <section class="hero container" aria-labelledby="hero-title">
-      <div class="eyebrow"><span class="hero-brand">BTCBack</span> / EVERYDAY BITCOIN REWARDS</div>
-      <h1 id="hero-title">쇼핑이 만드는, <span>더 나은 일상</span></h1>
-      <p>쇼핑을 통해 Bitcoin 리워드를 제공하는 서비스를 준비하고 있습니다.<br>제휴 정책과 리워드 운영 방식을 확인·검증 중입니다.</p>
+    <section class="features container" id="about" aria-label="BTCBack의 가치">
+      <div class="feature"><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg><div><h3>익숙한 쇼핑몰</h3><p>제휴 쇼핑몰에서 편안하게</p></div></div>
+      <div class="feature"><svg class="icon" aria-hidden="true"><use href="#i-bitcoin"/></svg><div><h3>Bitcoin 리워드</h3><p>일상의 쇼핑이 쌓이는 자산으로</p></div></div>
+      <div class="feature"><svg class="icon" aria-hidden="true"><use href="#i-bolt"/></svg><div><h3>간편한 수령</h3><p>Lightning으로 연결되는 내 지갑</p></div></div>
+      <div class="feature"><svg class="icon" aria-hidden="true"><use href="#i-repeat"/></svg><div><h3>더 자유로운 선택</h3><p>내 지갑으로 받거나, 다시 사용하거나</p></div></div>
     </section>
-    <section class="flow-section container" aria-label="쇼핑, Bitcoin 리워드 검토, 리워드 수령 준비의 세 단계">
-      <div class="section-label"><span>일상의 쇼핑에서 시작되는 세 가지 단계</span><span>SHOP / STACK / ENJOY</span></div>
-      <div class="flow" id="flow">
-        <a href="shopping.html" class="step-card clickable" id="shop">
-          <div class="step-number">01 / SHOP</div><h2>쇼핑하기</h2><p>익숙한 제휴 쇼핑몰에서<br>평소처럼 필요한 것을 구매하세요.</p>
-          <div class="art"><svg class="icon" aria-hidden="true"><use href="#i-cart"/></svg></div>
-          <div class="card-foot"><div class="partners"><strong>coupang</strong><span>Amazon</span><span>iHerb</span></div><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></div>
-        </a>
-        <a href="reward.html" class="step-card clickable" id="earn">
-          <div class="step-number">02 / STACK</div><h2>Bitcoin 리워드 신청</h2><p>구매 및 제휴 실적 확인 후<br>리워드 확정을 검토합니다.</p>
-          <div class="art"><div class="coin"><svg class="icon" aria-hidden="true"><use href="#i-bitcoin"/></svg></div></div>
-          <div class="card-foot"><span>일상의 소비, 쌓이는 Bitcoin</span><svg class="icon" aria-hidden="true"><use href="#i-bolt"/></svg></div>
-        </a>
-        <div class="step-card" id="enjoy">
-          <div class="step-number">03 / ENJOY</div><h2>리워드 받기</h2><p>Bitcoin 리워드 수령 방식을<br>준비·검토하고 있습니다.</p>
-          <div class="art"><svg class="icon" aria-hidden="true"><use href="#i-bolt"/></svg></div>
-          <div class="card-foot"><span>리워드 서비스 준비 중</span><svg class="icon" aria-hidden="true"><use href="#i-bitcoin"/></svg></div>
-        </div>
-      </div>
-    </section>
+    <section class="faq container" id="faq"><div><h2>자주 묻는 질문</h2><p class="faq-intro">BTCBack과 함께하는 새로운 쇼핑.</p></div><div>
+      <details><summary>BTCBack은 어떤 서비스인가요?</summary><p>BTCBack은 쇼핑을 통해 Bitcoin 리워드를 제공하는 서비스를 준비하고 있으며, 제휴 정책과 운영 방식을 확인·검증 중입니다. 쿠팡의 공식 리워드 서비스가 아니며, 쿠팡이 Bitcoin 리워드를 제공하는 것은 아닙니다.</p></details>
+      <details><summary>회원가입이 필요한가요?</summary><p>BTCBack 회원가입은 필요하지 않습니다. BTCBack의 쿠팡 이동 링크로 쇼핑한 뒤, 적립 신청 페이지에 구매 정보와 이메일, Lightning 지급 정보를 입력하면 됩니다. 쿠팡 이용에는 쿠팡의 계정 및 구매 절차가 적용됩니다.</p></details>
+      <details><summary>Bitcoin은 어떻게 받나요?</summary><p>BTCBack을 통해 쿠팡으로 이동해 쇼핑하고, 구매 내역이 확인되면 리워드를 신청할 수 있습니다. 구매 및 제휴 실적 확인 후 리워드를 확정하는 방식이며, Lightning 지급을 포함한 세부 운영 조건은 제휴 정책 확인과 함께 검토 중입니다.</p></details>
+      <details><summary>구매 후 바로 지급되나요?</summary><p>구매나 신청만으로 지급이 결정되지 않습니다. 구매 내역과 제휴 실적 확인 후 리워드가 확정되며, 지급 여부와 시점은 확인 결과 및 운영 조건에 따라 달라질 수 있습니다.</p></details>
+      <details><summary>어떤 쇼핑몰을 지원하나요?</summary><p>현재 지원하는 제휴 쇼핑몰은 쿠팡입니다. BTCBack의 쿠팡 이동 링크를 통해 쇼핑한 구매 건에 대해 적립을 신청해 주세요.</p></details>
+      <details><summary>추천상품만 구매해야 하나요?</summary><p>추천상품만 구매할 필요는 없습니다. BTCBack을 통해 쿠팡으로 이동한 뒤 평소 구매하던 상품을 쇼핑할 수 있습니다. 리워드는 구매 내역과 제휴 실적을 확인한 후 확정됩니다.</p></details>
+      <details><summary>Bitcoin 리워드는 얼마인가요?</summary><p>리워드 수량은 구매 및 제휴 실적 확인 후 신청 건별로 검토합니다. 지급 조건과 운영 방식은 확인·검증 중이며, 일정 비율의 환급이나 정해진 sats 수량을 약속하지 않습니다.</p></details>
+      <details><summary>취소하거나 반품하면 어떻게 되나요?</summary><p>취소·반품 등으로 제휴 실적이 인정되지 않는 경우 리워드가 지급되지 않거나 신청이 반려될 수 있습니다. 신청 후 취소 또는 반품했다면 해당 내용을 운영자에게 알려 주세요.</p></details>
+    </div></section>
   </main>
   <footer><div class="footer-inner container"><span>© 2026 BTCBack</span><span>Shop Today. Stack Tomorrow.</span></div></footer>
 </body>

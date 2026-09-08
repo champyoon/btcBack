@@ -282,6 +282,12 @@
       .trip-section { margin-top:36px; }
       .trip-section h2 { font-size:16px; }
     }
+    .attribution-test { margin-top:32px; padding-top:20px; border-top:1px solid #252a31; color:#9ca3af; font-size:13px; }
+    .attribution-test summary { cursor:pointer; }
+    .attribution-test input { box-sizing:border-box; display:block; width:100%; margin:10px 0; padding:12px; background:#15181d; border:1px solid #394039; border-radius:6px; color:#fff; }
+    .attribution-test button,.attribution-test a { display:inline-block; padding:12px 16px; border:1px solid #80603a; background:#15181d; color:#f7931a; border-radius:6px; text-decoration:none; cursor:pointer; }
+    .attribution-test button:disabled { opacity:.5; cursor:wait; }
+    .attribution-test [hidden] { display:none; }
   </style>
 </head>
 
@@ -350,6 +356,18 @@
       title="Trip.com 제휴 여행 배너">
     </iframe>
   </section>
+  <details class="attribution-test">
+    <summary>개발 테스트: Coupang attribution 검증</summary>
+    <p>실구매 attribution 검증용이며 정식 리워드 기능이 아닙니다.</p>
+    <p>테스트용 추적 ID: btcback_test_001</p>
+    <form id="attribution-form">
+      <label for="attribution-url">Coupang URL</label>
+      <input id="attribution-url" type="url" required placeholder="https://www.coupang.com/vp/products/...">
+      <button type="submit" id="attribution-submit">subId 테스트 링크 생성</button>
+    </form>
+    <p id="attribution-status" role="status"></p>
+    <a id="attribution-link" target="_blank" rel="noopener" hidden>쿠팡으로 이동</a>
+  </details>
 </main>
 
 
@@ -359,5 +377,6 @@
 </footer>
 
 
+<script src="coupang-attribution.js" defer></script>
 </body>
 </html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My BTCBack | BTCBack</title>
+  <style>
+    :root { color-scheme:dark; --bg:#0b0c0e; --text:#f2f3f5; --muted:#989da6; --orange:#f7931a; --line:#292c31; }
+    * { box-sizing:border-box; letter-spacing:0; }
+    body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",Arial,sans-serif; -webkit-font-smoothing:antialiased; }
+    a { color:inherit; text-decoration:none; }
+    a:focus-visible { outline:2px solid var(--orange); outline-offset:5px; }
+    .container { width:min(1320px,calc(100% - 96px)); margin-inline:auto; }
+    .site-header { position:sticky; top:0; z-index:10; background:rgba(11,12,14,.95); border-bottom:1px solid #252a31; backdrop-filter:blur(16px); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR",Arial,sans-serif; }
+    .site-header-inner { width:100%; max-width:1416px; height:88px; padding:0 48px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:28px; }
+    .site-brand { display:block; flex-shrink:0; color:#fff; text-decoration:none; }
+    .site-logo { font-size:28px; font-weight:800; line-height:1.1; letter-spacing:0; }
+    .site-logo span { color:#f7931a; }
+    .site-tagline { margin-top:7px; font-size:10px; font-weight:400; line-height:1.5; color:#858b95; }
+    .site-header .site-nav { display:flex; align-items:center; justify-content:flex-end; gap:32px; width:auto; order:0; }
+    .site-header .site-nav a { display:block; padding:14px 0; font-size:13px; font-weight:400; line-height:1.5; letter-spacing:0; white-space:nowrap; color:#b1b5bd; text-decoration:none; background:none; border:0; }
+    .site-header .site-nav a:hover { color:#fff; }
+    .site-header .site-nav a[aria-current="page"] { color:#f7931a; }
+    main { padding-block:36px 44px; }
+    .page-heading { margin-bottom:28px; }
+    .eyebrow { margin:0 0 12px; font-size:11px; font-weight:700; color:var(--orange); }
+    h1 { margin:0; font-size:28px; line-height:1.4; word-break:keep-all; }
+    .brand-message { margin:10px 0 0; color:var(--muted); font-size:13px; }
+    .demo-badge { display:inline-block; margin-left:10px; padding:3px 7px; border:1px solid #715027; border-radius:4px; background:#211a12; color:#e8b577; font-size:10px; font-weight:600; line-height:1.4; vertical-align:middle; }
+    .demo-notice { margin:12px 0 0; color:var(--muted); font-size:12px; line-height:1.7; word-break:keep-all; overflow-wrap:anywhere; }
+    .summary-layout { display:grid; grid-template-columns:1.3fr 1fr; border-block:1px solid var(--line); background:linear-gradient(145deg,#17191d,#111315 85%); }
+    .earned,.reward-history { padding:30px 32px; min-width:0; }
+    .metric-label { font-size:12px; font-weight:400; line-height:1.6; color:var(--muted); margin:0 0 12px; }
+    .sats-total { margin:0; color:var(--orange); font-size:56px; font-weight:800; line-height:1.2; font-variant-numeric:tabular-nums; }
+    .sats-total .unit { font-size:24px; font-weight:600; }
+    .btc-total { font-size:20px; margin:14px 0 26px; }
+    .btc-total small { display:block; font-size:11px; color:var(--muted); margin-top:6px; }
+    .secondary-values { display:flex; flex-wrap:wrap; gap:20px 32px; border-top:1px solid var(--line); padding-top:20px; margin:0; }
+    .secondary-values dt { margin-bottom:7px; }
+    .secondary-values dd { margin:0; font-size:16px; color:#c4c9cf; }
+    .reward-history { border-left:1px solid var(--line); }
+    h2 { font-size:15px; font-weight:600; margin:0; }
+    .history-list { list-style:none; padding:0; margin:14px 0 0; }
+    .history-list li { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; padding:20px 0; border-bottom:1px solid var(--line); font-size:13px; }
+    .history-list strong { color:#b7d1c3; font-weight:500; white-space:nowrap; }
+    .history-list small { display:block; margin-top:6px; font-size:10px; color:var(--muted); }
+    .reward-status { display:grid; grid-template-columns:1fr 1fr; gap:20px; padding-block:24px; }
+    .status-item { border:1px solid #34373d; border-radius:8px; background:#131519; padding:20px 24px; }
+    .status-item h2 { color:#b7cfc1; font-size:12px; font-weight:400; }
+    .status-item.pending h2 { color:#c7c1ae; }
+    .status-item strong { display:block; margin-top:9px; font-size:22px; font-weight:600; }
+    .status-item p { color:var(--muted); font-size:11px; margin:8px 0 0; }
+    .accumulation { border-top:1px solid var(--line); padding-top:24px; }
+    .accumulation-heading { display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px 20px; align-items:baseline; }
+    .accumulation-heading p { margin:0; font-size:11px; color:var(--muted); }
+    .chart { margin:24px 0 0; }
+    .chart-bars { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:28px; align-items:end; height:148px; padding-inline:32px; border-bottom:1px solid #454039; background:repeating-linear-gradient(to top,transparent 0,transparent 48px,#ffffff05 49px,#ffffff05 50px); }
+    .bar-column { height:100%; display:flex; flex-direction:column; justify-content:flex-end; align-items:center; gap:8px; }
+    .bar-column span { font-size:12px; color:#c4c9cf; font-variant-numeric:tabular-nums; }
+    .bar { width:100%; max-width:168px; background:#895d2b; border-top:2px solid #c6883e; border-radius:4px 4px 0 0; }
+    .bar-column:last-child .bar { background:#ac712f; border-color:var(--orange); }
+    .chart-labels { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:28px; padding:12px 32px 0; color:var(--muted); font-size:11px; text-align:center; }
+    footer { border-top:1px solid var(--line); }
+    .footer-inner { display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px 20px; padding-block:24px; color:#747a83; font-size:11px; }
+    @media(max-width:1150px) { .container { width:calc(100% - 56px); } }
+    @media(max-width:850px) {
+      .site-header-inner { height:auto; min-height:108px; padding:15px 20px 0; flex-wrap:wrap; gap:12px; }
+      .site-header .site-nav { width:100%; justify-content:space-between; flex-wrap:wrap; gap:4px 8px; }
+      .site-header .site-nav a { padding:10px 0 13px; font-size:11px; }
+      .earned,.reward-history { padding:24px; }
+      .sats-total { font-size:44px; }
+    }
+    @media(max-width:700px) {
+      .container { width:calc(100% - 36px); }
+      main { padding-block:28px 32px; }
+      h1 { font-size:23px; }
+      .summary-layout { grid-template-columns:minmax(0,1fr); }
+      .earned,.reward-history { padding:24px 18px; }
+      .sats-total { font-size:42px; }
+      .sats-total .unit { font-size:20px; }
+      .reward-history { border-left:0; border-top:1px solid var(--line); }
+      .reward-status { grid-template-columns:1fr; gap:12px; }
+      .chart-bars { padding-inline:8px; gap:16px; }
+      .chart-labels { padding-inline:8px; gap:16px; font-size:10px; }
+      .footer-inner { font-size:10px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="site-brand" href="index.html" aria-label="BTCBack 홈">
+        <div class="site-logo">BTC<span>Back</span></div>
+        <div class="site-tagline">Shop Today. Stack Tomorrow.</div>
+      </a>
+      <nav class="site-nav" aria-label="메인 메뉴">
+        <a href="index.html">홈</a>
+        <a href="shopping.html">쇼핑하기</a>
+        <a href="dashboard.html" aria-current="page">My BTCBack</a>
+        <a href="about.html">BTCBack은?</a>
+      </nav>
+    </div>
+  </header>
+  <!-- UI-only mock data. No Auth, DB, pricing or tracking connections.
+       Lifetime and accumulation include PAID rewards only; exclude confirmed/pending. -->
+  <main class="container">
+    <div class="page-heading">
+      <p class="eyebrow">MY BTCBACK <span class="demo-badge">DEMO</span></p>
+      <h1>쇼핑으로 모은 Bitcoin을 한눈에.</h1>
+      <p class="brand-message">Shop. Earn sats. Stack Bitcoin.</p>
+      <p class="demo-notice">현재 표시된 Reward 및 금액은 Dashboard 예시 데이터입니다.</p>
+    </div>
+    <div class="summary-layout">
+      <section class="earned" aria-labelledby="earned-title">
+        <h2 class="metric-label" id="earned-title">Total Sats Earned · Lifetime</h2>
+        <p class="sats-total"><span data-field="total_sats_earned">87,420</span> <span class="unit">sats</span></p>
+        <p class="btc-total"><span data-field="btc_amount">0.00087420</span> BTC<small>Bitcoin Earned</small></p>
+        <dl class="secondary-values">
+          <div><dt class="metric-label">Current Value</dt><dd data-field="current_value_krw">₩168,700</dd></div>
+          <div><dt class="metric-label">Reward Performance</dt><dd><span data-field="reward_performance_krw">+₩56,400</span> (<span data-field="reward_performance_percent">+50.2%</span>)</dd></div>
+        </dl>
+      </section>
+      <section class="reward-history" aria-labelledby="history-title">
+        <h2 id="history-title">Reward History</h2>
+        <ul class="history-list" data-field="reward_history">
+          <li data-status="paid"><span>온라인 쇼핑<small>지급 완료</small></span><strong>+12,420 sats</strong></li>
+          <li data-status="paid"><span>여행 서비스<small>지급 완료</small></span><strong>+25,000 sats</strong></li>
+          <li data-status="paid"><span>이전 Reward 기록<small>지급 완료</small></span><strong>+50,000 sats</strong></li>
+        </ul>
+      </section>
+    </div>
+    <section class="reward-status" aria-label="리워드 상태 요약">
+      <div class="status-item"><h2>Confirmed rewards</h2><strong><span data-field="confirmed_sats">2,500</span> sats</strong><p>확정 후 지급 대기</p></div>
+      <div class="status-item pending"><h2>Pending rewards</h2><strong><span data-field="pending_sats">1,250</span> sats</strong><p>구매 및 정산 확인 중</p></div>
+    </section>
+    <section class="accumulation" aria-labelledby="accumulation-title">
+      <div class="accumulation-heading"><h2 id="accumulation-title">Bitcoin Accumulation</h2><p>지급 완료 리워드 기준 누적 sats</p></div>
+      <figure class="chart" data-field="accumulation_data" role="img" aria-label="지급 완료 리워드 누적: 이전 기록 50,000 sats, 여행 서비스 이후 75,000 sats, 온라인 쇼핑 이후 87,420 sats">
+        <div class="chart-bars" aria-hidden="true">
+          <div class="bar-column"><span>50,000</span><div class="bar" style="height:63px"></div></div>
+          <div class="bar-column"><span>75,000</span><div class="bar" style="height:94px"></div></div>
+          <div class="bar-column"><span>87,420</span><div class="bar" style="height:110px"></div></div>
+        </div>
+        <div class="chart-labels" aria-hidden="true"><span>이전 기록</span><span>여행 서비스</span><span>온라인 쇼핑</span></div>
+      </figure>
+    </section>
+  </main>
+  <footer><div class="container footer-inner"><span>© 2026 BTCBack. All rights reserved.</span><span>Shop Today. Stack Tomorrow.</span></div></footer>
+</body>
+</html>

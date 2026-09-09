@@ -191,6 +191,71 @@
       .flow .step-card:not(:last-child)::after { left:50%; top:calc(100% + 7px); width:1px; height:26px; }
       .flow .step-card:not(:last-child)::before { left:calc(50% - 3px); top:calc(100% + 26px); transform:rotate(135deg); }
     }
+    .home-hero { padding:64px 0 44px; }
+    .home-hero .brand-message { font-size:14px; color:#c8ccd2; margin:16px 0 26px; }
+    .home-hero .beta-note { font-size:12px; line-height:1.8; max-width:650px; margin:20px auto 0; color:#989da6; }
+    .home-hero .button,.preview-section>.button,.closing .button { min-height:52px; }
+    .works { padding:24px 0 60px; }
+    .works-note,.preview-caption { color:#989da6; font-size:13px; line-height:1.8; margin:0 0 24px; }
+    .works-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:24px; }
+    .works-grid .step-card { height:auto; min-height:360px; padding:26px; }
+    .works-grid .step-card h2 { font-size:22px; }
+    .works-grid .art { min-height:100px; padding:20px 0; }
+    .preview-section { padding:40px 0 56px; border-top:1px solid var(--line); }
+    .preview-section h2 { font-size:28px; line-height:1.4; margin:0 0 14px; }
+    .dashboard-preview { display:grid; grid-template-columns:1.3fr 1fr; border:1px solid #34373d; border-radius:8px; background:#15171b; box-shadow:0 12px 28px #00000025; margin:0 0 24px; }
+    .earned,.reward-history { padding:32px; min-width:0; }
+    .metric-label { font-size:12px; color:#989da6; margin:0 0 12px; }
+    .sats-total { color:var(--orange); font-size:56px; font-weight:800; line-height:1.2; }
+    .sats-total span { font-size:24px; font-weight:600; }
+    .btc-total { font-size:20px; margin:14px 0 28px; }
+    .btc-total span { display:block; font-size:11px; color:#989da6; margin-top:6px; }
+    .preview-values { display:flex; flex-wrap:wrap; gap:24px; border-top:1px solid var(--line); padding-top:22px; }
+    .preview-values strong { font-size:16px; font-weight:500; color:#c4c9cf; }
+    .reward-history { border-left:1px solid var(--line); }
+    .reward-history h3 { font-size:15px; margin:0 0 22px; }
+    .reward-history h3 span { color:#989da6; font-size:11px; font-weight:400; }
+    .reward-history dl { margin:0; }
+    .reward-history dl>div { display:flex; flex-wrap:wrap; justify-content:space-between; gap:12px; padding:16px 0; border-bottom:1px solid var(--line); font-size:13px; }
+    .reward-history dd { margin:0; color:#b7d1c3; }
+    .reward-history>p { font-size:11px; line-height:1.8; color:#989da6; }
+    .closing { text-align:center; border-top:1px solid var(--line); padding:52px 0; background:#101214; }
+    .closing h2 { font-size:32px; line-height:1.4; margin:0 0 18px; }
+    .closing h2 span { color:var(--orange); }
+    .closing p { color:#b1b5bd; line-height:1.8; margin:0 0 24px; }
+    .closing .closing-note { font-size:11px; margin:20px 0 0; color:#989da6; }
+    @media(max-width:950px) {
+      .works-grid { gap:16px; }
+      .works-grid .step-card { padding:20px; }
+      .works-grid .step-card h2 { font-size:19px; }
+      .earned,.reward-history { padding:24px; }
+      .sats-total { font-size:42px; }
+    }
+    @media(max-width:700px) {
+      .home-hero { padding:42px 0 32px; }
+      .home-hero .beta-note { max-width:100%; }
+      .works-grid { grid-template-columns:1fr; }
+      .works-grid .step-card { min-height:300px; }
+      .dashboard-preview { grid-template-columns:1fr; }
+      .reward-history { border-left:0; border-top:1px solid var(--line); }
+      .sats-total { font-size:38px; }
+      .sats-total span { font-size:20px; }
+      .btc-total { font-size:18px; }
+      .preview-section h2 { font-size:23px; }
+      .closing h2 { font-size:24px; overflow-wrap:break-word; }
+      .works { padding-bottom:36px; }
+    }
+    .home-hero { padding:36px 0 24px; }
+    .home-hero .brand-message { margin:12px 0; }
+    .home-hero .beta-note { margin:12px auto 0; }
+    .works { padding:12px 0 36px; }
+    .works-grid .step-card { min-height:340px; }
+    .panel-link { min-height:48px; color:var(--orange); font-weight:700; font-size:13px; }
+    .panel-link:focus-visible { outline:2px solid var(--orange); outline-offset:4px; }
+    @media(max-width:700px) {
+      .home-hero { padding:28px 0 20px; }
+      .works-grid .step-card { min-height:300px; }
+    }
   </style>
 </head>
 <body>
@@ -204,32 +269,39 @@
   </defs></svg>
   <header class="site-header"><div class="site-header-inner">
     <a href="index.html" class="site-brand" aria-label="BTCBack 홈"><div class="site-logo">BTC<span>Back</span></div><div class="site-tagline">Shop Today. Stack Tomorrow.</div></a>
-    <nav class="site-nav" aria-label="메인 메뉴"><a href="index.html" aria-current="page">홈</a><a href="shopping.html">쇼핑하기</a><a href="reward.html">Bitcoin 리워드 신청</a><a href="about.html">BTCBack은?</a></nav>
+    <nav class="site-nav" aria-label="메인 메뉴"><a href="index.html" aria-current="page">홈</a><a href="shopping.html">쇼핑하기</a><a href="dashboard.html">My BTCBack</a><a href="about.html">BTCBack은?</a></nav>
   </div></header>
   <main>
-    <section class="hero container" aria-labelledby="hero-title">
-      <div class="eyebrow"><span class="hero-brand">BTCBack</span> / EVERYDAY BITCOIN REWARDS</div>
-      <h1 id="hero-title">쇼핑이 만드는, <span>더 나은 일상</span></h1>
-      <p>다양한 쇼핑·온라인 서비스를 Bitcoin 리워드와 연결하는 서비스를 준비하고 있습니다.<br>제휴 정책과 리워드 운영 방식을 확인·검증 중입니다.</p>
+    <section class="hero container home-hero" aria-labelledby="hero-title">
+      <div class="eyebrow"><span class="hero-brand">BTCBack</span> / CLOSED BETA</div>
+      <h1 id="hero-title">쇼핑하고 <span>Bitcoin 받기</span></h1>
+      <p class="hero-promise">평소처럼 쇼핑하세요.<br>Bitcoin Reward는 자동으로.</p>
+      <p class="brand-message">Shop. Earn sats. Stack Bitcoin.</p>
+      <p class="beta-note">Closed Beta에서 지향하는 서비스 경험이며, 제휴 정책과 리워드 운영 방식을 확인·검토 중입니다.</p>
     </section>
-    <section class="flow-section container" aria-label="쇼핑, Bitcoin 리워드 검토, 리워드 수령 준비의 세 단계">
-      <div class="section-label"><span>일상의 쇼핑에서 시작되는 세 가지 단계</span><span>SHOP / STACK / ENJOY</span></div>
-      <div class="flow" id="flow">
-        <a href="shopping.html" class="step-card clickable" id="shop">
-          <div class="step-number">01 / SHOP</div><h2>쇼핑하기</h2><p>BTCBack의 다양한 제휴처에서<br>평소처럼 상품과 서비스를 이용하세요.</p>
+    <section class="container works" aria-label="BTCBack의 세 단계">
+      <div class="works-grid">
+        <article class="step-card">
+          <div class="step-number">01 / SHOP</div>
+          <h2>평소처럼 쇼핑하세요.</h2>
+          <p>BTCBack에서 원하는 제휴처를 선택하고 평소처럼 쇼핑하면 됩니다.</p>
           <div class="art"><svg class="icon" aria-hidden="true"><use href="#i-cart"/></svg></div>
-          <div class="card-foot"><div class="partners"><strong>coupang</strong><span>Trip.com</span><span>iHerb 심사 중</span></div><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></div>
-        </a>
-        <a href="reward.html" class="step-card clickable" id="earn">
-          <div class="step-number">02 / STACK</div><h2>Bitcoin 리워드 신청</h2><p>이용 후 구매 정보를 입력해<br>리워드 신청·구매 확인 테스트에 참여하세요.</p>
+          <a class="card-foot panel-link" href="shopping.html">쇼핑하기 <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+        </article>
+        <article class="step-card">
+          <div class="step-number">02 / EARN SATS</div>
+          <h2>쇼핑만 하면,<br>Bitcoin Reward가 자동으로 쌓입니다.</h2>
+          <p>별도의 Reward 신청은 필요 없습니다.<br>구매가 확인되면 Reward가 자동으로 반영됩니다.</p>
           <div class="art"><div class="coin"><svg class="icon" aria-hidden="true"><use href="#i-bitcoin"/></svg></div></div>
-          <div class="card-foot"><span>제휴처별 리워드 정책 검토 중</span><svg class="icon" aria-hidden="true"><use href="#i-bolt"/></svg></div>
-        </a>
-        <div class="step-card" id="enjoy">
-          <div class="step-number">03 / ENJOY</div><h2>리워드 받기</h2><p>확인된 제휴 성과를 기반으로<br>Bitcoin 리워드 제공 방식을 준비합니다.</p>
-          <div class="art"><svg class="icon" aria-hidden="true"><use href="#i-bolt"/></svg></div>
-          <div class="card-foot"><span>리워드 서비스 준비 중</span><svg class="icon" aria-hidden="true"><use href="#i-bitcoin"/></svg></div>
-        </div>
+          <div class="card-foot"><span>자동 반영 방식 검토 중</span><svg class="icon" aria-hidden="true"><use href="#i-bolt"/></svg></div>
+        </article>
+        <article class="step-card">
+          <div class="step-number">03 / MY BTCBACK</div>
+          <h2>모은 Bitcoin을 확인하세요.</h2>
+          <p>지금까지 BTCBack을 통해 받은 누적 sats와 Reward 기록을 My BTCBack에서 확인할 수 있습니다.</p>
+          <div class="art"><svg class="icon" aria-hidden="true"><use href="#i-bitcoin"/></svg></div>
+          <a class="card-foot panel-link" href="dashboard.html">My BTCBack <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+        </article>
       </div>
     </section>
   </main>

@@ -1,5 +1,23 @@
 # Fixed-subId attribution test
 
+## Final purchase verification checklist
+
+- Open the development test section on shopping.html, enter a currently available
+  product URL, then generate a link and use its orange "쿠팡으로 이동" button.
+  This button uses the returned shortenUrl, not landingUrl. Existing banners and
+  search links do not form this fixed-subId test path.
+- After the next day's report refresh, call coupang-orders with the purchase date
+  range and debug=true using the existing admin procedure in COUPANG_ORDERS.md.
+- Check the SAME order item for subId == "btcback_test_001", date, productId,
+  gmv and commission. debug[index] corresponds to orders[index]. Field presence
+  alone is not enough: compare the actual subId value and purchase context.
+- Missing or delayed rows are inconclusive. Reported commission is not a promised
+  Bitcoin reward, and a shared fixed ID does not identify a particular customer.
+- After the test, remove/disable the development UI and its coupang-attribution.js
+  script inclusion, and disable/delete the public coupang-deeplink function.
+  Hiding the UI alone does not prevent API calls. Keep credentials private and do
+  not disable coupang-orders or remove Secrets required by other functions.
+
 Deploy from the repository root:
 
 ```powershell

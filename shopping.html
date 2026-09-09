@@ -84,7 +84,7 @@
     ========================= */
 
     main {
-      max-width: 1000px;
+      max-width: 940px;
       margin: 0 auto;
       padding: 42px 20px 48px;
     }
@@ -180,7 +180,7 @@
     }
 
     .standalone-banner {
-      width: 82%;
+      width: 100%;
       margin: 0 auto 18px;
     }
 
@@ -282,12 +282,26 @@
       .trip-section { margin-top:36px; }
       .trip-section h2 { font-size:16px; }
     }
-    .attribution-test { margin-top:32px; padding-top:20px; border-top:1px solid #252a31; color:#9ca3af; font-size:13px; }
-    .attribution-test summary { cursor:pointer; }
-    .attribution-test input { box-sizing:border-box; display:block; width:100%; margin:10px 0; padding:12px; background:#15181d; border:1px solid #394039; border-radius:6px; color:#fff; }
-    .attribution-test button,.attribution-test a { display:inline-block; padding:12px 16px; border:1px solid #80603a; background:#15181d; color:#f7931a; border-radius:6px; text-decoration:none; cursor:pointer; }
-    .attribution-test button:disabled { opacity:.5; cursor:wait; }
-    .attribution-test [hidden] { display:none; }
+    .coupang-entry-status { margin:12px 0 0; text-align:center; color:#d1d5db; font-size:13px; line-height:1.6; }
+    .coupang-entry-status:empty { display:none; }
+    .shopping-section .coupang-cta { cursor:pointer; font-family:inherit; }
+    .shopping-section .coupang-cta:disabled { opacity:.65; cursor:wait; }
+    .partner-card { padding:28px; margin-bottom:26px; border:1px solid #252a31; border-radius:8px; background:#15181d; box-shadow:0 8px 30px #00000025; }
+    .partner-label { margin:0 0 10px; color:#f7931a; font-size:11px; font-weight:700; }
+    .partner-title { margin:0 0 12px; color:#fff; font-size:24px; line-height:1.4; word-break:keep-all; }
+    .partner-description { margin:0 0 24px; color:#b1b7c1; font-size:14px; line-height:1.7; word-break:keep-all; }
+    .partner-cta { display:flex; justify-content:center; align-items:center; gap:14px; width:100%; min-height:68px; padding:16px 20px; border:1px solid #f7931a; border-radius:6px; background:#f7931a; color:#15100a; font:700 19px/1.5 inherit; font-family:inherit; font-size:19px; font-weight:700; line-height:1.5; cursor:pointer; }
+    .partner-cta::after { content:"→"; }
+    .partner-cta:hover:not(:disabled) { background:#ffab43; }
+    .partner-cta:active:not(:disabled) { background:#e88817; }
+    .partner-cta:focus-visible { outline:2px solid #f7931a; outline-offset:4px; }
+    .partner-cta:disabled { opacity:.65; cursor:wait; }
+    .partner-cta:disabled::after { content:none; }
+    @media(max-width:520px) {
+      .partner-card { padding:20px 16px; }
+      .partner-title { font-size:21px; }
+      .partner-cta { min-height:64px; font-size:18px; }
+    }
   </style>
 </head>
 
@@ -315,14 +329,12 @@
        COUPANG SHOPPING
   ========================== -->
 
-  <section class="shopping-section">
-
-    <div class="banner-wrapper">
-
-      <iframe src="https://coupa.ng/cpi1Ss" width="100%" height="75" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" title="쿠팡 파트너스 상품 검색"></iframe>
-
-    </div>
-
+  <section class="partner-card" aria-labelledby="coupang-partner-title">
+    <p class="partner-label">COUPANG</p>
+    <h2 class="partner-title" id="coupang-partner-title">쿠팡에서 평소처럼 쇼핑하세요.</h2>
+    <p class="partner-description">BTCBack을 통해 쿠팡으로 이동한 뒤 원하는 상품을 이용하세요.</p>
+    <button type="button" class="partner-cta" id="coupang-entry">쿠팡으로 이동</button>
+    <p class="coupang-entry-status" id="coupang-entry-status" role="status"></p>
   </section>
 
   <div class="banner-wrapper standalone-banner">
@@ -356,18 +368,6 @@
       title="Trip.com 제휴 여행 배너">
     </iframe>
   </section>
-  <details class="attribution-test">
-    <summary>개발 테스트: Coupang attribution 검증</summary>
-    <p>실구매 attribution 검증용이며 정식 리워드 기능이 아닙니다.</p>
-    <p>테스트용 추적 ID: btcback_test_001</p>
-    <form id="attribution-form">
-      <label for="attribution-url">Coupang URL</label>
-      <input id="attribution-url" type="url" required placeholder="https://www.coupang.com/vp/products/...">
-      <button type="submit" id="attribution-submit">subId 테스트 링크 생성</button>
-    </form>
-    <p id="attribution-status" role="status"></p>
-    <a id="attribution-link" target="_blank" rel="noopener" hidden>쿠팡으로 이동</a>
-  </details>
 </main>
 
 

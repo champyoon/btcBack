@@ -70,11 +70,22 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
   <script src="admin-config.js" defer></script>
   <script src="signup.js" defer></script>
+  <style>
+    .site-auth-slot { display:flex; align-items:center; }
+    .site-header .site-nav #member-logout { padding:14px 0; min-height:44px; border:0; background:none; color:#b1b5bd; font:inherit; font-size:13px; line-height:1.5; white-space:nowrap; cursor:pointer; }
+    .site-header .site-nav .site-auth-entry { min-height:44px; }
+    .site-header #member-logout:hover { color:#fff; }
+    .site-header #member-logout:focus-visible { outline:2px solid #f7931a; outline-offset:4px; }
+    .site-header #member-logout:disabled { opacity:.55; cursor:wait; }
+    .site-auth-slot [hidden] { display:none !important; }
+    @media (max-width:850px) { .site-header .site-nav #member-logout { padding:10px 0 13px; font-size:11px; } }
+  </style>
+  <script src="member-auth.js" defer></script>
 </head>
 <body>
   <header class="site-header"><div class="site-header-inner">
     <a href="index.html" class="site-brand" aria-label="BTCBack 홈"><div class="site-logo">BTC<span>Back</span></div><div class="site-tagline">Shop Today. Stack Tomorrow.</div></a>
-    <nav class="site-nav" aria-label="메인 메뉴"><a href="index.html">홈</a><a href="shopping.html">쇼핑하기</a><a href="dashboard.html">My BTCBack</a><a href="about.html">BTCBack은?</a></nav>
+<nav class="site-nav" aria-label="메인 메뉴"><a href="index.html">홈</a><a href="shopping.html">쇼핑하기</a><a href="dashboard.html">My BTCBack</a><a href="about.html">BTCBack은?</a><span class="site-auth-slot"><a class="site-auth-entry" href="login.html">로그인</a><button id="member-logout" type="button" hidden>로그아웃</button></span></nav>
   </div></header>
   <main>
     <p class="policy-meta"><strong>CLOSED BETA · EMAIL VERIFICATION TEST</strong></p>
@@ -93,6 +104,7 @@
       <button class="submit" id="submit" type="submit" disabled>인증 이메일 요청</button>
     </form>
     <p id="message" class="message" role="status" aria-live="polite" tabindex="-1"></p>
+    <p class="intro">이미 계정이 있으신가요? <a href="login.html">로그인</a></p>
     <noscript><p class="message error">가입 검증을 진행하려면 JavaScript를 활성화해 주세요.</p></noscript>
   </main>
   <footer><div class="footer-inner"><span>© 2026 BTCBack</span><span>Shop Today. Stack Tomorrow.</span></div><nav class="policy-links" aria-label="정책 메뉴"><a href="terms.html">이용약관</a><a href="privacy.html">개인정보처리방침</a><a href="reward-policy.html">Reward Policy</a><a href="affiliate-disclosure.html">Affiliate Disclosure</a></nav></footer>

@@ -3,10 +3,10 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const root = path.join(__dirname, '..');
-const mock = `window.calls=[];window.reply={data:{session:null},error:null};window.profile={data:{member_status:'PENDING'},error:null};
-window.supabase={createClient:(url,key,options)=>{window.options=options;return {
+const mock = `window.calls=[];window.reads=[];window.reply={data:{session:null},error:null};window.profile={data:{member_status:'PENDING'},error:null};
+window.supabase={createClient:(url,key,options)=>{if(options.auth.storageKey==='btcback-member-auth')return {auth:{getSession:async()=>({data:{session:null}}),onAuthStateChange:()=>{}}};window.options=options;return {
 auth:{signUp:async args=>{window.calls.push(args);await new Promise(r=>setTimeout(r,window.delay||0));if(window.reject)throw Error('network');return window.reply;},setSession:async()=>({error:null}),getUser:async()=>({data:{user:{id:'test-user',email_confirmed_at:'2026-09-09'}}})},
-from:table=>{if(table!=='profiles')throw Error('unexpected write');return {select:()=>({eq:()=>({maybeSingle:async()=>window.profile})})}}
+from:table=>{window.reads.push(table);if(table!=='profiles')throw Error('unexpected write');return {select:()=>({eq:()=>({maybeSingle:async()=>window.profile})})}}
 }}};`;
 (async () => {
   const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
@@ -42,6 +42,20 @@ from:table=>{if(table!=='profiles')throw Error('unexpected write');return {selec
     assert.equal(await page.inputValue('#password'),'');
     assert.equal(await page.evaluate(()=>options.auth.persistSession),false);
     assert.equal(await page.evaluate(()=>localStorage.length+sessionStorage.length),0);
+    for (const [email, masked] of [['champyoon@gmail.com','cha******@gmail.com'],['abc@gmail.com','a**@gmail.com'],['ab@gmail.com','a*@gmail.com'],['a@gmail.com','*@gmail.com']]) {
+      let normal;
+      for (const duplicate of [false,true]) {
+        await open();await fill();await page.fill('#email',email);
+        if(duplicate)await page.evaluate(()=>window.reply={error:{code:'user_already_exists'}});
+        await page.click('#submit');await page.waitForSelector('form[hidden]',{state:'attached'});
+        const notice=await page.innerText('#message');assert(notice.includes(masked));assert(!notice.includes(email));
+        if(duplicate)assert.equal(notice,normal);else normal=notice;
+        assert.equal(await page.evaluate(()=>localStorage.length+sessionStorage.length),0);
+        assert.equal(new URL(page.url()).search,'');assert.equal(new URL(page.url()).hash,'');
+        assert.deepEqual(await page.evaluate(()=>reads),[]);
+        assert.equal(await page.evaluate(()=>calls[0].email),email);
+      }
+    }
     for(const reply of [{error:{code:'weak_password'}},{error:{status:429}},{error:{code:'unexpected'}},{data:{session:{}}}]){
       await open();await fill();await page.evaluate(r=>window.reply=r,reply);await page.click('#submit');await page.waitForSelector('.message.error');
       assert.equal(await page.inputValue('#password'),'');

@@ -3,10 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="policy-id" content="affiliate_disclosure">
-  <meta name="policy-version" content="0.1">
-  <meta name="policy-effective-date" content="2026-09-09">
-  <title>Affiliate Disclosure | BTCBack</title>
+  <meta name="referrer" content="no-referrer">
+  <title>로그인 | BTCBack</title>
   <style>
     :root { color-scheme:dark; --orange:#f7931a; }
     * { box-sizing:border-box; letter-spacing:0; }
@@ -47,7 +45,32 @@
     .policy-links a:focus-visible { outline:2px solid #f7931a; outline-offset:4px; }
 
     @media(max-width:700px) { main { width:calc(100% - 36px); padding:28px 0; } h1 { font-size:25px; } .footer-inner { width:calc(100% - 36px); font-size:10px; } }
+  
+    [hidden] { display:none !important; }
+    main { max-width:520px; padding-block:40px; }
+    .intro { color:#b1b5bd; font-size:14px; line-height:1.8; }
+    .test-notice { border-left:2px solid #a46e2d; padding-left:14px; color:#b8afa2; font-size:12px; line-height:1.8; margin:22px 0; }
+    form { margin-top:26px; }
+    .field { margin-bottom:18px; }
+    .field label { display:block; margin-bottom:8px; font-size:13px; }
+    input[type=email],input[type=password] { display:block; width:100%; min-height:48px; border:1px solid #34373d; border-radius:6px; background:#14161a; color:#f2f3f5; padding:12px 14px; font:inherit; font-size:16px; }
+    input:focus-visible,button:focus-visible { outline:2px solid #f7931a; outline-offset:3px; }
+    fieldset { border:0; padding:18px 0; margin:0; min-width:0; }
+    legend { font-size:13px; font-weight:600; padding:0; }
+    .consent { display:flex; gap:10px; align-items:flex-start; min-height:44px; padding:10px 0; font-size:13px; line-height:1.7; }
+    .consent input { flex-shrink:0; width:18px; height:18px; margin:2px 0 0; accent-color:#f7931a; }
+    .consent-note { font-size:12px; line-height:1.8; color:#989da6; margin:2px 0 10px 28px; }
+    .submit { width:100%; min-height:52px; border:0; border-radius:6px; background:#f7931a; color:#15100a; font:inherit; font-size:15px; font-weight:700; cursor:pointer; }
+    .submit:hover { background:#ffab43; }
+    .submit:disabled { opacity:.55; cursor:wait; }
+    .message { font-size:14px; line-height:1.9; overflow-wrap:anywhere; margin:18px 0 0; }
+    .message.error { color:#f3aaa3; }
+    .message.success { color:#b7d1c3; }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="admin-config.js" defer></script>
+  <script src="member-auth.js" defer></script>
+  <link rel="stylesheet" href="member-auth.css">
   <style>
     .site-auth-slot { display:flex; align-items:center; }
     .site-header .site-nav #member-logout { padding:14px 0; min-height:44px; border:0; background:none; color:#b1b5bd; font:inherit; font-size:13px; line-height:1.5; white-space:nowrap; cursor:pointer; }
@@ -58,9 +81,6 @@
     .site-auth-slot [hidden] { display:none !important; }
     @media (max-width:850px) { .site-header .site-nav #member-logout { padding:10px 0 13px; font-size:11px; } }
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
-  <script src="admin-config.js" defer></script>
-  <script src="member-auth.js" defer></script>
 </head>
 <body>
   <header class="site-header"><div class="site-header-inner">
@@ -68,13 +88,18 @@
 <nav class="site-nav" aria-label="메인 메뉴"><a href="index.html">홈</a><a href="shopping.html">쇼핑하기</a><a href="dashboard.html">My BTCBack</a><a href="about.html">BTCBack은?</a><span class="site-auth-slot"><a class="site-auth-entry" href="login.html">로그인</a><button id="member-logout" type="button" hidden>로그아웃</button></span></nav>
   </div></header>
   <main>
-    <h1>Affiliate Disclosure</h1>
-    <p class="policy-meta"><strong>Closed Beta v0.1</strong><br>시행일: <time datetime="2026-09-09">2026년 9월 9일</time></p>
-    <section class="policy-section"><h2><span>01</span>제휴 수수료 안내</h2><p>BTCBack은 일부 쇼핑 링크를 통해 제휴 수수료를 받을 수 있습니다. BTCBack은 해당 제휴 수익의 일부를 이용자에게 Bitcoin Reward(sats)로 제공하는 서비스입니다.</p></section>
-    <section class="policy-section"><h2><span>02</span>Reward 적용 조건</h2><p>각 제휴사의 구매 인정 및 수수료 정책에 따라 Reward 대상 여부와 Reward 수준이 달라질 수 있습니다. Closed Beta에서는 제휴 정책과 리워드 운영 방식을 확인·검토 중이며 모든 제휴처의 Reward 제공을 보장하지 않습니다.</p></section>
-    <section class="policy-section"><h2><span>03</span>제휴사와 BTCBack의 관계</h2><p>제휴 관계가 있다는 이유만으로 해당 제휴사가 BTCBack 서비스를 직접 운영하거나 Bitcoin Reward 서비스를 승인 또는 보증하는 것은 아닙니다.</p></section>
-    <section class="policy-section"><h2><span>04</span>개별 광고 고지</h2><p>제휴 링크가 표시된 페이지의 개별 광고 고지도 함께 확인해 주세요. Reward의 상태와 집계 기준은 <a href="reward-policy.html">Reward Policy</a>에서 확인할 수 있습니다.</p></section>
-    <a class="return-link" href="index.html">← BTCBack으로 돌아가기</a>
+    <p class="policy-meta"><strong>MY BTCBACK</strong></p>
+    <h1>로그인</h1>
+    <p class="intro">이메일과 비밀번호로 BTCBack에 로그인하세요.</p>
+    <p id="member-status" role="status" aria-live="polite">회원 상태를 확인하고 있습니다.</p>
+    <form id="login-form" hidden>
+      <div class="field"><label for="email">이메일</label><input id="email" name="email" type="email" autocomplete="username" required></div>
+      <div class="field"><label for="password">비밀번호</label><input id="password" name="password" type="password" autocomplete="current-password" required></div>
+      <button class="submit" id="login-submit" type="submit">로그인</button>
+    </form>
+    <div class="member-controls"><button id="member-retry" type="button" hidden>상태 다시 확인</button></div>
+    <p class="intro">아직 계정이 없으신가요? <a href="signup.html">회원가입</a></p>
+    <noscript><p>로그인하려면 JavaScript를 활성화해 주세요.</p></noscript>
   </main>
   <footer><div class="footer-inner"><span>© 2026 BTCBack</span><span>Shop Today. Stack Tomorrow.</span></div><nav class="policy-links" aria-label="정책 메뉴"><a href="terms.html">이용약관</a><a href="privacy.html">개인정보처리방침</a><a href="reward-policy.html">Reward Policy</a><a href="affiliate-disclosure.html">Affiliate Disclosure</a></nav></footer>
 </body>

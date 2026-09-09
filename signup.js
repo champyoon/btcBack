@@ -16,7 +16,13 @@
     message.className = 'message ' + (error ? 'error' : 'success');
     message.focus({ preventScroll: true });
   };
-  const signupNotice = '회원가입 요청이 완료되었습니다. 인증이 필요한 경우 입력한 이메일로 안내가 발송됩니다. 이메일의 인증 링크를 눌러 가입을 완료해 주세요. 메일이 오지 않으면 스팸함도 확인해 주세요.';
+  function signupNotice(email) {
+    const at = email.lastIndexOf('@');
+    const local = Array.from(email.slice(0, at));
+    const visible = local.length === 1 ? 0 : Math.min(3, Math.max(1, Math.floor(local.length / 3)));
+    const masked = local.slice(0, visible).join('') + '*'.repeat(local.length - visible) + email.slice(at);
+    return `회원가입 요청이 완료되었습니다. 인증이 필요한 경우 ${masked}으로 안내가 발송됩니다. 이메일의 인증 링크를 눌러 가입을 완료해 주세요. 메일이 오지 않으면 스팸함도 확인해 주세요.`;
+  }
   function safeError(error) {
     if (error?.status === 429 || ['over_email_send_rate_limit', 'over_request_rate_limit'].includes(error?.code)) return '요청이 많아 잠시 제한되었습니다. 잠시 후 다시 시도해 주세요.';
     if (error?.code === 'weak_password') return '비밀번호가 서버의 보안 기준을 충족하지 않습니다. 더 길고 예측하기 어려운 비밀번호를 사용해 주세요.';
@@ -69,8 +75,9 @@
     button.disabled = true;
     button.textContent = '요청 중...';
     message.textContent = '';
+    const email = field('email').value.trim();
     try {
-      const { data, error } = await client.auth.signUp({ email: field('email').value.trim(), password: field('password').value, options: { emailRedirectTo: 'https://btcback.kr/signup.html' } });
+      const { data, error } = await client.auth.signUp({ email, password: field('password').value, options: { emailRedirectTo: 'https://btcback.kr/signup.html' } });
       if (error && !['user_already_exists', 'email_exists', 'email_exists_not_confirmed'].includes(error.code)) {
         show(safeError(error), true);
       } else if (data?.session) {
@@ -79,7 +86,7 @@
         client = null;
       } else {
         form.hidden = true;
-        show(signupNotice);
+        show(signupNotice(email));
       }
     } catch {
       show(safeError(null), true);

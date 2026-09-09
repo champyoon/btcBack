@@ -1,0 +1,10 @@
+[hidden] { display:none !important; }
+.member-access { padding-block:24px 0; }
+.member-controls { display:flex; justify-content:flex-end; flex-wrap:wrap; gap:12px; }
+.member-controls button { min-height:44px; padding:10px 15px; border:1px solid #34373d; border-radius:6px; background:#15171b; color:#d7dbe0; font:inherit; font-size:13px; cursor:pointer; }
+.member-controls button:hover { border-color:#f7931a; }
+.member-controls button:focus-visible { outline:2px solid #f7931a; outline-offset:3px; }
+.member-controls button:disabled { opacity:.55; cursor:wait; }
+#member-status { color:#b1b5bd; font-size:14px; line-height:1.9; overflow-wrap:anywhere; margin:0 0 16px; }
+#member-status:empty { margin:0; }
+#member-status.error { color:#f3aaa3; }

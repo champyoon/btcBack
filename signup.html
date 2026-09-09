@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="no-referrer">
+  <title>Closed Beta 가입 검증 | BTCBack</title>
+  <style>
+    :root { color-scheme:dark; --orange:#f7931a; }
+    * { box-sizing:border-box; letter-spacing:0; }
+    body { margin:0; background:#0b0c0e; color:#f2f3f5; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",Arial,sans-serif; -webkit-font-smoothing:antialiased; }
+    a { color:inherit; text-decoration:none; }
+    a:focus-visible { outline:2px solid var(--orange); outline-offset:4px; }
+    .site-header { position:sticky; top:0; z-index:10; background:rgba(11,12,14,.95); border-bottom:1px solid #252a31; backdrop-filter:blur(16px); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR",Arial,sans-serif; }
+    .site-header-inner { width:100%; max-width:1416px; height:88px; padding:0 48px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:28px; }
+    .site-brand { display:block; flex-shrink:0; color:#fff; text-decoration:none; }
+    .site-logo { font-size:28px; font-weight:800; line-height:1.1; letter-spacing:0; }
+    .site-logo span { color:#f7931a; }
+    .site-tagline { margin-top:7px; font-size:10px; font-weight:400; line-height:1.5; color:#858b95; }
+    .site-header .site-nav { display:flex; align-items:center; justify-content:flex-end; gap:32px; width:auto; order:0; }
+    .site-header .site-nav a { display:block; padding:14px 0; font-size:13px; font-weight:400; line-height:1.5; letter-spacing:0; white-space:nowrap; color:#b1b5bd; text-decoration:none; background:none; border:0; }
+    .site-header .site-nav a:hover { color:#fff; }
+    .site-header .site-nav a[aria-current="page"] { color:#f7931a; }
+    @media(max-width:850px) {
+      .site-header-inner { height:auto; min-height:108px; padding:15px 20px 0; flex-wrap:wrap; gap:12px; }
+      .site-header .site-nav { width:100%; justify-content:space-between; flex-wrap:wrap; gap:4px 8px; }
+      .site-header .site-nav a { padding:10px 0 13px; font-size:11px; }
+    }
+
+    main { width:min(800px,calc(100% - 48px)); margin:0 auto; padding:44px 0; }
+    h1 { font-size:30px; line-height:1.4; margin:0 0 16px; word-break:keep-all; overflow-wrap:anywhere; }
+    .policy-meta { color:#989da6; font-size:12px; line-height:1.8; margin:0 0 28px; }
+    .policy-meta strong { color:#f7931a; font-weight:500; }
+    .policy-section { padding:24px 0; border-top:1px solid #292c31; }
+    h2 { margin:0 0 12px; font-size:18px; line-height:1.5; word-break:keep-all; overflow-wrap:anywhere; }
+    h2 span { color:#f7931a; font-size:12px; margin-right:12px; }
+    .policy-section p { font-size:14px; line-height:1.95; color:#b1b5bd; margin:10px 0 0; word-break:keep-all; overflow-wrap:anywhere; }
+    main a { color:#edb574; text-decoration:underline; text-underline-offset:4px; }
+    .return-link { display:inline-block; padding:16px 0; font-size:13px; margin-top:12px; }
+    footer { border-top:1px solid #292c31; }
+    .footer-inner { width:min(1320px,calc(100% - 96px)); margin:auto; display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px 20px; padding:24px 0; font-size:11px; color:#747a83; }
+    .policy-links { display:flex; flex-wrap:wrap; justify-content:center; gap:4px 22px; width:100%; padding:0 18px 20px; margin:0; }
+    .policy-links a { padding:8px 0; color:#989da6; font-size:11px; line-height:1.6; text-decoration:none; overflow-wrap:anywhere; }
+    .policy-links a:hover { color:#f7931a; }
+    .policy-links a:focus-visible { outline:2px solid #f7931a; outline-offset:4px; }
+
+    @media(max-width:700px) { main { width:calc(100% - 36px); padding:28px 0; } h1 { font-size:25px; } .footer-inner { width:calc(100% - 36px); font-size:10px; } }
+  
+    [hidden] { display:none !important; }
+    main { max-width:520px; padding-block:40px; }
+    .intro { color:#b1b5bd; font-size:14px; line-height:1.8; }
+    .test-notice { border-left:2px solid #a46e2d; padding-left:14px; color:#b8afa2; font-size:12px; line-height:1.8; margin:22px 0; }
+    form { margin-top:26px; }
+    .field { margin-bottom:18px; }
+    .field label { display:block; margin-bottom:8px; font-size:13px; }
+    input[type=email],input[type=password] { display:block; width:100%; min-height:48px; border:1px solid #34373d; border-radius:6px; background:#14161a; color:#f2f3f5; padding:12px 14px; font:inherit; font-size:16px; }
+    input:focus-visible,button:focus-visible { outline:2px solid #f7931a; outline-offset:3px; }
+    fieldset { border:0; padding:18px 0; margin:0; min-width:0; }
+    legend { font-size:13px; font-weight:600; padding:0; }
+    .consent { display:flex; gap:10px; align-items:flex-start; min-height:44px; padding:10px 0; font-size:13px; line-height:1.7; }
+    .consent input { flex-shrink:0; width:18px; height:18px; margin:2px 0 0; accent-color:#f7931a; }
+    .consent-note { font-size:12px; line-height:1.8; color:#989da6; margin:2px 0 10px 28px; }
+    .submit { width:100%; min-height:52px; border:0; border-radius:6px; background:#f7931a; color:#15100a; font:inherit; font-size:15px; font-weight:700; cursor:pointer; }
+    .submit:hover { background:#ffab43; }
+    .submit:disabled { opacity:.55; cursor:wait; }
+    .message { font-size:14px; line-height:1.9; overflow-wrap:anywhere; margin:18px 0 0; }
+    .message.error { color:#f3aaa3; }
+    .message.success { color:#b7d1c3; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="admin-config.js" defer></script>
+  <script src="signup.js" defer></script>
+</head>
+<body>
+  <header class="site-header"><div class="site-header-inner">
+    <a href="index.html" class="site-brand" aria-label="BTCBack 홈"><div class="site-logo">BTC<span>Back</span></div><div class="site-tagline">Shop Today. Stack Tomorrow.</div></a>
+    <nav class="site-nav" aria-label="메인 메뉴"><a href="index.html">홈</a><a href="shopping.html">쇼핑하기</a><a href="dashboard.html">My BTCBack</a><a href="about.html">BTCBack은?</a></nav>
+  </div></header>
+  <main>
+    <p class="policy-meta"><strong>CLOSED BETA · EMAIL VERIFICATION TEST</strong></p>
+    <h1>BTCBack 가입 검증</h1>
+    <p class="intro">이메일 인증으로 Closed Beta 참여를 준비하세요.</p>
+    <p class="test-notice" id="test-notice">개발·Closed Beta 이메일 인증 검증용입니다. 개인정보 수집·이용 동의의 최종 문구는 아직 확정되지 않았습니다. 외부 사용자 대상 정식 가입 화면이 아니며, 지정된 테스트 참여자만 이용해 주세요.</p>
+    <form id="signup-form" novalidate aria-describedby="test-notice">
+      <div class="field"><label for="email">이메일</label><input id="email" name="email" type="email" autocomplete="email" required maxlength="254"></div>
+      <div class="field"><label for="password">비밀번호</label><input id="password" name="password" type="password" autocomplete="new-password" required></div>
+      <div class="field"><label for="password-confirm">비밀번호 확인</label><input id="password-confirm" name="password_confirmation" type="password" autocomplete="new-password" required></div>
+      <fieldset><legend>필수 확인</legend>
+        <label class="consent"><input id="terms" type="checkbox" required><span>[필수] <a href="terms.html" target="_blank" rel="noopener">이용약관</a>에 동의합니다.</span></label>
+        <label class="consent"><input id="privacy-collection" type="checkbox" required aria-describedby="consent-note"><span>[필수] 개인정보 수집·이용 동의 항목의 검증용 안내를 확인했습니다.</span></label>
+        <p class="consent-note" id="consent-note">최종 동의 문구 확정 전 UI 확인용 항목입니다. 이번 테스트의 체크 상태는 정책 동의 이력으로 저장되지 않습니다.</p>
+      </fieldset>
+      <button class="submit" id="submit" type="submit" disabled>인증 이메일 요청</button>
+    </form>
+    <p id="message" class="message" role="status" aria-live="polite" tabindex="-1"></p>
+    <noscript><p class="message error">가입 검증을 진행하려면 JavaScript를 활성화해 주세요.</p></noscript>
+  </main>
+  <footer><div class="footer-inner"><span>© 2026 BTCBack</span><span>Shop Today. Stack Tomorrow.</span></div><nav class="policy-links" aria-label="정책 메뉴"><a href="terms.html">이용약관</a><a href="privacy.html">개인정보처리방침</a><a href="reward-policy.html">Reward Policy</a><a href="affiliate-disclosure.html">Affiliate Disclosure</a></nav></footer>
+</body>
+</html>

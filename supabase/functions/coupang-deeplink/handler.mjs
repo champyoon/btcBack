@@ -9,7 +9,12 @@ export function validUrl(value, hosts) {
   } catch { return false; }
 }
 
-export function createHandler({ env, fetcher = fetch, logger = console }) {
+export function timestampSubId(date = new Date()) {
+  return new Date(date.getTime() + 9 * 60 * 60 * 1000).toISOString()
+    .slice(2, 19).replace(/[-T:]/g, '');
+}
+
+export function createHandler({ env, fetcher = fetch, logger = console, now = () => new Date() }) {
   return async req => {
     let stage = 'request-parse';
     let upstreamStatus;
@@ -67,7 +72,7 @@ export function createHandler({ env, fetcher = fetch, logger = console }) {
       const response = await fetcher(ENDPOINT, {
         method: 'POST', redirect: 'error', signal: AbortSignal.timeout(15000),
         headers: { Authorization: auth, 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({ coupangUrls: [input.coupangUrl], subId: 'btcback_test_001' }),
+        body: JSON.stringify({ coupangUrls: [input.coupangUrl], subId: timestampSubId(now()) }),
       });
       upstreamStatus = response.status;
       stage = 'response-parse';

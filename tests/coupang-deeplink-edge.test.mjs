@@ -1,9 +1,14 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createHandler } from '../supabase/functions/coupang-deeplink/handler.mjs';
+import { createHandler, timestampSubId } from '../supabase/functions/coupang-deeplink/handler.mjs';
 import { sign } from '../supabase/functions/coupang-deeplink/sign.mjs';
 import { sign as localSign } from '../scripts/test-coupang-deeplink.mjs';
 const env = name => ({ COUPANG_ACCESS_KEY: 'fixture-access', COUPANG_SECRET_KEY: 'fixture-secret', COUPANG_TRACKING_CODE: 'fixture-code' })[name];
+test('timestamp subId uses KST with zero padding and year rollover', () => {
+  assert.equal(timestampSubId(new Date('2026-09-09T00:24:35Z')), '260909092435');
+  assert.equal(timestampSubId(new Date('2026-09-09T00:24:36Z')), '260909092436');
+  assert.equal(timestampSubId(new Date('2026-12-31T15:01:00Z')), '270101000100');
+});
 const req = url => new Request('https://test.invalid', { method: 'POST', body: JSON.stringify({ coupangUrl: url }) });
 const good = { shortenUrl: 'https://link.coupang.com/a/test', landingUrl: 'https://www.coupang.com/vp/products/123?subid=btcback_test_001' };
 const affiliateLanding = 'https://link.coupang.com/re/AFFSDP?lptag=AF7466415&subid=btcback_test_001&pageKey=123&itemId=456&vendorItemId=789&traceid=';
@@ -41,11 +46,11 @@ test('signer matches existing verified implementation', async () => {
   const date = new Date('2026-09-08T00:00:00Z');
   assert.equal(await sign('a', 'b', date), await localSign('a', 'b', date));
 });
-test('fixed subId, exact request schema and minimal response', async () => {
-  const handler = createHandler({ env, fetcher: async (url, options) => {
+test('KST timestamp subId, exact request schema and minimal response', async () => {
+  const handler = createHandler({ env, now: () => new Date('2026-09-09T00:24:00Z'), fetcher: async (url, options) => {
     assert.equal(url, 'https://api-gateway.coupang.com/v2/providers/affiliate_open_api/apis/openapi/v1/deeplink');
     assert.equal(options.method, 'POST');
-    assert.deepEqual(JSON.parse(options.body), { coupangUrls: ['https://coupang.com/vp/products/123'], subId: 'btcback_test_001' });
+    assert.deepEqual(JSON.parse(options.body), { coupangUrls: ['https://coupang.com/vp/products/123'], subId: '260909092400' });
     return Response.json({ rCode: '0', data: [{ ...good, secret: 'fixture-secret' }] });
   } });
   assert.deepEqual(await (await handler(req('https://coupang.com/vp/products/123'))).json(), { success: true, ...good });

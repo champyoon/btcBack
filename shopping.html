@@ -104,8 +104,6 @@
 
     .shopping-hero h1 { font-size:38px; line-height:1.4; word-break:keep-all; }
     .shopping-hero .subtitle { margin:16px auto 24px; max-width:700px; word-break:keep-all; }
-    .hero-benefits { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; padding:0; margin:0 0 20px; list-style:none; }
-    .hero-benefits li { padding:6px 10px; border:1px solid #394039; border-radius:6px; background:#141a17; color:#bdcfbf; font-size:11px; line-height:1.5; }
     .shopping-section .coupang-cta { display:flex; align-items:center; justify-content:center; gap:14px; width:fit-content; min-height:54px; margin:0 auto; padding:15px 30px; border:1px solid #f7931a; border-radius:6px; background:#f7931a; color:#15100a; text-decoration:none; font-size:17px; font-weight:750; }
     .coupang-cta:hover { background:#ffab43; }
     .coupang-cta:focus-visible { outline:2px solid #f7931a; outline-offset:5px; }
@@ -302,6 +300,17 @@
       .partner-title { font-size:21px; }
       .partner-cta { min-height:64px; font-size:18px; }
     }
+    .partner-selector { display:flex; flex-wrap:wrap; gap:10px; margin:0 0 24px; }
+    .partner-tab { display:flex; align-items:center; justify-content:center; gap:8px; min-height:48px; padding:12px 16px; border:1px solid #34373d; border-radius:6px; background:#15181d; color:#d1d5db; font-family:inherit; font-size:14px; cursor:pointer; }
+    .partner-tab.active { color:#f7931a; border-color:#f7931a; background:#211a12; }
+    .partner-tab .status { padding:2px 5px; border-radius:4px; background:#292c31; color:#b1b7c1; font-size:10px; white-space:nowrap; }
+    .partner-tab:focus-visible,.partner-detail:focus-visible { outline:2px solid #f7931a; outline-offset:4px; }
+    .partner-detail[hidden] { display:none; }
+    .partner-banner iframe { display:block; width:100%; max-width:728px; height:90px; margin:0 auto; border:0; }
+    @media(max-width:520px) {
+      .partner-selector { flex-wrap:nowrap; overflow-x:auto; padding:4px 0 10px; gap:8px; }
+      .partner-tab { flex-shrink:0; min-height:48px; }
+    }
   </style>
 </head>
 
@@ -318,13 +327,20 @@
   <section class="shopping-hero" aria-labelledby="shopping-title">
     <h1 id="shopping-title">평소처럼 쇼핑하세요.<br><span class="bitcoin">Bitcoin 리워드는 준비 중입니다.</span></h1>
     <p class="subtitle">BTCBack에서 다양한 제휴 쇼핑·여행 서비스를 이용할 수 있습니다.<br>Bitcoin 리워드 제공 방식은 제휴처별 정책을 확인·검토 중입니다.</p>
-    <ul class="hero-benefits" aria-label="BTCBack 이용 장점">
-      <li>회원가입 필요 없음</li>
-      <li>앱 설치 필요 없음</li>
-    </ul>
   </section>
 
 
+  <div class="partner-selector" role="tablist" aria-label="제휴처 선택">
+    <button type="button" class="partner-tab active" id="tab-coupang" role="tab" data-partner="coupang" aria-controls="panel-coupang" aria-selected="true" tabindex="0">Coupang</button>
+    <button type="button" class="partner-tab" id="tab-trip" role="tab" data-partner="trip" aria-controls="panel-trip" aria-selected="false" tabindex="-1">Trip.com</button>
+    <button type="button" class="partner-tab" id="tab-iherb" role="tab" data-partner="iherb" aria-controls="panel-iherb" aria-selected="false" tabindex="-1">iHerb <span class="status">준비중</span></button>
+    <button type="button" class="partner-tab" id="tab-oliveyoung" role="tab" data-partner="oliveyoung" aria-controls="panel-oliveyoung" aria-selected="false" tabindex="-1">OliveYoung <span class="status">준비중</span></button>
+    <button type="button" class="partner-tab" id="tab-lego" role="tab" data-partner="lego" aria-controls="panel-lego" aria-selected="false" tabindex="-1">LEGO <span class="status">준비중</span></button>
+    <button type="button" class="partner-tab" id="tab-agoda" role="tab" data-partner="agoda" aria-controls="panel-agoda" aria-selected="false" tabindex="-1">Agoda <span class="status">준비중</span></button>
+    <button type="button" class="partner-tab" id="tab-booking" role="tab" data-partner="booking" aria-controls="panel-booking" aria-selected="false" tabindex="-1">Booking.com <span class="status">준비중</span></button>
+    <button type="button" class="partner-tab" id="tab-eleven" role="tab" data-partner="eleven" aria-controls="panel-eleven" aria-selected="false" tabindex="-1">11번가 <span class="status">준비중</span></button>
+  </div>
+  <section class="partner-detail" id="panel-coupang" role="tabpanel" aria-labelledby="tab-coupang" tabindex="0">
   <!-- =========================
        COUPANG SHOPPING
   ========================== -->
@@ -351,22 +367,66 @@
     이 페이지는 쿠팡 파트너스 활동의 일환으로,
     이에 따른 일정액의 수수료를 제공받습니다.
   </div>
-
-
-
-
-
-  <section class="trip-section" aria-labelledby="trip-title">
-    <h2 id="trip-title">여행도 BTCBack에서</h2>
+  </section>
+  <section class="partner-detail" id="panel-trip" role="tabpanel" aria-labelledby="tab-trip" tabindex="0" hidden>
+    <div class="partner-card">
+      <p class="partner-label">TRIP.COM</p>
+      <h2 class="partner-title">여행도 평소처럼 이용하세요.</h2>
+      <p class="partner-description">Trip.com에서 여행 상품과 서비스를 살펴보세요. Bitcoin 리워드 제공 방식은 제휴 정책을 확인 중입니다.</p>
+    <div class="partner-banner">
     <iframe border="0"
-      src="https://kr.trip.com/partners/ad/S19724826?Allianceid=10473870&SID=330569310&trip_sub1="
-      width="900"
-      height="200"
+      data-banner-url="https://kr.trip.com/partners/ad/SB19739155?Allianceid=10473870&SID=330569310&trip_sub1="
+      width="728"
+      height="90"
       frameborder="0"
       scrolling="no"
-      id="S19724826"
+      id="SB19739155"
       title="Trip.com 제휴 여행 배너">
     </iframe>
+    </div>
+    </div>
+  </section>
+  <section class="partner-detail" id="panel-iherb" role="tabpanel" aria-labelledby="tab-iherb" tabindex="0" hidden>
+    <div class="partner-card">
+      <p class="partner-label">IHERB</p>
+      <h2 class="partner-title">준비 중입니다.</h2>
+      <p class="partner-description">제휴 승인 및 Bitcoin 리워드 제공 방식을 검토하고 있습니다.</p>
+    </div>
+  </section>
+  <section class="partner-detail" id="panel-oliveyoung" role="tabpanel" aria-labelledby="tab-oliveyoung" tabindex="0" hidden>
+    <div class="partner-card">
+      <p class="partner-label">OLIVE YOUNG</p>
+      <h2 class="partner-title">준비 중입니다.</h2>
+      <p class="partner-description">제휴 방식과 Bitcoin 리워드 제공 가능 여부를 검토하고 있습니다.</p>
+    </div>
+  </section>
+  <section class="partner-detail" id="panel-lego" role="tabpanel" aria-labelledby="tab-lego" tabindex="0" hidden>
+    <div class="partner-card">
+      <p class="partner-label">LEGO</p>
+      <h2 class="partner-title">준비 중입니다.</h2>
+      <p class="partner-description">제휴 방식과 Bitcoin 리워드 제공 가능 여부를 검토하고 있습니다.</p>
+    </div>
+  </section>
+  <section class="partner-detail" id="panel-agoda" role="tabpanel" aria-labelledby="tab-agoda" tabindex="0" hidden>
+    <div class="partner-card">
+      <p class="partner-label">AGODA</p>
+      <h2 class="partner-title">준비 중입니다.</h2>
+      <p class="partner-description">제휴 방식과 Bitcoin 리워드 제공 가능 여부를 검토하고 있습니다.</p>
+    </div>
+  </section>
+  <section class="partner-detail" id="panel-booking" role="tabpanel" aria-labelledby="tab-booking" tabindex="0" hidden>
+    <div class="partner-card">
+      <p class="partner-label">BOOKING.COM</p>
+      <h2 class="partner-title">준비 중입니다.</h2>
+      <p class="partner-description">제휴 방식과 Bitcoin 리워드 제공 가능 여부를 검토하고 있습니다.</p>
+    </div>
+  </section>
+  <section class="partner-detail" id="panel-eleven" role="tabpanel" aria-labelledby="tab-eleven" tabindex="0" hidden>
+    <div class="partner-card">
+      <p class="partner-label">11번가</p>
+      <h2 class="partner-title">준비 중입니다.</h2>
+      <p class="partner-description">제휴 방식과 Bitcoin 리워드 제공 가능 여부를 검토하고 있습니다.</p>
+    </div>
   </section>
 </main>
 
@@ -378,5 +438,6 @@
 
 
 <script src="coupang-attribution.js" defer></script>
+<script src="partner-selector.js" defer></script>
 </body>
 </html>

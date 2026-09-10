@@ -3,6 +3,14 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const pages = ['index','shopping','dashboard','about','login','signup','terms','privacy','reward-policy','affiliate-disclosure'];
+for (const name of ['terms', 'privacy']) {
+  const source = fs.readFileSync(path.join(__dirname, '..', name + '.html'), 'utf8');
+  const main = source.split('<footer>')[0];
+  assert(main.includes('mailto:support@btcback.kr'));
+  assert(!/별도로 안내하는 문의 채널|공식 문의 채널 확정 후/.test(source));
+  assert(source.includes('Closed Beta v0.1'));
+  assert(source.includes('2026년 9월 9일'));
+}
 (async () => {
   const browser = await chromium.launch({ executablePath:process.env.CHROME_PATH, headless:true });
   try {
@@ -31,6 +39,9 @@ const pages = ['index','shopping','dashboard','about','login','signup','terms','
         const action = state ? '#member-logout' : '.site-auth-entry';
         await page.waitForSelector(action);
         assert.equal(await page.locator('.site-auth-slot').count(),1);
+        assert.equal(await page.locator('footer .footer-support').innerText(), '문의 support@btcback.kr');
+        assert.equal(await page.locator('footer .footer-support a').getAttribute('href'), 'mailto:support@btcback.kr');
+        assert((await page.locator('footer').innerText()).includes('Shop Today. Stack Tomorrow.'));
         assert.equal(await page.locator(action).innerText(),state?'로그아웃':'로그인');
         assert.equal(await page.locator('.site-nav > a').count(),4);
         assert.equal(await page.locator('main #member-logout').count(),0);
@@ -40,6 +51,16 @@ const pages = ['index','shopping','dashboard','about','login','signup','terms','
         if (active && !(name === 'dashboard' && !state)) assert.equal(await page.locator('.site-nav [aria-current="page"]').innerText(),active);
         for (const width of [320,390,768,1440]) {
           await page.setViewportSize({width,height:900});
+          assert(await page.locator('.footer-support').evaluate(element => {
+            const box = element.getBoundingClientRect();
+            const links = document.querySelector('.policy-links').getBoundingClientRect();
+            const email = element.querySelector('a').getBoundingClientRect();
+            return box.left >= 0 && box.right <= innerWidth && box.top >= links.bottom &&
+              email.left >= 0 && email.right <= innerWidth && document.documentElement.scrollWidth <= innerWidth;
+          }), `${name} ${width} support footer overflow/order`);
+          if (!state && name === 'index' && [390,1440].includes(width)) {
+            await page.locator('footer').screenshot({path:path.join(require('node:os').tmpdir(),`btcback-support-${width}.png`)});
+          }
           assert(await page.locator('.site-nav').evaluate(nav => {
             const boxes=[...nav.querySelectorAll('a,button')].filter(e=>e.getClientRects().length).map(e=>e.getBoundingClientRect());
             return boxes.every((a,i)=>a.left>=0 && a.right<=innerWidth && a.height>=39 && boxes.every((b,j)=>i===j || a.right<=b.left || b.right<=a.left || a.bottom<=b.top || b.bottom<=a.top));

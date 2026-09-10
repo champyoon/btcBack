@@ -57,7 +57,7 @@
           notice('승인 대기 중입니다. BTCBack Closed Beta 참여 승인을 확인 중입니다. 승인 후 Shopping, Reward, My BTCBack 회원 기능을 이용할 수 있습니다.');
           retry.hidden = false; break;
         case 'BLOCKED':
-          notice('현재 이용이 제한된 계정입니다.'); retry.hidden = false; break;
+          notice('현재 이용이 제한된 계정입니다. 도움이 필요한 경우 support@btcback.kr로 문의해 주세요.'); retry.hidden = false; break;
         default: throw new Error('Unknown status');
       }
     } catch {

@@ -21,14 +21,20 @@ const root = path.join(__dirname, '..');
       for (const width of [320,390,768,1440]) {
         await page.setViewportSize({width,height:1000});
         await page.goto('https://btcback.test/'+name+'.html');
-        await page.waitForSelector('.brand-message');
-        assert.equal(await page.locator('.brand-message').innerText(),'Shop. Earn Bitcoin.');
+        await page.waitForSelector(name === 'index' ? '.hero-promise' : '.brand-message');
         assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
         if (name === 'index') {
+          assert.equal(await page.locator('#hero-title').textContent(),'쇼핑하고 Bitcoin 받기');
+          assert.equal(await page.locator('.hero-promise').innerText(),'평소처럼 쇼핑하고,\nBitcoin으로 돌려받으세요.');
+          assert.equal(await page.locator('.home-hero .eyebrow, .home-hero .brand-message, .home-hero .beta-note').count(),0);
+          assert(!/CLOSED BETA|Shop\. Earn Bitcoin\.|자동으로|평소처럼 쇼핑하세요\.|확인·검토/.test(await page.locator('.home-hero').innerText()));
+          assert((await page.locator('header').innerText()).includes('Shop Today. Stack Tomorrow.'));
+          assert((await page.locator('footer').innerText()).includes('Shop Today. Stack Tomorrow.'));
           assert.equal(await page.locator('.step-number').nth(1).innerText(),'02 / EARN BITCOIN');
-          assert(await page.locator('.brand-message').evaluate(e=>{const range=document.createRange();range.selectNodeContents(e);const a=range.getBoundingClientRect(),b=e.parentElement.getBoundingClientRect();return Math.abs(a.x+a.width/2-b.x-b.width/2)<1;}));
+          assert(await page.locator('.hero-promise').evaluate(e=>{const range=document.createRange();range.selectNodeContents(e);const a=range.getBoundingClientRect(),b=e.parentElement.getBoundingClientRect();return Math.abs(a.x+a.width/2-b.x-b.width/2)<1;}));
           assert(await page.locator('.step-number').nth(1).evaluate(e=>{const range=document.createRange();range.selectNodeContents(e);const a=range.getBoundingClientRect(),b=e.parentElement.getBoundingClientRect();return a.left>=b.left && a.right<=b.right;}));
         } else {
+          assert.equal(await page.locator('.brand-message').innerText(),'Shop. Earn Bitcoin.');
           assert.equal(await page.locator('#earned-title').innerText(),'Bitcoin Earned');
           assert.match(await page.locator('.sats-total').innerText(),/87,420\s+sats/);
           assert((await page.locator('main').innerText()).includes('0.00087420 BTC'));

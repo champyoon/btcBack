@@ -39,6 +39,9 @@ for (const name of ['terms', 'privacy']) {
         const action = state ? '#member-logout' : '.site-auth-entry';
         await page.waitForSelector(action);
         assert.equal(await page.locator('.site-auth-slot').count(),1);
+        assert.equal(await page.locator('footer > .footer-center').count(),1);
+        assert.equal(await page.locator('.footer-center > .policy-links + .footer-support').count(),1);
+        assert.equal(await page.locator('footer > .footer-support').count(),0);
         assert.equal(await page.locator('footer .footer-support').innerText(), '문의 support@btcback.kr');
         assert.equal(await page.locator('footer .footer-support a').getAttribute('href'), 'mailto:support@btcback.kr');
         assert((await page.locator('footer').innerText()).includes('Shop Today. Stack Tomorrow.'));
@@ -55,10 +58,17 @@ for (const name of ['terms', 'privacy']) {
             const box = element.getBoundingClientRect();
             const links = document.querySelector('.policy-links').getBoundingClientRect();
             const email = element.querySelector('a').getBoundingClientRect();
+            const center = element.parentElement.getBoundingClientRect();
+            const range = document.createRange();
+            range.selectNodeContents(element);
+            const text = range.getBoundingClientRect();
+            const mid = rect => rect.left + rect.width / 2;
             return box.left >= 0 && box.right <= innerWidth && box.top >= links.bottom &&
+              Math.abs(mid(text) - mid(center)) < 1 && Math.abs(mid(center) - innerWidth / 2) < 1 &&
+              box.top - links.bottom <= 12 && center.bottom >= box.bottom &&
               email.left >= 0 && email.right <= innerWidth && document.documentElement.scrollWidth <= innerWidth;
           }), `${name} ${width} support footer overflow/order`);
-          if (!state && name === 'index' && [390,1440].includes(width)) {
+          if (!state && name === 'index') {
             await page.locator('footer').screenshot({path:path.join(require('node:os').tmpdir(),`btcback-support-${width}.png`)});
           }
           assert(await page.locator('.site-nav').evaluate(nav => {

@@ -14,11 +14,12 @@
   .site-header .site-nav { width:100%; justify-content:space-between; flex-wrap:wrap; gap:4px 8px; }
   .site-header .site-nav a { padding:10px 0 13px; font-size:11px; }
 }
-.policy-links { display:flex; flex-wrap:wrap; justify-content:center; gap:4px 22px; width:100%; padding:0 18px 20px; margin:0; }
+.footer-center { display:flex; flex-direction:column; align-items:center; gap:8px; width:100%; padding:0 18px 20px; text-align:center; }
+.policy-links { display:flex; flex-wrap:wrap; justify-content:center; gap:4px 22px; width:100%; padding:0; margin:0; order:0; }
 .policy-links a { padding:8px 0; color:#989da6; font-size:11px; line-height:1.6; text-decoration:none; overflow-wrap:anywhere; }
 .policy-links a:hover { color:#f7931a; }
 .policy-links a:focus-visible { outline:2px solid #f7931a; outline-offset:4px; }
-.footer-support { margin:0; padding:0 18px 20px; text-align:center; color:#989da6; font-size:11px; line-height:1.6; overflow-wrap:anywhere; }
+.footer-support { max-width:100%; margin:0; padding:0; text-align:center; color:#989da6; font-size:11px; line-height:1.6; overflow-wrap:anywhere; }
 .footer-support a { color:inherit; text-decoration:none; }
 .footer-support a:hover { color:#f7931a; }
 .footer-support a:focus-visible { outline:2px solid #f7931a; outline-offset:4px; }

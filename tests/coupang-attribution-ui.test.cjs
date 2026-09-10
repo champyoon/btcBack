@@ -11,6 +11,7 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
     const short = 'https://link.coupang.com/a/test';
     await page.route('**/*', async route => {
       const url = route.request().url();
+      if (url === 'https://btcback.test/common.css') return route.fulfill({ contentType: 'text/css', body: fs.readFileSync(path.join(__dirname, '../common.css'), 'utf8') });
       if (url === 'https://btcback.test/shopping.html') return route.fulfill({ contentType: 'text/html', body: fs.readFileSync(path.join(__dirname, '../shopping.html'), 'utf8') });
       if (url === 'https://btcback.test/coupang-attribution.js') return route.fulfill({ contentType: 'text/javascript', body: fs.readFileSync(path.join(__dirname, '../coupang-attribution.js'), 'utf8') });
       if (url === 'https://btcback.test/partner-selector.js') return route.fulfill({ contentType: 'text/javascript', body: fs.readFileSync(path.join(__dirname, '../partner-selector.js'), 'utf8') });

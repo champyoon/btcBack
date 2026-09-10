@@ -16,7 +16,7 @@ from:table=>{window.reads.push(table);if(table!=='profiles')throw Error('unexpec
     await page.route('https://btcback.test/**', route => {
       const file = new URL(route.request().url()).pathname.slice(1);
       if (file === 'admin-config.js') return route.fulfill({ contentType:'application/javascript', body:'const ADMIN_SUPABASE_URL="https://pqlombgqscbacjkudirl.supabase.co";const ADMIN_SUPABASE_KEY="sb_publishable_test";' });
-      return route.fulfill({ contentType:file.endsWith('.js')?'application/javascript':'text/html', body:fs.readFileSync(path.join(root,file),'utf8') });
+      return route.fulfill({ contentType:file.endsWith('.js')?'application/javascript':file.endsWith('.css')?'text/css':'text/html', body:fs.readFileSync(path.join(root,file),'utf8') });
     });
     await page.route('https://cdn.jsdelivr.net/**', r => cdnFails ? r.abort() : r.fulfill({ contentType:'application/javascript',body:mock }));
     const open = async hash => {

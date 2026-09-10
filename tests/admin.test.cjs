@@ -59,7 +59,7 @@ window.supabase = {createClient:()=>({from:query,auth:{
 }})};
 `;
 (async () => {
-  const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
+  const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH, headless: true });
   try {
     const page = await browser.newPage(); const errors=[];
     page.on('pageerror', error => errors.push(error.message));

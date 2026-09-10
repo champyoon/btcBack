@@ -22,7 +22,7 @@ window.supabase = { createClient: () => ({ from: table => ({ insert: payload => 
 
 (async () => {
   const browser = await chromium.launch({
-    executablePath: process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe',
+    executablePath: process.env.CHROME_PATH,
     headless: true
   });
   try {

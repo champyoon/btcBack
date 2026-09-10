@@ -9,7 +9,7 @@ auth:{signUp:async args=>{window.calls.push(args);await new Promise(r=>setTimeou
 from:table=>{window.reads.push(table);if(table!=='profiles')throw Error('unexpected write');return {select:()=>({eq:()=>({maybeSingle:async()=>window.profile})})}}
 }}};`;
 (async () => {
-  const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
+  const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH, headless: true });
   try {
     const page = await browser.newPage();
     let cdnFails = false;

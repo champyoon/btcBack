@@ -4,7 +4,7 @@ const path = require('node:path');
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const pages = ['index','shopping','dashboard','about','login','signup','terms','privacy','reward-policy','affiliate-disclosure'];
 (async () => {
-  const browser = await chromium.launch({ executablePath:process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless:true });
+  const browser = await chromium.launch({ executablePath:process.env.CHROME_PATH, headless:true });
   try {
     const page = await browser.newPage();
     let signedIn = false;

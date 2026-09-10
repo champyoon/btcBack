@@ -3,7 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 (async () => {
-  const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
+  const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH, headless: true });
   try {
     const page = await browser.newPage({ timezoneId: 'America/Los_Angeles' });
     await page.addInitScript(() => { Date.now = () => Date.parse('2026-09-09T01:38:25Z'); });

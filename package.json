@@ -1,0 +1,17 @@
+{
+  "name": "btcback",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Development and test tooling for the BTCBack static site",
+  "engines": {
+    "node": ">=22.13.0 <26"
+  },
+  "scripts": {
+    "test": "node scripts/run-tests.mjs",
+    "test:browser": "playwright install chromium"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.5.8",
+    "playwright": "1.63.0"
+  }
+}

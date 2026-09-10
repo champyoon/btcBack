@@ -9,7 +9,7 @@ signInWithPassword:async x=>{window.calls.push(['login',x]);if(window.loginError
 signOut:async x=>{window.calls.push(['logout',x]);if(window.logoutError)return {error:{}};window.session=false;cb('SIGNED_OUT');return {error:null}},onAuthStateChange:f=>{cb=f;window.emit=f}},
 from:t=>({select:cols=>({eq:(key,id)=>({maybeSingle:async()=>{window.calls.push(['profile',t,cols,key,id]);return window.profileError?{error:{}}:{data:window.member===null?null:{member_status:window.member}}}})})})}}};`;
 (async()=>{
- const b=await chromium.launch({executablePath:process.env.CHROME_PATH||'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:true});
+ const b=await chromium.launch({executablePath:process.env.CHROME_PATH,headless:true});
  try {
   const p=await b.newPage();let initialSession=false,member='PENDING',cdnFails=false;
   await p.addInitScript(()=>{window.session=false;});

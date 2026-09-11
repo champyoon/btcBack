@@ -249,6 +249,9 @@
     .partner-cta:focus-visible { outline:2px solid #f7931a; outline-offset:4px; }
     .partner-cta:disabled { opacity:.65; cursor:wait; }
     .partner-cta:disabled::after { content:none; }
+    .partner-cta-test { margin-top:12px; background:transparent; color:#f7931a; font-size:16px; min-height:54px; text-decoration:none; }
+    .partner-cta-test:hover:not(:disabled), .partner-cta-test:active:not(:disabled) { color:#15100a; }
+    .partner-cta-test[hidden] { display:none; }
     @media(max-width:520px) {
       .partner-card { padding:20px 16px; }
       .partner-title { font-size:21px; }
@@ -308,6 +311,9 @@
     <h2 class="partner-title" id="coupang-partner-title">쿠팡에서 평소처럼 쇼핑하세요.</h2>
     <p class="partner-description">BTCBack을 통해 쿠팡으로 이동한 뒤 원하는 상품을 이용하세요.</p>
     <button type="button" class="partner-cta" id="coupang-entry">쿠팡으로 이동</button>
+    <button type="button" class="partner-cta partner-cta-test" id="coupang-anchor-prepare">쿠팡으로 이동하기 (테스트)</button>
+    <a class="partner-cta partner-cta-test" id="coupang-anchor-link" target="_blank" referrerpolicy="unsafe-url" rel="noopener" hidden>쿠팡으로 이동하기 (테스트)</a>
+    <p class="coupang-entry-status" id="coupang-anchor-status" role="status"></p>
     <p class="coupang-entry-status" id="coupang-entry-status" role="status"></p>
   </section>
 
@@ -392,6 +398,7 @@
 
 
 <script src="coupang-attribution.js" defer></script>
+<script src="coupang-anchor-test.js" defer></script>
 <script src="partner-selector.js" defer></script>
 </body>
 </html>

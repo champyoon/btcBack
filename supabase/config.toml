@@ -1,0 +1,4 @@
+# TEST C is public, matching the deployed A/B deeplink function.
+# Do not disable JWT verification on admin report functions.
+[functions.coupang-deeplink-no-subid]
+verify_jwt = false

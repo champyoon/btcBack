@@ -24,8 +24,8 @@ const root = path.join(__dirname, '..');
         await page.waitForSelector(name === 'index' ? '.hero-promise' : '.brand-message');
         assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
         if (name === 'index') {
-          assert.equal(await page.locator('#hero-title').textContent(),'쇼핑하고 Bitcoin 받기');
-          assert.equal(await page.locator('.hero-promise').innerText(),'평소처럼 쇼핑하고,\nBitcoin으로 돌려받으세요.');
+          assert.equal(await page.locator('#hero-title').textContent(),'평소처럼 쇼핑하세요 Bitcoin은 따라옵니다.');
+          assert.equal(await page.locator('.hero-promise').innerText(),'별도의 Reward 신청 없이,\n구매가 확인되면 Bitcoin Reward가 반영됩니다.');
           assert.equal(await page.locator('.home-hero .eyebrow, .home-hero .brand-message, .home-hero .beta-note').count(),0);
           assert(!/CLOSED BETA|Shop\. Earn Bitcoin\.|자동으로|평소처럼 쇼핑하세요\.|확인·검토/.test(await page.locator('.home-hero').innerText()));
           assert((await page.locator('header').innerText()).includes('Shop Today. Stack Tomorrow.'));

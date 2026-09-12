@@ -252,6 +252,10 @@
     .partner-cta-test { margin-top:12px; background:transparent; color:#f7931a; font-size:16px; min-height:54px; text-decoration:none; }
     .partner-cta-test:hover:not(:disabled), .partner-cta-test:active:not(:disabled) { color:#15100a; }
     .partner-cta-test[hidden] { display:none; }
+    .coupang-control-test { margin-top:24px; padding-top:20px; border-top:1px solid #34373d; }
+    .coupang-control-test h3 { margin:0 0 12px; font-size:14px; color:#b1b5bd; }
+    #coupang-test-d a { display:block; width:100%; max-width:728px; margin-inline:auto; }
+    #coupang-test-d img { display:block; width:100%; height:auto; aspect-ratio:728 / 90; }
     @media(max-width:520px) {
       .partner-card { padding:20px 16px; }
       .partner-title { font-size:21px; }
@@ -315,6 +319,16 @@
     <a class="partner-cta partner-cta-test" id="coupang-anchor-link" target="_blank" referrerpolicy="unsafe-url" rel="noopener" hidden>쿠팡으로 이동하기 (테스트)</a>
     <p class="coupang-entry-status" id="coupang-anchor-status" role="status"></p>
     <p class="coupang-entry-status" id="coupang-entry-status" role="status"></p>
+    <div class="coupang-control-test" id="coupang-test-c">
+      <h3>TEST C · Dynamic Deeplink + No subId</h3>
+      <button type="button" class="partner-cta partner-cta-test" id="coupang-no-subid-prepare">쿠팡으로 이동하기 (No subId Test)</button>
+      <a class="partner-cta partner-cta-test" id="coupang-no-subid-link" target="_blank" referrerpolicy="unsafe-url" rel="noopener" hidden>쿠팡으로 이동하기 (No subId Test)</a>
+      <p class="coupang-entry-status" id="coupang-no-subid-status" role="status"></p>
+    </div>
+    <div class="coupang-control-test" id="coupang-test-d">
+      <h3>TEST D · Coupang 공식 Banner (Control Test)</h3>
+      <a href="https://link.coupang.com/a/gY9mXfjiZE" target="_blank" referrerpolicy="unsafe-url"><img src="https://ads-partners.coupang.com/banners/1026300?trackingCode=AF7466415&subId=&traceId=V0-301-879dd1202e5c73b2-I1026300&w=728&h=90" alt=""></a>
+    </div>
   </section>
 
 
@@ -399,6 +413,7 @@
 
 <script src="coupang-attribution.js" defer></script>
 <script src="coupang-anchor-test.js" defer></script>
+<script src="coupang-no-subid-test.js" defer></script>
 <script src="partner-selector.js" defer></script>
 </body>
 </html>

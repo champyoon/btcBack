@@ -32,7 +32,7 @@
       busy = false;
     } finally {
       button.disabled = false;
-      button.textContent = '쿠팡으로 이동하기 (No subId Test)';
+      button.textContent = '쿠팡으로 이동하기 (channel1 Test)';
     }
   });
   link.addEventListener('click', event => {

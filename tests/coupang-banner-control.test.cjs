@@ -7,8 +7,8 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
   try {
     const context = await browser.newContext();
     const page = await context.newPage();
-    const href = 'https://link.coupang.com/a/gY9mXfjiZE';
-    const src = 'https://ads-partners.coupang.com/banners/1026300?trackingCode=AF7466415&subId=&traceId=V0-301-879dd1202e5c73b2-I1026300&w=728&h=90';
+    const href = 'https://link.coupang.com/a/g0yS9XpMRg';
+    const src = 'https://ads-partners.coupang.com/banners/1026300?trackingCode=AF7466415&subId=channel2&traceId=V0-301-879dd1202e5c73b2-I1026300&w=728&h=90';
     let apiCalls = 0, navigations = 0;
     await context.route('**/*', route => {
       const url = new URL(route.request().url());

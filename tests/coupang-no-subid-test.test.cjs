@@ -36,7 +36,7 @@ assert(!/landingUrl|tracking_id/.test(source));
     });
     await page.goto('https://btcback.test/shopping.html');
     const prepare = page.locator('#coupang-no-subid-prepare'), link = page.locator('#coupang-no-subid-link');
-    assert.equal(await prepare.innerText(), '쿠팡으로 이동하기 (No subId Test)');
+    assert.equal(await prepare.innerText(), '쿠팡으로 이동하기 (channel1 Test)');
     assert.equal(await link.getAttribute('target'), '_blank');
     assert.equal(await link.getAttribute('referrerpolicy'), 'unsafe-url');
     assert.equal(await link.getAttribute('rel'), 'noopener');

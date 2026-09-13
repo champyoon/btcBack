@@ -67,7 +67,7 @@ export function createHandler({ env, fetcher = fetch, logger = console }) {
       const response = await fetcher(ENDPOINT, {
         method: 'POST', redirect: 'error', signal: AbortSignal.timeout(15000),
         headers: { Authorization: auth, 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({ coupangUrls: [input.coupangUrl] }),
+        body: JSON.stringify({ coupangUrls: [input.coupangUrl], subId: 'channel1' }),
       });
       upstreamStatus = response.status;
       stage = 'response-parse';

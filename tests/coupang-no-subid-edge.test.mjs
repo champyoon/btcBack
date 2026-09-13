@@ -1,10 +1,13 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { createHandler } from '../supabase/functions/coupang-deeplink-no-subid/handler.mjs';
 const env = name => ({ COUPANG_ACCESS_KEY: 'fixture-access', COUPANG_SECRET_KEY: 'fixture-secret', COUPANG_TRACKING_CODE: 'fixture-code' })[name];
 const good = { shortenUrl: 'https://link.coupang.com/a/mock', landingUrl: 'https://link.coupang.com/re/AFFHOME?lptag=fixture-code' };
 const req = input => new Request('https://function.test', { method: 'POST', body: JSON.stringify(input) });
-test('C omits subId property entirely, even if supplied by frontend', async () => {
+test('C sends fixed channel1, ignoring client subId, with public JWT configuration', async () => {
+  const config = readFileSync(new URL('../supabase/config.toml', import.meta.url), 'utf8');
+  assert.match(config, /\[functions\.coupang-deeplink-no-subid\]\s*verify_jwt\s*=\s*false/);
   let calls = 0;
   const handler = createHandler({ env, fetcher: async (url, options) => {
     calls++;
@@ -12,8 +15,7 @@ test('C omits subId property entirely, even if supplied by frontend', async () =
     assert.equal(options.method, 'POST');
     assert.equal(options.redirect, 'error');
     const body = JSON.parse(options.body);
-    assert.deepEqual(body, { coupangUrls: ['https://www.coupang.com/'] });
-    assert(!Object.hasOwn(body, 'subId'));
+    assert.deepEqual(body, { coupangUrls: ['https://www.coupang.com/'], subId: 'channel1' });
     return Response.json({ rCode: '0', data: [good] });
   } });
   for (const input of [{ coupangUrl: 'https://www.coupang.com/' }, { coupangUrl: 'https://www.coupang.com/', subId: 'injected' }]) {

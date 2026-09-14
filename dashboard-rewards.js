@@ -8,9 +8,12 @@
   const labels = { CONFIRMED: '지급 확정', PENDING: '확인 중', CANCELLED: '취소됨' };
   const merchants = { COUPANG: 'Coupang', IHERB: 'iHerb', TRIPCOM: 'Trip.com' };
   let revision = 0;
+  let priceController;
   const format = value => value.toLocaleString('en-US');
   function reset() {
     ++revision;
+    priceController?.abort();
+    field('current_value_krw').textContent = '현재 가치 · -';
     for (const name of ['total_sats_earned','btc_amount','confirmed_sats','pending_sats']) field(name).textContent = '-';
     field('reward_history').replaceChildren();
     message.textContent = 'Reward를 불러오고 있습니다.';
@@ -22,6 +25,43 @@
     if (typeof value === 'number' && (!Number.isSafeInteger(value) || value < 0)) throw new Error('Invalid amount');
     if (!['number','string'].includes(typeof value) || !/^\d+$/.test(String(value))) throw new Error('Invalid amount');
     return BigInt(value);
+  }
+  function currentWon(confirmed, price) {
+    // Preserve bigint sats precision; round the final positive KRW value half-up.
+    const [mantissa, exponent = '0'] = String(price).split('e');
+    const [whole, fraction = ''] = mantissa.split('.');
+    const scale = fraction.length - Number(exponent);
+    let numerator = confirmed * BigInt(whole + fraction), denominator = 100000000n;
+    if (scale >= 0) denominator *= 10n ** BigInt(scale);
+    else numerator *= 10n ** BigInt(-scale);
+    return (numerator + denominator / 2n) / denominator;
+  }
+  async function loadCurrentValue(confirmed, current) {
+    const value = field('current_value_krw');
+    if (confirmed === 0n) { value.textContent = '현재 가치 · 약 ₩0'; return; }
+    value.textContent = '현재 가치 · 불러오는 중...';
+    const controller = new AbortController();
+    priceController = controller;
+    const timer = setTimeout(() => controller.abort(), 10000);
+    try {
+      const response = await fetch(new URL('/functions/v1/btc-krw-price', ADMIN_SUPABASE_URL), {
+        method: 'GET', headers: { Accept: 'application/json' }, credentials: 'omit',
+        cache: 'no-store', signal: controller.signal,
+      });
+      if (!response.ok) throw new Error('Price unavailable');
+      const data = await response.json();
+      if (data?.success !== true || data.market !== 'KRW-BTC' || typeof data.price !== 'number' ||
+          !Number.isFinite(data.price) || data.price <= 0 || data.price > Number.MAX_SAFE_INTEGER) throw new Error('Invalid price');
+      if (current !== revision) return;
+      value.textContent = `현재 가치 · 약 ₩${format(currentWon(confirmed, data.price))}`;
+    } catch {
+      if (current !== revision) return;
+      console.error('[BTCBack price] Current value unavailable');
+      value.textContent = '현재 가치를 불러올 수 없습니다.';
+    } finally {
+      clearTimeout(timer);
+      if (priceController === controller) priceController = undefined;
+    }
   }
   async function load(client, userId) {
     reset();
@@ -66,6 +106,7 @@
       if (!rows.length) { const empty = document.createElement('li'); empty.textContent = '아직 Reward 기록이 없습니다.'; list.append(empty); }
       field('reward_history').replaceChildren(list);
       message.textContent = '';
+      void loadCurrentValue(confirmed, current);
     } catch (error) {
       if (current !== revision) return;
       // Never log raw server messages, row data, session details or credentials.

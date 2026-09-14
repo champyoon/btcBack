@@ -16,16 +16,16 @@
     .eyebrow { margin:0 0 12px; font-size:11px; font-weight:700; color:var(--orange); }
     h1 { margin:0; font-size:28px; line-height:1.4; word-break:keep-all; }
     .brand-message { margin:10px 0 0; color:var(--muted); font-size:13px; }
-    .summary-layout { display:grid; grid-template-columns:1.3fr 1fr; border-block:1px solid var(--line); background:linear-gradient(145deg,#17191d,#111315 85%); }
-    .earned,.reward-history { padding:30px 32px; min-width:0; }
+    .earned,.reward-history { padding:30px 32px; min-width:0; border-block:1px solid var(--line); background:linear-gradient(145deg,#17191d,#111315 85%); }
     .metric-label { font-size:12px; font-weight:400; line-height:1.6; color:var(--muted); margin:0 0 12px; }
     .sats-total { margin:0; color:var(--orange); font-size:56px; font-weight:800; line-height:1.2; font-variant-numeric:tabular-nums; }
     .sats-total .unit { font-size:24px; font-weight:600; }
     .btc-total { font-size:20px; margin:14px 0 26px; }
     .btc-total small { display:block; font-size:11px; color:var(--muted); margin-top:6px; }
-    .reward-history { border-left:1px solid var(--line); }
+    .current-value { margin:0; color:var(--muted); font-size:13px; line-height:1.7; overflow-wrap:anywhere; }
     h2 { font-size:15px; font-weight:600; margin:0; }
-    .history-list { list-style:none; padding:0; margin:14px 0 0; }
+    .history-list { list-style:none; padding:0; margin:14px 0 0; max-height:320px; overflow-y:auto; }
+    .history-list:focus-visible { outline:2px solid var(--orange); outline-offset:4px; }
     .history-list li { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; padding:20px 0; border-bottom:1px solid var(--line); font-size:13px; }
     .history-list strong { color:#b7d1c3; font-weight:500; white-space:nowrap; }
     .history-list small { display:block; margin-top:6px; font-size:10px; color:var(--muted); }
@@ -54,11 +54,9 @@
       .container { width:calc(100% - 36px); }
       main { padding-block:28px 32px; }
       h1 { font-size:23px; }
-      .summary-layout { grid-template-columns:minmax(0,1fr); }
       .earned,.reward-history { padding:24px 18px; }
       .sats-total { font-size:42px; }
       .sats-total .unit { font-size:20px; }
-      .reward-history { border-left:0; border-top:1px solid var(--line); }
       .reward-status { grid-template-columns:1fr; gap:12px; }
       .footer-inner { font-size:10px; }
     }
@@ -98,20 +96,19 @@
     </div>
     <p id="rewards-message" role="status" aria-live="polite">Reward를 불러오고 있습니다.</p>
     <button id="rewards-retry" type="button" hidden>다시 시도</button>
-    <div class="summary-layout">
-      <section class="earned" aria-labelledby="earned-title">
+    <section class="earned" aria-labelledby="earned-title">
         <h2 class="metric-label" id="earned-title">Bitcoin Earned</h2>
         <p class="sats-total"><span data-field="total_sats_earned">-</span> <span class="unit">sats</span></p>
         <p class="btc-total"><span data-field="btc_amount">-</span> BTC<small>Bitcoin Earned</small></p>
-      </section>
-      <section class="reward-history" aria-labelledby="history-title">
-        <h2 id="history-title">Reward History</h2>
-        <ul class="history-list" data-field="reward_history"></ul>
-      </section>
-    </div>
+        <p class="current-value" data-field="current_value_krw" role="status" aria-live="polite">현재 가치 · -</p>
+    </section>
     <section class="reward-status" aria-label="리워드 상태 요약">
       <div class="status-item"><h2>Confirmed rewards</h2><strong><span data-field="confirmed_sats">-</span> sats</strong><p>확정된 Reward</p></div>
       <div class="status-item pending"><h2>Pending rewards</h2><strong><span data-field="pending_sats">-</span> sats</strong><p>구매 및 정산 확인 중</p></div>
+    </section>
+    <section class="reward-history" aria-labelledby="history-title">
+      <h2 id="history-title">Reward History</h2>
+      <ul class="history-list" data-field="reward_history" tabindex="0" aria-labelledby="history-title"></ul>
     </section>
   </main>
 <footer><div class="container footer-inner"><span>© 2026 BTCBack. All rights reserved.</span><span>Shop Today. Stack Tomorrow.</span></div><div class="footer-center"><nav class="policy-links" aria-label="정책 메뉴"><a href="terms.html">이용약관</a><a href="privacy.html">개인정보처리방침</a><a href="reward-policy.html">Reward Policy</a><a href="affiliate-disclosure.html">Affiliate Disclosure</a></nav><p class="footer-support">문의 <a href="mailto:support@btcback.kr">support@btcback.kr</a></p></div></footer>

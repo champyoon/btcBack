@@ -2,3 +2,7 @@
 # Do not disable JWT verification on admin report functions.
 [functions.coupang-deeplink-no-subid]
 verify_jwt = false
+
+# Public market data only; no user data or database access.
+[functions.btc-krw-price]
+verify_jwt = false

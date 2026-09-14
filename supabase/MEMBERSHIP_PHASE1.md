@@ -8,8 +8,9 @@ is independent of member_status. A PENDING profile does not revoke admin access.
 
 Review and run `migrations/202609090001_membership_identity.sql` once in the
 Supabase SQL Editor as the database owner, preferably in a staging project first.
-Existing installation order is reward_requests.sql, admin_setup.sql,
-reward_sats_migration.sql. Do not rerun those files on an existing installation.
+For new installations use admin_access.sql for administrator access.
+The historical manual Reward setup is retired; do not rerun its old scripts.
+Existing installations preserve admin_users unchanged.
 Phase 1B applied this migration to `pqlombgqscbacjkudirl` on 2026-09-09.
 Local and remote migration history both contain `202609090001`. Do not rerun it.
 

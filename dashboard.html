@@ -16,8 +16,6 @@
     .eyebrow { margin:0 0 12px; font-size:11px; font-weight:700; color:var(--orange); }
     h1 { margin:0; font-size:28px; line-height:1.4; word-break:keep-all; }
     .brand-message { margin:10px 0 0; color:var(--muted); font-size:13px; }
-    .demo-badge { display:inline-block; margin-left:10px; padding:3px 7px; border:1px solid #715027; border-radius:4px; background:#211a12; color:#e8b577; font-size:10px; font-weight:600; line-height:1.4; vertical-align:middle; }
-    .demo-notice { margin:12px 0 0; color:var(--muted); font-size:12px; line-height:1.7; word-break:keep-all; overflow-wrap:anywhere; }
     .summary-layout { display:grid; grid-template-columns:1.3fr 1fr; border-block:1px solid var(--line); background:linear-gradient(145deg,#17191d,#111315 85%); }
     .earned,.reward-history { padding:30px 32px; min-width:0; }
     .metric-label { font-size:12px; font-weight:400; line-height:1.6; color:var(--muted); margin:0 0 12px; }
@@ -25,9 +23,6 @@
     .sats-total .unit { font-size:24px; font-weight:600; }
     .btc-total { font-size:20px; margin:14px 0 26px; }
     .btc-total small { display:block; font-size:11px; color:var(--muted); margin-top:6px; }
-    .secondary-values { display:flex; flex-wrap:wrap; gap:20px 32px; border-top:1px solid var(--line); padding-top:20px; margin:0; }
-    .secondary-values dt { margin-bottom:7px; }
-    .secondary-values dd { margin:0; font-size:16px; color:#c4c9cf; }
     .reward-history { border-left:1px solid var(--line); }
     h2 { font-size:15px; font-weight:600; margin:0; }
     .history-list { list-style:none; padding:0; margin:14px 0 0; }
@@ -40,16 +35,14 @@
     .status-item.pending h2 { color:#c7c1ae; }
     .status-item strong { display:block; margin-top:9px; font-size:22px; font-weight:600; }
     .status-item p { color:var(--muted); font-size:11px; margin:8px 0 0; }
-    .accumulation { border-top:1px solid var(--line); padding-top:24px; }
-    .accumulation-heading { display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px 20px; align-items:baseline; }
-    .accumulation-heading p { margin:0; font-size:11px; color:var(--muted); }
-    .chart { margin:24px 0 0; }
-    .chart-bars { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:28px; align-items:end; height:148px; padding-inline:32px; border-bottom:1px solid #454039; background:repeating-linear-gradient(to top,transparent 0,transparent 48px,#ffffff05 49px,#ffffff05 50px); }
-    .bar-column { height:100%; display:flex; flex-direction:column; justify-content:flex-end; align-items:center; gap:8px; }
-    .bar-column span { font-size:12px; color:#c4c9cf; font-variant-numeric:tabular-nums; }
-    .bar { width:100%; max-width:168px; background:#895d2b; border-top:2px solid #c6883e; border-radius:4px 4px 0 0; }
-    .bar-column:last-child .bar { background:#ac712f; border-color:var(--orange); }
-    .chart-labels { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:28px; padding:12px 32px 0; color:var(--muted); font-size:11px; text-align:center; }
+    [data-field], .history-list li { overflow-wrap:anywhere; }
+    .history-list strong { white-space:normal; }
+    .history-list [data-status="CANCELLED"] strong { color:var(--muted); }
+    #rewards-message { color:var(--muted); font-size:13px; line-height:1.7; }
+    #rewards-message:empty { display:none; }
+    #rewards-message.error { color:#f3aaa3; }
+    #rewards-retry { min-height:44px; margin-bottom:16px; padding:10px 16px; color:var(--text); background:#15171b; border:1px solid var(--line); border-radius:6px; font:inherit; cursor:pointer; }
+    #rewards-retry:focus-visible { outline:2px solid var(--orange); outline-offset:3px; }
     footer { border-top:1px solid var(--line); }
     .footer-inner { display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px 20px; padding-block:24px; color:#747a83; font-size:11px; }
     @media(max-width:1150px) { .container { width:calc(100% - 56px); } }
@@ -67,14 +60,13 @@
       .sats-total .unit { font-size:20px; }
       .reward-history { border-left:0; border-top:1px solid var(--line); }
       .reward-status { grid-template-columns:1fr; gap:12px; }
-      .chart-bars { padding-inline:8px; gap:16px; }
-      .chart-labels { padding-inline:8px; gap:16px; font-size:10px; }
       .footer-inner { font-size:10px; }
     }
   </style>
   <link rel="stylesheet" href="member-auth.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
   <script src="admin-config.js" defer></script>
+  <script src="dashboard-rewards.js" defer></script>
   <script src="member-auth.js" defer></script>
 <link rel="stylesheet" href="common.css">
 </head>
@@ -93,8 +85,6 @@
       <span class="site-auth-slot"><a class="site-auth-entry" href="login.html">로그인</a><button id="member-logout" type="button" hidden>로그아웃</button></span></nav>
     </div>
   </header>
-  <!-- UI-only mock data. No Auth, DB, pricing or tracking connections.
-       Lifetime and accumulation include PAID rewards only; exclude confirmed/pending. -->
   <div class="container member-access">
     <p id="member-status" role="status" aria-live="polite">회원 상태를 확인하고 있습니다.</p>
     <div class="member-controls"><button id="member-retry" type="button" hidden>상태 다시 확인</button></div>
@@ -102,44 +92,26 @@
   </div>
   <main class="container" id="member-dashboard" hidden>
     <div class="page-heading">
-      <p class="eyebrow">MY BTCBACK <span class="demo-badge">DEMO</span></p>
+      <p class="eyebrow">MY BTCBACK</p>
       <h1>쇼핑으로 모은 Bitcoin을 한눈에.</h1>
       <p class="brand-message">Shop. Earn Bitcoin.</p>
-      <p class="demo-notice">현재 표시된 Reward 및 금액은 Dashboard 예시 데이터입니다.</p>
     </div>
+    <p id="rewards-message" role="status" aria-live="polite">Reward를 불러오고 있습니다.</p>
+    <button id="rewards-retry" type="button" hidden>다시 시도</button>
     <div class="summary-layout">
       <section class="earned" aria-labelledby="earned-title">
         <h2 class="metric-label" id="earned-title">Bitcoin Earned</h2>
-        <p class="sats-total"><span data-field="total_sats_earned">87,420</span> <span class="unit">sats</span></p>
-        <p class="btc-total"><span data-field="btc_amount">0.00087420</span> BTC<small>Bitcoin Earned</small></p>
-        <dl class="secondary-values">
-          <div><dt class="metric-label">Current Value</dt><dd data-field="current_value_krw">₩168,700</dd></div>
-          <div><dt class="metric-label">Reward Performance</dt><dd><span data-field="reward_performance_krw">+₩56,400</span> (<span data-field="reward_performance_percent">+50.2%</span>)</dd></div>
-        </dl>
+        <p class="sats-total"><span data-field="total_sats_earned">-</span> <span class="unit">sats</span></p>
+        <p class="btc-total"><span data-field="btc_amount">-</span> BTC<small>Bitcoin Earned</small></p>
       </section>
       <section class="reward-history" aria-labelledby="history-title">
         <h2 id="history-title">Reward History</h2>
-        <ul class="history-list" data-field="reward_history">
-          <li data-status="paid"><span>온라인 쇼핑<small>지급 완료</small></span><strong>+12,420 sats</strong></li>
-          <li data-status="paid"><span>여행 서비스<small>지급 완료</small></span><strong>+25,000 sats</strong></li>
-          <li data-status="paid"><span>이전 Reward 기록<small>지급 완료</small></span><strong>+50,000 sats</strong></li>
-        </ul>
+        <ul class="history-list" data-field="reward_history"></ul>
       </section>
     </div>
     <section class="reward-status" aria-label="리워드 상태 요약">
-      <div class="status-item"><h2>Confirmed rewards</h2><strong><span data-field="confirmed_sats">2,500</span> sats</strong><p>확정 후 지급 대기</p></div>
-      <div class="status-item pending"><h2>Pending rewards</h2><strong><span data-field="pending_sats">1,250</span> sats</strong><p>구매 및 정산 확인 중</p></div>
-    </section>
-    <section class="accumulation" aria-labelledby="accumulation-title">
-      <div class="accumulation-heading"><h2 id="accumulation-title">Bitcoin Accumulation</h2><p>지급 완료 리워드 기준 누적 sats</p></div>
-      <figure class="chart" data-field="accumulation_data" role="img" aria-label="지급 완료 리워드 누적: 이전 기록 50,000 sats, 여행 서비스 이후 75,000 sats, 온라인 쇼핑 이후 87,420 sats">
-        <div class="chart-bars" aria-hidden="true">
-          <div class="bar-column"><span>50,000</span><div class="bar" style="height:63px"></div></div>
-          <div class="bar-column"><span>75,000</span><div class="bar" style="height:94px"></div></div>
-          <div class="bar-column"><span>87,420</span><div class="bar" style="height:110px"></div></div>
-        </div>
-        <div class="chart-labels" aria-hidden="true"><span>이전 기록</span><span>여행 서비스</span><span>온라인 쇼핑</span></div>
-      </figure>
+      <div class="status-item"><h2>Confirmed rewards</h2><strong><span data-field="confirmed_sats">-</span> sats</strong><p>확정된 Reward</p></div>
+      <div class="status-item pending"><h2>Pending rewards</h2><strong><span data-field="pending_sats">-</span> sats</strong><p>구매 및 정산 확인 중</p></div>
     </section>
   </main>
 <footer><div class="container footer-inner"><span>© 2026 BTCBack. All rights reserved.</span><span>Shop Today. Stack Tomorrow.</span></div><div class="footer-center"><nav class="policy-links" aria-label="정책 메뉴"><a href="terms.html">이용약관</a><a href="privacy.html">개인정보처리방침</a><a href="reward-policy.html">Reward Policy</a><a href="affiliate-disclosure.html">Affiliate Disclosure</a></nav><p class="footer-support">문의 <a href="mailto:support@btcback.kr">support@btcback.kr</a></p></div></footer>

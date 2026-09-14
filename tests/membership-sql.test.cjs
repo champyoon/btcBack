@@ -14,7 +14,7 @@ const c = '33333333-3333-4333-8333-333333333333';
       $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
       grant usage on schema auth to anon,authenticated;
       insert into auth.users values ('${a}','admin@example.com',now()),('${b}','b@example.com',null);`);
-    for (const file of ['reward_requests.sql', 'admin_setup.sql', 'reward_sats_migration.sql',
+    for (const file of ['admin_access.sql',
       'migrations/202609090001_membership_identity.sql']) {
       await db.exec(fs.readFileSync(path.join(__dirname, '..', 'supabase', file), 'utf8'));
     }
@@ -55,7 +55,6 @@ const c = '33333333-3333-4333-8333-333333333333';
       assert.equal((await db.query('select * from policy_consents')).rows.length, 1);
       assert.equal((await db.query('select user_id from policy_consents')).rows[0].user_id, b);
       assert.equal((await db.query('select * from admin_users')).rows.length, 0);
-      assert.equal((await db.query('select * from reward_requests')).rows.length, 0);
     });
     for (const sql of [
       `insert into profiles(id,email) values ('${b}','fake@example.com')`,
@@ -69,19 +68,12 @@ const c = '33333333-3333-4333-8333-333333333333';
     ]) await assert.rejects(asRole('authenticated', b, () => db.exec(sql)), { code: '42501' });
     for (const table of ['profiles','policy_consents'])
       await assert.rejects(asRole('anon', '', () => db.exec(`select * from ${table}`)), { code: '42501' });
-    await asRole('anon', '', () => db.exec(`insert into reward_requests
-      (store_name,purchase_date,purchase_amount,customer_name,email,lightning_destination)
-      values ('쿠팡','2026-09-09',1000,'Test','test@example.com','test@wallet.com')`));
-    await db.exec(`insert into reward_requests
-      (store_name,purchase_date,purchase_amount,customer_name,email,lightning_destination)
-      values ('쿠팡','2026-09-09',1000,'Test','test@example.com','test@wallet.com')`);
     await asRole('authenticated', a, async () => {
       assert.equal((await db.query('select * from admin_users')).rows.length, 1);
-      assert.equal((await db.query("update reward_requests set status='purchase_confirmed' returning id")).rows.length, 1);
     });
     await db.exec(`delete from auth.users where id='${c}'`);
     assert.equal(await profile(c), undefined);
     assert.equal((await db.query('select * from policy_consents where user_id=$1',[c])).rows.length, 0);
-    console.log('PASS verification, backfill, stable random identity, email sync, status timestamps, self-only RLS, denied writes, consent isolation, cascades, existing admin/reward permissions');
+    console.log('PASS verification, backfill, stable random identity, email sync, status timestamps, self-only RLS, denied writes, consent isolation, cascades, existing admin permissions');
   } finally { await db.close(); }
 })().catch(error => { console.error(error); process.exitCode = 1; });

@@ -24,6 +24,10 @@
 .footer-support a:hover { color:#f7931a; }
 .footer-support a:focus-visible { outline:2px solid #f7931a; outline-offset:4px; }
 .site-auth-slot { display:flex; align-items:center; }
+.site-account { min-width:0; max-width:100%; }
+.site-user-info { contain:inline-size; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-align:right; color:#858b95; font-size:11px; line-height:1.5; margin-bottom:2px; }
+.site-user-info[hidden] { display:none; }
+@media(max-width:850px) { .site-account { width:100%; } }
 .site-header .site-nav #member-logout { padding:14px 0; min-height:44px; border:0; background:none; color:#b1b5bd; font:inherit; font-size:13px; line-height:1.5; white-space:nowrap; cursor:pointer; }
 .site-header .site-nav .site-auth-entry { min-height:44px; }
 .site-header #member-logout:hover { color:#fff; }

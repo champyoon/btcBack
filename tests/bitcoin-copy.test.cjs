@@ -9,7 +9,7 @@ const root = path.join(__dirname, '..');
     const page = await browser.newPage();
     await page.route('**/*', route => {
       const url = new URL(route.request().url());
-      if (url.hostname === 'cdn.jsdelivr.net') return route.fulfill({contentType:'application/javascript',body:`window.supabase={createClient:()=>({auth:{getSession:async()=>({data:{session:{}}}),getUser:async()=>({data:{user:{id:'demo',email_confirmed_at:'2026-09-09'}}}),onAuthStateChange:()=>{}},from:()=>({select:()=>({eq:()=>({maybeSingle:async()=>({data:{member_status:'APPROVED'}})})})})})};`});
+      if (url.hostname === 'cdn.jsdelivr.net') return route.fulfill({contentType:'application/javascript',body:`window.supabase={createClient:()=>({auth:{getSession:async()=>({data:{session:{}}}),getUser:async()=>({data:{user:{id:'demo',email_confirmed_at:'2026-09-09'}}}),onAuthStateChange:()=>{}},from:t=>t==='rewards'?{select:()=>{const q={eq:()=>q,order:()=>q,range:async()=>({data:[],count:0,error:null})};return q;}}:({select:()=>({eq:()=>({maybeSingle:async()=>({data:{member_status:'APPROVED'}})})})})})};`});
       if (url.hostname !== 'btcback.test') return route.abort();
       const file = url.pathname.slice(1);
       if (file === 'admin-config.js') return route.fulfill({contentType:'application/javascript',body:'const ADMIN_SUPABASE_URL="https://pqlombgqscbacjkudirl.supabase.co";const ADMIN_SUPABASE_KEY="sb_publishable_test";'});
@@ -36,14 +36,15 @@ const root = path.join(__dirname, '..');
         } else {
           assert.equal(await page.locator('.brand-message').innerText(),'Shop. Earn Bitcoin.');
           assert.equal(await page.locator('#earned-title').innerText(),'Bitcoin Earned');
-          assert.match(await page.locator('.sats-total').innerText(),/87,420\s+sats/);
-          assert((await page.locator('main').innerText()).includes('0.00087420 BTC'));
-          assert.equal(await page.locator('.demo-badge').innerText(),'DEMO');
+          await page.waitForFunction(()=>document.querySelector('[data-field="total_sats_earned"]').textContent==='0');
+          assert.match(await page.locator('.sats-total').innerText(),/0\s+sats/);
+          assert((await page.locator('main').innerText()).includes('0.00000000 BTC'));
+          assert.equal(await page.locator('.demo-badge').count(),0);
         }
         if (width===390 || width===1440) await page.screenshot({path:path.join(require('node:os').tmpdir(),`btcback-copy-${name}-${width}.png`)});
       }
     }
     assert(fs.readFileSync(path.join(root,'reward-policy.html'),'utf8').includes('지급할 sats 수량'));
-    console.log('PASS Bitcoin concept copy, retained sats/BTC quantities, DEMO and 320/390/768/1440 layout');
+    console.log('PASS Bitcoin concept copy, real empty-state sats/BTC quantities and 320/390/768/1440 layout');
   } finally { await browser.close(); }
 })().catch(error=>{console.error(error);process.exitCode=1;});

@@ -90,14 +90,9 @@
     <p id="auth-message" class="message error" role="alert" hidden></p>
     <section class="login" id="login-panel"><h1>관리자 로그인</h1><form id="login-form"><label for="email">이메일</label><input id="email" type="email" autocomplete="username" required maxlength="254"><label for="password">비밀번호</label><input id="password" type="password" autocomplete="current-password" required><button id="login-button" class="primary" disabled>로그인</button></form><noscript><p class="error">JavaScript를 활성화해 주세요.</p></noscript></section>
     <section id="dashboard" hidden aria-labelledby="dashboard-title">
-      <div class="title-row"><h1 id="dashboard-title">Bitcoin 적립 신청 관리</h1><span id="account" class="account"></span></div>
-      <div class="stats" aria-label="전체 신청 통계"><div class="stat"><span>전체 신청</span><strong id="count-all">-</strong></div><div class="stat"><span>pending</span><strong id="count-pending">-</strong></div><div class="stat"><span>purchase_confirmed</span><strong id="count-purchase_confirmed">-</strong></div><div class="stat"><span>reward_confirmed</span><strong id="count-reward_confirmed">-</strong></div><div class="stat"><span>paid</span><strong id="count-paid">-</strong></div></div>
-      <div class="toolbar"><div class="filter"><label for="status-filter">상태</label><select id="status-filter"><option value="">전체</option><option>pending</option><option>purchase_confirmed</option><option>reward_confirmed</option><option>paid</option><option>rejected</option></select></div><button id="refresh" class="secondary icon-button" title="새로고침" aria-label="새로고침"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5M6 6a8 8 0 0 1 14 6M18 18A8 8 0 0 1 4 12"/></svg></button></div>
-      <p id="dashboard-message" class="message" role="status" hidden></p>
-      <div class="table-wrap" tabindex="0" role="region" aria-label="신청 목록"><table><colgroup><col style="width:15%"><col style="width:16%"><col style="width:19%"><col style="width:11%"><col style="width:15%"><col style="width:7%"><col style="width:17%"></colgroup><thead><tr><th>접수 일시</th><th>구매 정보</th><th>신청자</th><th>구매금액</th><th>상태</th><th>상세</th><th>상태 변경</th></tr></thead><tbody id="requests"></tbody></table></div>
-      <p id="empty" class="empty" hidden>신청 내역이 없습니다.</p><div class="pagination"><span id="page-summary"></span><div><button id="previous" class="secondary icon-button" title="이전 페이지" aria-label="이전 페이지">←</button><span id="page-number">1</span><button id="next" class="secondary icon-button" title="다음 페이지" aria-label="다음 페이지">→</button></div></div>
+      <div class="title-row"><h1 id="dashboard-title">BTCBack 관리자</h1><span id="account" class="account"></span></div>
+      <p class="message">구형 Reward 신청 관리 기능은 종료되었습니다. 관리자 인증은 유지됩니다.</p>
     </section>
   </main>
-  <dialog id="detail"><div class="dialog-header"><h2>신청 상세</h2><button id="close-detail" class="secondary icon-button" aria-label="상세 닫기" title="닫기">×</button></div><dl id="detail-fields"></dl></dialog>
 </body>
 </html>

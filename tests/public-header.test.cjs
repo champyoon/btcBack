@@ -16,11 +16,12 @@ for (const name of ['terms', 'privacy']) {
   try {
     const page = await browser.newPage();
     let signedIn = false;
+    const email = 'long.closed.beta.account.for.header.layout.verification@example.com';
     await page.route('**/*', route => {
       const url = new URL(route.request().url());
       if (url.hostname === 'cdn.jsdelivr.net') return route.fulfill({ contentType:'application/javascript', body:`
         window.supabase={createClient:(url,key,options)=>({auth:{
-          getSession:async()=>({data:{session:${signedIn} ? {user:{id:'test-user'}} : null}}),
+          getSession:async()=>({data:{session:${signedIn} ? {user:{id:'test-user',email:'${email}'}} : null}}),
           getUser:async()=>({data:{user:{id:'test-user',email_confirmed_at:'2026-09-09'}}}),
           onAuthStateChange:()=>{},signOut:async(options)=>{window.logoutOptions=options;return {error:null};}
         },from:()=>({select:()=>({eq:()=>({maybeSingle:async()=>({data:{member_status:'PENDING'}})})})})})};` });
@@ -38,6 +39,9 @@ for (const name of ['terms', 'privacy']) {
         if (name === 'dashboard' && !state) await page.waitForURL('**/login.html');
         const action = state ? '#member-logout' : '.site-auth-entry';
         await page.waitForSelector(action);
+        assert.equal(await page.locator('.site-user-info').isVisible(),state);
+        if(state) assert.equal(await page.locator('.site-user-info').textContent(),email+' 님');
+        assert.equal(await page.locator('.site-nav .site-user-info').count(),0);
         assert.equal(await page.locator('.site-auth-slot').count(),1);
         assert.equal(await page.locator('footer > .footer-center').count(),1);
         assert.equal(await page.locator('.footer-center > .policy-links + .footer-support').count(),1);
@@ -54,6 +58,10 @@ for (const name of ['terms', 'privacy']) {
         if (active && !(name === 'dashboard' && !state)) assert.equal(await page.locator('.site-nav [aria-current="page"]').innerText(),active);
         for (const width of [320,390,768,1440]) {
           await page.setViewportSize({width,height:900});
+          if(state) assert(await page.locator('.site-user-info').evaluate(info=>{
+            const a=info.getBoundingClientRect(),b=document.querySelector('.site-nav').getBoundingClientRect();
+            return a.bottom<=b.top && Math.abs(a.right-b.right)<1 && a.left>=0 && a.right<=innerWidth && getComputedStyle(info).textAlign==='right';
+          }),`${name} ${width} user info alignment`);
           assert(await page.locator('.footer-support').evaluate(element => {
             const box = element.getBoundingClientRect();
             const links = document.querySelector('.policy-links').getBoundingClientRect();
@@ -81,10 +89,14 @@ for (const name of ['terms', 'privacy']) {
     }
     await page.goto('https://btcback.test/about.html');
     await page.waitForSelector('#member-logout');
+    await page.reload();
+    await page.waitForSelector('.site-user-info');
+    assert.equal(await page.locator('.site-user-info').textContent(),email+' 님');
     signedIn = false;
     await page.click('#member-logout');
     await page.waitForURL('**/login.html');
     await page.waitForSelector('.site-auth-entry');
+    assert.equal(await page.locator('.site-user-info').isVisible(),false);
     assert.match(fs.readFileSync(path.join(__dirname,'..','member-auth.js'),'utf8'),/signOut\(\{ scope: 'local' \}\)/);
     console.log('PASS public headers: 10 pages, session states, active nav, header-only logout, 320/390/768/1440 layout');
   } finally { await browser.close(); }

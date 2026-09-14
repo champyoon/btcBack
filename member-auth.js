@@ -8,13 +8,30 @@
   const submit = document.getElementById('login-submit');
   const headerEntry = document.querySelector('.site-auth-entry');
   const headerOnly = !status;
-  function updateEntry(signedIn) {
+  const nav = document.querySelector('.site-header .site-nav');
+  let userInfo;
+  if (nav && headerEntry) {
+    const account = document.createElement('div');
+    account.className = 'site-account';
+    userInfo = document.createElement('div');
+    userInfo.className = 'site-user-info';
+    userInfo.hidden = true;
+    nav.before(account);
+    account.append(userInfo, nav);
+  }
+  function updateEntry(signedIn, user = null) {
+    if (userInfo) {
+      const label = signedIn && user?.email ? `${user.email} 님` : '';
+      userInfo.textContent = label;
+      userInfo.title = label;
+      userInfo.hidden = !label;
+    }
     if (!headerEntry) return;
     headerEntry.hidden = signedIn;
     if (logout) logout.hidden = !signedIn;
   }
   let client, revision = 0, actionBusy = false;
-  function hideContent() { if (dashboard) dashboard.hidden = true; if (form) form.hidden = true; }
+  function hideContent() { if (dashboard) { dashboard.hidden = true; window.BTCBackRewards?.reset(); } if (form) form.hidden = true; }
   function notice(text, error = false) { if (status) { status.textContent = text; status.classList.toggle('error', error); } }
   function loginError(error) {
     if (error?.code === 'email_not_confirmed') return '이메일 인증이 필요합니다. 가입 시 받은 인증 메일을 확인해 주세요.';
@@ -30,7 +47,7 @@
       const session = await client.auth.getSession();
       if (current !== revision) return;
       if (session.error) throw session.error;
-      updateEntry(Boolean(session.data?.session));
+      updateEntry(Boolean(session.data?.session), session.data?.session?.user);
       // Header state is cosmetic only; account access still uses the existing guard.
       if (headerOnly) return;
       if (!session.data?.session) {
@@ -50,7 +67,7 @@
       if (profile.error || !profile.data) throw new Error('Profile unavailable');
       switch (profile.data.member_status) {
         case 'APPROVED':
-          if (dashboard) { dashboard.hidden = false; notice(''); }
+          if (dashboard) { dashboard.hidden = false; notice(''); void window.BTCBackRewards?.load(client, user.data.user.id); }
           else location.replace('shopping.html');
           break;
         case 'PENDING':
@@ -85,6 +102,7 @@
     try {
       const { error } = await client.auth.signOut({ scope: 'local' });
       if (error) throw error;
+      updateEntry(false);
       location.replace('login.html');
     } catch {
       const message = '로그아웃하지 못했습니다. 연결을 확인하고 다시 시도해 주세요.';
@@ -94,6 +112,7 @@
     finally { logout.disabled = false; actionBusy = false; }
   });
   retry?.addEventListener('click', () => { if (!actionBusy && client) void refresh(); });
+  document.getElementById('rewards-retry')?.addEventListener('click', () => { if (!actionBusy && client) void refresh(); });
   try {
     let keyOK = typeof ADMIN_SUPABASE_KEY !== 'undefined' && /^sb_publishable_[A-Za-z0-9_-]+$/.test(ADMIN_SUPABASE_KEY);
     if (!keyOK && typeof ADMIN_SUPABASE_KEY !== 'undefined') {

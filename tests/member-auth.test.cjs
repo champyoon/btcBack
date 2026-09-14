@@ -7,7 +7,7 @@ const mock = `window.supabase={createClient:(url,key,options)=>{window.options=o
 auth:{getSession:async()=>({data:{session:window.session?{user:{id:'u'}}:null}}),getUser:async()=>({data:{user:{id:'u',email_confirmed_at:'2026-09-09'}}}),
 signInWithPassword:async x=>{window.calls.push(['login',x]);if(window.loginError)return {error:window.loginError};window.session=true;return {error:null}},
 signOut:async x=>{window.calls.push(['logout',x]);if(window.logoutError)return {error:{}};window.session=false;cb('SIGNED_OUT');return {error:null}},onAuthStateChange:f=>{cb=f;window.emit=f}},
-from:t=>({select:cols=>({eq:(key,id)=>({maybeSingle:async()=>{window.calls.push(['profile',t,cols,key,id]);return window.profileError?{error:{}}:{data:window.member===null?null:{member_status:window.member}}}})})})}}};`;
+from:t=>t==='rewards'?{select:()=>{const q={eq:()=>q,order:()=>q,range:async()=>({data:[],count:0,error:null})};return q;}}:({select:cols=>({eq:(key,id)=>({maybeSingle:async()=>{window.calls.push(['profile',t,cols,key,id]);return window.profileError?{error:{}}:{data:window.member===null?null:{member_status:window.member}}}})})})}}};`;
 (async()=>{
  const b=await chromium.launch({executablePath:process.env.CHROME_PATH,headless:true});
  try {
@@ -26,7 +26,7 @@ from:t=>({select:cols=>({eq:(key,id)=>({maybeSingle:async()=>{window.calls.push(
   member='APPROVED';await open('login');await p.waitForURL('**/shopping.html');
   initialSession=false;await open('dashboard');await p.waitForURL('**/login.html');
   for(const state of ['PENDING','BLOCKED',null,'APPROVED']){initialSession=true;member=state;await open('dashboard');await ready();assert.equal(await p.isVisible('#member-dashboard'),state==='APPROVED');}
-  assert.equal(await p.locator('.demo-badge').innerText(),'DEMO');assert((await p.innerText('.demo-notice')).includes('예시 데이터'));
+  assert.equal(await p.locator('.demo-badge,.demo-notice').count(),0);
   await p.evaluate(()=>{window.member='BLOCKED';document.dispatchEvent(new Event('visibilitychange'));});await ready();assert(await p.isHidden('#member-dashboard'));
   await p.evaluate(()=>window.logoutError=true);await p.click('#member-logout');await p.waitForFunction(()=>document.querySelector('#member-status').textContent.includes('로그아웃하지 못했습니다'));assert(await p.isHidden('#member-dashboard'));
   initialSession=false;await p.evaluate(()=>window.logoutError=false);await p.click('#member-logout');await p.waitForURL('**/login.html');await p.waitForSelector('#login-form');
@@ -35,6 +35,6 @@ from:t=>({select:cols=>({eq:(key,id)=>({maybeSingle:async()=>{window.calls.push(
   initialSession=true;member='APPROVED';await open('dashboard');await ready();await p.evaluate(()=>{window.session=false;window.emit('SIGNED_OUT');});initialSession=false;await p.waitForURL('**/login.html');
   cdnFails=true;await open('dashboard');await p.waitForSelector('#member-status.error');assert(await p.isHidden('#member-dashboard'));
   const js=fs.readFileSync(path.join(root,'member-auth.js'),'utf8');assert(!/console\.|\.insert\(|\.update\(|localStorage\.setItem|sessionStorage\.setItem/.test(js));
-  console.log('PASS login, UUID profile lookup, all statuses, existing sessions, logout/failure, status refresh, dashboard fail closed/DEMO, responsive and signup-independent storage');
+  console.log('PASS login, UUID profile lookup, all statuses, existing sessions, logout/failure, status refresh, dashboard fail closed, responsive and signup-independent storage');
  }finally{await b.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

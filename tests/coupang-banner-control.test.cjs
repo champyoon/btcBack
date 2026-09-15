@@ -23,6 +23,9 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
       return route.abort();
     });
     await page.goto('https://btcback.test/shopping.html');
+    // Only the test fixture reveals the archived control banner.
+    assert.equal(await page.locator('#coupang-test-d').isVisible(),false);
+    await page.locator('#coupang-test-d').evaluate(e=>{e.hidden=false;});
     const anchor = page.locator('#coupang-test-d a');
     assert.equal(await anchor.getAttribute('href'), href);
     assert.equal(await anchor.getAttribute('target'), '_blank');

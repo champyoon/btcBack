@@ -35,6 +35,8 @@ assert(!/landingUrl|subId|tracking_id/.test(source));
       return route.abort();
     });
     await page.goto('https://btcback.test/shopping.html');
+    // Retain regression coverage for the archived comparison UI.
+    await page.locator('#coupang-legacy-tests').evaluate(e=>{e.hidden=false;});
     const prepare = page.locator('#coupang-anchor-prepare'), link = page.locator('#coupang-anchor-link');
     assert.equal(await prepare.innerText(), '쿠팡으로 이동하기 (테스트)');
     assert.equal(await link.getAttribute('target'), '_blank');

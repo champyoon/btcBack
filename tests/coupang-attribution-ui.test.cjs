@@ -25,6 +25,8 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
       return route.abort();
     });
     await page.goto('https://btcback.test/shopping.html');
+    // Retain regression coverage for the archived comparison UI.
+    await page.locator('#coupang-legacy-tests').evaluate(e=>{e.hidden=false;});
     assert.equal(await page.locator('#panel-coupang a:not(#coupang-anchor-link):not(#coupang-no-subid-link):not(#coupang-test-d a), #panel-coupang img:not(#coupang-test-d img), #panel-coupang iframe, .standalone-banner').count(), 0);
     assert.equal(await page.locator('#coupang-anchor-link').getAttribute('href'), null);
     assert.equal(await page.locator('#panel-coupang button').count(), 3);

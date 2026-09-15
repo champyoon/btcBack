@@ -25,14 +25,14 @@
       used = false;
       button.hidden = true;
       link.hidden = false;
-      status.textContent = '링크가 준비되었습니다. 테스트 버튼을 눌러 쿠팡으로 이동하세요.';
+      status.textContent = '링크가 준비되었습니다. 버튼을 한 번 더 눌러 쿠팡으로 이동하세요.';
       link.focus();
     } catch {
       status.textContent = '쿠팡에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.';
       busy = false;
     } finally {
       button.disabled = false;
-      button.textContent = '쿠팡으로 이동하기 (channel1 Test)';
+      button.textContent = '쿠팡으로 이동';
     }
   });
   link.addEventListener('click', event => {

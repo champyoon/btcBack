@@ -19,7 +19,7 @@
         body: JSON.stringify({ coupangUrl: 'https://www.coupang.com/' }), signal: AbortSignal.timeout(20000),
       });
       const data = await response.json();
-      unassigned = response.status === 403 && data.success === false && data.error === 'coupang_access_unassigned';
+      unassigned = response.status === 403 && data.success === false && ['coupang_access_unavailable', 'coupang_access_unassigned'].includes(data.error);
       if (!response.ok || data.success !== true) throw new Error();
       const url = new URL(data.shortenUrl);
       if (url.protocol !== 'https:' || !['link.coupang.com', 'coupa.ng'].includes(url.hostname) || url.username || url.password || url.port) throw new Error();

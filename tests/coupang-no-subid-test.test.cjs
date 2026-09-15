@@ -55,12 +55,15 @@ assert(source.includes('window.location.assign(data.shortenUrl)'));
       {status:403,error:'coupang_access_unassigned'},
       {status:403,error:'coupang_access_unavailable'},
       {status:401,error:'authentication_required'},
+      {status:403,error:'unexpected_error'},
+      {status:401,error:'coupang_access_unavailable'},
       {status:502,error:'coupang_request_failed'},
+      {status:502,error:'coupang_access_unavailable'},
       {status:503,error:'coupang_access_unassigned'}
     ]) {
       errorCase=sample;await button.click();
       await page.waitForFunction(()=>!document.getElementById('coupang-no-subid-prepare').disabled);
-      assert.equal(await page.locator('#coupang-no-subid-status').innerText(),sample.status===403&&sample.error==='coupang_access_unassigned'?'현재 이 계정에서는 쿠팡 리워드를 이용할 수 없습니다.':'쿠팡에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.');
+      assert.equal(await page.locator('#coupang-no-subid-status').innerText(),sample.status===403&&['coupang_access_unavailable','coupang_access_unassigned'].includes(sample.error)?'현재 이 계정에서는 쿠팡 리워드를 이용할 수 없습니다.':'쿠팡에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.');
       assert.equal(navigations,0);
     }
     errorCase=null;

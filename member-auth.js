@@ -9,15 +9,20 @@
   const headerEntry = document.querySelector('.site-auth-entry');
   const headerOnly = !status;
   const nav = document.querySelector('.site-header .site-nav');
-  let userInfo;
+  let userInfo, userRow, attendance, attendanceUser = null;
+  function updateAttendance(user) { attendanceUser = user; attendance?.setUser(user); }
   if (nav && headerEntry) {
     const account = document.createElement('div');
     account.className = 'site-account';
     userInfo = document.createElement('div');
     userInfo.className = 'site-user-info';
     userInfo.hidden = true;
+    userRow = document.createElement('div');
+    userRow.className = 'site-user-row';
+    userRow.hidden = true;
+    userRow.append(userInfo);
     nav.before(account);
-    account.append(userInfo, nav);
+    account.append(userRow, nav);
   }
   function updateEntry(signedIn, user = null) {
     if (userInfo) {
@@ -25,6 +30,7 @@
       userInfo.textContent = label;
       userInfo.title = label;
       userInfo.hidden = !label;
+      userRow.hidden = !signedIn;
     }
     if (!headerEntry) return;
     headerEntry.hidden = signedIn;
@@ -41,6 +47,7 @@
   }
   async function refresh() {
     const current = ++revision;
+    let sessionKnown = false;
     hideContent(); if (retry) retry.hidden = true;
     notice('회원 상태를 확인하고 있습니다.');
     try {
@@ -48,9 +55,11 @@
       if (current !== revision) return;
       if (session.error) throw session.error;
       updateEntry(Boolean(session.data?.session), session.data?.session?.user);
-      // Header state is cosmetic only; account access still uses the existing guard.
-      if (headerOnly) return;
+      sessionKnown = true;
+      if (session.data?.session?.user?.id !== attendanceUser?.id) updateAttendance(null);
       if (!session.data?.session) {
+        updateAttendance(null);
+        if (headerOnly) return;
         logout.hidden = true;
         if (dashboard) { location.replace('login.html'); return; }
         form.hidden = false; notice(''); return;
@@ -60,11 +69,14 @@
       if (current !== revision) return;
       if (user.error || !user.data?.user) throw new Error('User unavailable');
       if (!user.data.user.email_confirmed_at) {
+        updateAttendance(null);
         notice('이메일 인증이 필요합니다. 가입 시 받은 인증 메일을 확인해 주세요.', true); return;
       }
       const profile = await client.from('profiles').select('member_status').eq('id', user.data.user.id).maybeSingle();
       if (current !== revision) return;
       if (profile.error || !profile.data) throw new Error('Profile unavailable');
+      updateAttendance(profile.data.member_status === 'APPROVED' ? user.data.user : null);
+      if (headerOnly) return;
       switch (profile.data.member_status) {
         case 'APPROVED':
           if (dashboard) { dashboard.hidden = false; notice(''); void window.BTCBackRewards?.load(client, user.data.user.id); }
@@ -78,7 +90,7 @@
         default: throw new Error('Unknown status');
       }
     } catch {
-      if (current === revision) { if (headerOnly) { updateEntry(false); return; } notice('회원 정보를 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.', true); retry.hidden = false; }
+      if (current === revision) { updateAttendance(null); if (headerOnly) { if (!sessionKnown) updateEntry(false); return; } notice('회원 정보를 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.', true); retry.hidden = false; }
     }
   }
   form?.addEventListener('submit', async event => {
@@ -98,6 +110,7 @@
   logout?.addEventListener('click', async () => {
     if (actionBusy || !client) return;
     actionBusy = true; ++revision; hideContent(); logout.disabled = true; if (retry) retry.hidden = true;
+    updateAttendance(null);
     notice('로그아웃 중...');
     try {
       const { error } = await client.auth.signOut({ scope: 'local' });
@@ -124,12 +137,19 @@
     } });
     // Keep Auth callbacks synchronous; query only after the SDK releases its lock.
     client.auth.onAuthStateChange(event => {
-      if (event === 'SIGNED_OUT') { ++revision; hideContent(); updateEntry(false); if (logout) logout.hidden = true; }
+      if (event === 'SIGNED_OUT') { ++revision; hideContent(); updateAttendance(null); updateEntry(false); if (logout) logout.hidden = true; }
       if (event !== 'INITIAL_SESSION' && !actionBusy) setTimeout(() => { if (!actionBusy) void refresh(); }, 0);
     });
-    window.addEventListener('pagehide', () => { ++revision; hideContent(); });
+    window.addEventListener('pagehide', () => { ++revision; hideContent(); updateAttendance(null); });
     window.addEventListener('pageshow', event => { if (event.persisted && !actionBusy) void refresh(); });
     document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && !actionBusy) void refresh(); });
+    // Attendance is optional: a module load failure must not break existing Auth.
+    if (userRow) {
+      void import('./member-attendance.js').then(({ createAttendance }) => {
+        attendance = createAttendance({ client, row: userRow });
+        attendance.setUser(attendanceUser);
+      }).catch(() => {});
+    }
     void refresh();
   } catch { hideContent(); notice('회원 서비스를 불러오지 못했습니다. 페이지를 다시 열어 주세요.', true); }
 })();

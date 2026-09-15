@@ -25,6 +25,32 @@
 .footer-support a:focus-visible { outline:2px solid #f7931a; outline-offset:4px; }
 .site-auth-slot { display:flex; align-items:center; }
 .site-account { min-width:0; max-width:100%; }
+.site-user-row { display:flex; align-items:center; justify-content:flex-end; gap:8px; margin-bottom:2px; min-width:0; }
+.site-user-row[hidden] { display:none; }
+.site-user-row .site-user-info { flex:1; min-width:0; margin-bottom:0; }
+.site-attendance-button { display:inline-grid; flex:none; width:max-content; box-sizing:border-box; min-height:34px; padding:8px 14px; border:1px solid #f7931a; border-radius:999px; background:transparent; color:#f7931a; font:inherit; font-size:11px; line-height:16px; white-space:nowrap; cursor:pointer; transition:background-color 160ms,border-color 160ms,color 160ms; }
+/* Reserve the content width across loading/completed labels without a fixed width. */
+.site-attendance-button::before { content:'₿  출석 체크 · +100 sats'; visibility:hidden; grid-area:1 / 1; }
+.site-attendance-button > span { grid-area:1 / 1; align-self:center; justify-self:center; }
+.site-attendance-button .attendance-ready { display:inline-flex; align-items:center; gap:5px; }
+.site-attendance-button .attendance-icon { font-size:12px; }
+.site-attendance-button .attendance-reward { font-size:10px; }
+.site-attendance-button > [hidden] { display:none; }
+.site-attendance-button:hover:not(:disabled) { background:rgba(247,147,26,.08); }
+.site-attendance-button:disabled { cursor:default; color:#989da6; border-color:#34373d; background:#15171b; }
+.site-attendance-button[hidden] { display:none; }
+.site-attendance-button:focus-visible, .attendance-confirm:focus-visible { outline:2px solid #f7931a; outline-offset:3px; }
+.attendance-dialog { box-sizing:border-box; width:min(360px,calc(100% - 32px)); max-height:85vh; overflow:auto; padding:28px 24px; border:1px solid #34373d; border-radius:8px; background:#15171b; color:#f2f3f5; text-align:center; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR",Arial,sans-serif; }
+.attendance-dialog::backdrop { background:#000a; }
+.attendance-dialog h2 { margin:0 0 20px; font-size:20px; }
+.attendance-dialog .attendance-amount { margin:0 0 12px; color:#f7931a; font-size:40px; font-weight:800; }
+.attendance-dialog p { margin:0 0 24px; font-size:14px; line-height:1.7; overflow-wrap:anywhere; }
+.attendance-dialog [hidden] { display:none; }
+.attendance-confirm { width:100%; min-height:44px; border:0; border-radius:6px; background:#f7931a; color:#111; font:inherit; font-size:14px; font-weight:700; cursor:pointer; }
+@media(max-width:480px) {
+  .site-user-row:has(.site-attendance-button:not([hidden])) { flex-wrap:wrap; }
+  .site-user-row:has(.site-attendance-button:not([hidden])) .site-user-info { flex-basis:100%; }
+}
 .site-user-info { contain:inline-size; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-align:right; color:#858b95; font-size:11px; line-height:1.5; margin-bottom:2px; }
 .site-user-info[hidden] { display:none; }
 @media(max-width:850px) { .site-account { width:100%; } }

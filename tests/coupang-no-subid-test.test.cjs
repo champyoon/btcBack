@@ -10,6 +10,7 @@ assert(source.includes('window.location.assign(data.shortenUrl)'));
   const browser=await chromium.launch({executablePath:process.env.CHROME_PATH,headless:true});
   try {
     const page=await browser.newPage();
+    await page.addInitScript(()=>{window.BTCBackMember={getSession:async()=>({data:{session:{access_token:'fixture-session-token'}}})};});
     const endpoint='https://pqlombgqscbacjkudirl.supabase.co/functions/v1/coupang-deeplink-no-subid';
     const short='https://link.coupang.com/a/mock';
     let output=short, failure=false, calls=0, navigations=0, release, delayed=false;
@@ -18,6 +19,7 @@ assert(source.includes('window.location.assign(data.shortenUrl)'));
       if(url.href===endpoint){
         calls++;
         assert.equal(route.request().method(),'POST');
+        assert.equal(route.request().headers().authorization,'Bearer fixture-session-token');
         assert.deepEqual(route.request().postDataJSON(),{coupangUrl:'https://www.coupang.com/'});
         if(delayed) await new Promise(resolve=>{release=resolve;});
         return route.fulfill({status:failure?502:200,contentType:'application/json',headers:{'Access-Control-Allow-Origin':'*'},body:JSON.stringify({success:!failure,shortenUrl:output,landingUrl:'https://link.coupang.com/re/AFFHOME?subid=channel1'})});
@@ -28,6 +30,11 @@ assert(source.includes('window.location.assign(data.shortenUrl)'));
     });
     await page.goto('https://btcback.test/shopping.html');
     const button=page.locator('#coupang-no-subid-prepare');
+    await page.evaluate(()=>{window.BTCBackMember.getSession=async()=>({data:{session:null}});});
+    await button.click();
+    await page.waitForFunction(()=>!document.getElementById('coupang-no-subid-prepare').disabled);
+    assert.equal(calls,0);assert.equal(navigations,0);
+    await page.evaluate(()=>{window.BTCBackMember.getSession=async()=>({data:{session:{access_token:'fixture-session-token'}}});});
     assert.equal(await page.locator('#panel-coupang .partner-cta:visible').count(),1);
     assert.equal(await page.locator('#coupang-no-subid-link').count(),0);
     assert(!/TEST|channel1|channel2|테스트/.test(await page.locator('#panel-coupang').innerText()));

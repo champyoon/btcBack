@@ -14,7 +14,7 @@ const { chromium } = require('playwright');
       if (url.hostname === 'cdn.jsdelivr.net') return route.fulfill({ contentType:'application/javascript',body:`
         window.calls=[]; window.queries=[];
         window.supabase={createClient:()=>({auth:{
-          getSession:async()=>({data:{session:${signedIn}?{user:{id:'member-a',email:'long.closed.beta.account.for.mobile@example.com'}}:null}}),
+          getSession:async()=>({data:{session:${signedIn}&&!window.testSignedOut?{user:{id:'member-a',email:'long.closed.beta.account.for.mobile@example.com'}}:null}}),
           getUser:async()=>({data:{user:{id:'member-a',email_confirmed_at:'2026-09-01'}}}),
           onAuthStateChange:fn=>{window.authChange=fn;},signOut:async()=>({error:null})
         },rpc:(...args)=>{window.calls.push(args);return new Promise(resolve=>{window.resolveRpc=resolve;});},
@@ -100,7 +100,7 @@ const { chromium } = require('playwright');
       assert.equal(new URL(page.url()).pathname,'/index.html');
     }
     await open();await ready();await button.click();
-    await page.evaluate(()=>window.authChange('SIGNED_OUT'));
+    await page.evaluate(()=>{window.testSignedOut=true;window.authChange('SIGNED_OUT');});
     await page.evaluate(()=>window.resolveRpc({data:{success:true,already_attended:false,reward_sats:100,attendance_date:'2026-09-15'}}));
     assert.equal(await button.isVisible(),false);
     assert.equal(await page.locator('dialog').isVisible(),false);

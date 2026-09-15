@@ -135,6 +135,7 @@
     client = window.supabase.createClient(ADMIN_SUPABASE_URL, ADMIN_SUPABASE_KEY, { auth: {
       storageKey: 'btcback-member-auth', persistSession: true, autoRefreshToken: true, detectSessionInUrl: false
     } });
+    window.BTCBackMember = { getSession: () => client.auth.getSession() };
     // Keep Auth callbacks synchronous; query only after the SDK releases its lock.
     client.auth.onAuthStateChange(event => {
       if (event === 'SIGNED_OUT') { ++revision; hideContent(); updateAttendance(null); updateEntry(false); if (logout) logout.hidden = true; }

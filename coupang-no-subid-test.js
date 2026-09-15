@@ -10,8 +10,11 @@
     button.textContent = '쿠팡 연결 중...';
     status.textContent = '';
     try {
+      const session = await window.BTCBackMember?.getSession();
+      const token = session?.data?.session?.access_token;
+      if (session?.error || !token) throw new Error();
       const response = await fetch(endpoint, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ coupangUrl: 'https://www.coupang.com/' }), signal: AbortSignal.timeout(20000),
       });
       const data = await response.json();

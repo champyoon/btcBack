@@ -68,7 +68,9 @@ test('C rejects absent/invalid sessions and missing/invalid mappings before Coup
   }
   for(const channel of [null,'','channel0','channel11',' channel1','CHANNEL1','other']) {
     const h=createHandler({env,logger,fetcher:withProfile(never,channel)});
-    assert.equal((await h(req({coupangUrl:'https://www.coupang.com/'}))).status,403);
+    const result = await h(req({coupangUrl:'https://www.coupang.com/'}));
+    assert.equal(result.status,403);
+    assert.equal((await result.json()).error,channel === null || channel === '' ? 'coupang_access_unassigned' : 'coupang_access_unavailable');
   }
   for(const rows of [[],[{id:'another-user',coupang_sub_id:'channel1'}]]) {
     const h=createHandler({env,logger,fetcher:withProfile(never,'channel1',rows)});

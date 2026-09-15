@@ -9,6 +9,7 @@
     button.disabled = true;
     button.textContent = '쿠팡 연결 중...';
     status.textContent = '';
+    let unassigned = false;
     try {
       const session = await window.BTCBackMember?.getSession();
       const token = session?.data?.session?.access_token;
@@ -18,12 +19,13 @@
         body: JSON.stringify({ coupangUrl: 'https://www.coupang.com/' }), signal: AbortSignal.timeout(20000),
       });
       const data = await response.json();
+      unassigned = response.status === 403 && data.success === false && data.error === 'coupang_access_unassigned';
       if (!response.ok || data.success !== true) throw new Error();
       const url = new URL(data.shortenUrl);
       if (url.protocol !== 'https:' || !['link.coupang.com', 'coupa.ng'].includes(url.hostname) || url.username || url.password || url.port) throw new Error();
       window.location.assign(data.shortenUrl);
     } catch {
-      status.textContent = '쿠팡에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.';
+      status.textContent = unassigned ? '현재 이 계정에서는 쿠팡 리워드를 이용할 수 없습니다.' : '쿠팡에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.';
       busy = false;
       button.disabled = false;
       button.textContent = '쿠팡으로 이동';

@@ -76,6 +76,7 @@ export function createHandler({ env, fetcher = fetch, logger = console }) {
     if (!profileResponse.ok) return fail('account_check_failed', 503);
     const profiles = await profileResponse.json();
     const profile = Array.isArray(profiles) && profiles.length === 1 ? profiles[0] : null;
+    if (profile?.id === user.id && (profile.coupang_sub_id === null || profile.coupang_sub_id === '')) return fail('coupang_access_unassigned', 403);
     if (profile?.id !== user.id || typeof profile.coupang_sub_id !== 'string' || !/^channel(?:10|[1-9])$/.test(profile.coupang_sub_id)) return fail('coupang_access_unavailable', 403);
     stage = 'configuration';
     const access = env('COUPANG_ACCESS_KEY'), secret = env('COUPANG_SECRET_KEY');

@@ -29,6 +29,10 @@
     .history-list li { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; padding:20px 0; border-bottom:1px solid var(--line); font-size:13px; }
     .history-list strong { color:#b7d1c3; font-weight:500; white-space:nowrap; }
     .history-list small { display:block; margin-top:6px; font-size:10px; color:var(--muted); }
+    .history-list li.has-purchase { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); align-items:start; }
+    .history-list .has-purchase > span:first-child { grid-column:1 / -1; }
+    .history-list .has-purchase > strong { text-align:right; }
+    .history-purchase { color:var(--muted); }
     .reward-status { display:grid; grid-template-columns:1fr 1fr; gap:20px; padding-block:24px; }
     .status-item { border:1px solid #34373d; border-radius:8px; background:#131519; padding:20px 24px; }
     .status-item h2 { color:#b7cfc1; font-size:12px; font-weight:400; }

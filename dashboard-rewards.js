@@ -73,7 +73,7 @@
       // Fetch every row, including data beyond PostgREST's per-request limit.
       do {
         const { data, error, count } = await client.from('rewards')
-          .select('id,user_id,source_type,merchant,amount_sats,status,created_at', { count: 'exact' })
+          .select('id,user_id,source_type,merchant,purchase_amount,purchase_currency,amount_sats,status,created_at', { count: 'exact' })
           .eq('user_id', userId).order('created_at', { ascending: false }).order('id', { ascending: false })
           .range(rows.length, rows.length + 499);
         if (current !== revision) return;
@@ -101,7 +101,16 @@
         name.textContent = row.source_type === 'ATTENDANCE' ? '출석 Reward' : (Object.hasOwn(merchants,row.merchant) ? merchants[row.merchant] : (typeof row.merchant === 'string' && row.merchant ? row.merchant : 'Reward'));
         detail.textContent = `${labels[row.status]} · ${new Intl.DateTimeFormat('ko-KR', { timeZone:'Asia/Seoul', year:'numeric', month:'2-digit', day:'2-digit' }).format(new Date(row.created_at))}`;
         amount.textContent = `${row.status === 'CANCELLED' ? '' : '+'}${format(row.amount)} sats`;
-        name.append(detail); item.append(name,amount); list.append(item);
+        name.append(detail); item.append(name);
+        if (row.source_type === 'SHOPPING' && row.purchase_currency === 'KRW' && row.purchase_amount != null) {
+          try {
+            const purchase = document.createElement('span');
+            purchase.className = 'history-purchase';
+            purchase.textContent = `₩${format(sats(row.purchase_amount))}`;
+            item.classList.add('has-purchase'); item.append(purchase);
+          } catch { /* Invalid optional purchase amounts must not hide reward history. */ }
+        }
+        item.append(amount); list.append(item);
       }
       if (!rows.length) { const empty = document.createElement('li'); empty.textContent = '아직 Reward 기록이 없습니다.'; list.append(empty); }
       field('reward_history').replaceChildren(list);

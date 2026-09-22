@@ -56,6 +56,21 @@ window.supabase={createClient:()=>({auth:{
  assert.equal(await value('current_value_krw'),'현재 가치 · 약 ₩0');assert.equal(priceCalls,0);
  const noScroll=()=>page.locator('.history-list').evaluate(el=>el.scrollHeight<=el.clientHeight&&el.clientHeight<320);
  assert.ok(await noScroll());
+ const shopping=(id,price,amount,extra={})=>row(id,'PENDING',amount,{source_type:'SHOPPING',merchant:'COUPANG',purchase_amount:price,purchase_currency:'KRW',...extra});
+ await refresh([shopping('s1',24400,658),shopping('s2',15100,407),row('a','CONFIRMED',100,{purchase_amount:null,purchase_currency:null}),shopping('s3',null,25),shopping('s4','9223372036854775807','1234567890123456789',{status:'CANCELLED'}),shopping('s5',100,1,{purchase_currency:'USD'})]);
+ assert.equal(await page.locator('.history-purchase').count(),3);
+ const history=await value('reward_history');assert(history.includes('₩24,400'));assert(history.includes('+658 sats'));assert(history.includes('₩15,100'));assert(history.includes('+407 sats'));
+ assert.equal(await value('confirmed_sats'),'100');assert.equal(await value('pending_sats'),'1,091');
+ assert(await page.evaluate(()=>queries.at(-1).columns.includes('purchase_amount,purchase_currency')));
+ for(const width of [320,390,768,1440]){
+   await page.setViewportSize({width,height:900});
+   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+   for(const item of await page.locator('.has-purchase').all()) assert(await item.evaluate(el=>{
+     const p=el.querySelector('.history-purchase').getBoundingClientRect(),s=el.querySelector('strong').getBoundingClientRect(),r=el.getBoundingClientRect();
+     return p.right<=s.left&&Math.abs(p.top-s.top)<1&&p.left>=r.left&&s.right<=r.right;
+   }));
+   await page.locator('.reward-history').screenshot({path:path.join(require('node:os').tmpdir(),`btcback-purchase-history-${width}.png`)});
+ }
  await refresh([row('1','CONFIRMED',100)]);
  assert.equal(await value('total_sats_earned'),'100');assert.equal(await value('btc_amount'),'0.00000100');assert.match(await value('reward_history'),/출석 Reward/);
  assert.ok(await noScroll());

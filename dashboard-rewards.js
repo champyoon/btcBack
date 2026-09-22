@@ -73,7 +73,7 @@
       // Fetch every row, including data beyond PostgREST's per-request limit.
       do {
         const { data, error, count } = await client.from('rewards')
-          .select('id,user_id,source_type,merchant,purchase_amount,purchase_currency,amount_sats,status,created_at', { count: 'exact' })
+          .select('id,user_id,source_type,merchant,purchase_amount,purchase_currency,amount_sats,status,created_at,confirm_eligible_at', { count: 'exact' })
           .eq('user_id', userId).order('created_at', { ascending: false }).order('id', { ascending: false })
           .range(rows.length, rows.length + 499);
         if (current !== revision) return;
@@ -95,13 +95,25 @@
       field('pending_sats').textContent = format(pending);
       field('btc_amount').textContent = `${confirmed / 100000000n}.${String(confirmed % 100000000n).padStart(8,'0')}`;
       const list = document.createDocumentFragment();
+      const historyDate = new Intl.DateTimeFormat('ko-KR', { timeZone:'Asia/Seoul', year:'numeric', month:'2-digit', day:'2-digit' });
       for (const row of rows) {
         const item = document.createElement('li'), name = document.createElement('span'), detail = document.createElement('small'), amount = document.createElement('strong');
         item.dataset.status = row.status;
+        item.className = 'history-item'; detail.className = 'history-dates';
         name.textContent = row.source_type === 'ATTENDANCE' ? '출석 Reward' : (Object.hasOwn(merchants,row.merchant) ? merchants[row.merchant] : (typeof row.merchant === 'string' && row.merchant ? row.merchant : 'Reward'));
-        detail.textContent = `${labels[row.status]} · ${new Intl.DateTimeFormat('ko-KR', { timeZone:'Asia/Seoul', year:'numeric', month:'2-digit', day:'2-digit' }).format(new Date(row.created_at))}`;
+        const shoppingPending = row.source_type === 'SHOPPING' && row.status === 'PENDING';
+        const statusLabel = document.createElement('span'), createdDate = document.createElement('time');
+        statusLabel.textContent = `${shoppingPending ? '구매 및 정산 확인 중' : labels[row.status]} ·`;
+        createdDate.dateTime = row.created_at; createdDate.textContent = historyDate.format(new Date(row.created_at));
+        detail.append(statusLabel,createdDate);
+        if (shoppingPending && typeof row.confirm_eligible_at === 'string' && Number.isFinite(Date.parse(row.confirm_eligible_at))) {
+          const eligibleLabel = document.createElement('span'), eligibleDate = document.createElement('time');
+          eligibleLabel.textContent = '확정 예정 ·'; eligibleDate.dateTime = row.confirm_eligible_at;
+          eligibleDate.textContent = historyDate.format(new Date(row.confirm_eligible_at));
+          detail.append(eligibleLabel,eligibleDate);
+        }
         amount.textContent = `${row.status === 'CANCELLED' ? '' : '+'}${format(row.amount)} sats`;
-        name.append(detail); item.append(name);
+        item.append(name,detail);
         if (row.source_type === 'SHOPPING' && row.purchase_currency === 'KRW' && row.purchase_amount != null) {
           try {
             const purchase = document.createElement('span');

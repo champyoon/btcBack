@@ -71,6 +71,37 @@ window.supabase={createClient:()=>({auth:{
    }));
    await page.locator('.reward-history').screenshot({path:path.join(require('node:os').tmpdir(),`btcback-purchase-history-${width}.png`)});
  }
+ const planned='2026-11-17T00:00:00Z';
+ await refresh([
+   shopping('planned',49900,1347,{created_at:'2026-09-18T00:00:00Z',confirm_eligible_at:planned}),
+   shopping('without-date',24400,100,{confirm_eligible_at:null}),
+   row('attendance','CONFIRMED',100,{confirm_eligible_at:planned}),
+   shopping('confirmed',15100,50,{status:'CONFIRMED',confirm_eligible_at:planned}),
+   shopping('cancelled',13000,0,{status:'CANCELLED',confirm_eligible_at:planned})
+ ]);
+ const plannedRow=page.locator('.history-item').filter({hasText:'+1,347 sats'});
+ assert.match(await plannedRow.innerText(),/구매 및 정산 확인 중/);
+ assert.match(await plannedRow.innerText(),/확정 예정/);
+ assert.match(await plannedRow.innerText(),/₩49,900/);
+ assert.equal(await plannedRow.locator('time').nth(0).innerText(),'2026. 09. 18.');
+ assert.equal(await plannedRow.locator('time').nth(1).innerText(),'2026. 11. 17.');
+ assert.equal(await page.locator('.history-dates').filter({hasText:'확정 예정'}).count(),1);
+ assert.equal(await value('confirmed_sats'),'150');assert.equal(await value('pending_sats'),'1,447');
+ assert.equal(await page.locator('.history-item').filter({hasText:'출석 Reward'}).locator('.history-purchase').count(),0);
+ assert.match(await page.locator('.history-item').filter({hasText:'출석 Reward'}).innerText(),/지급 확정/);
+ assert(await page.evaluate(()=>queries.at(-1).columns.includes('confirm_eligible_at')));
+ for(const width of [320,390,768,1440]){
+   await page.setViewportSize({width,height:900});
+   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+   assert(await plannedRow.evaluate(el=>{const dates=el.querySelectorAll('time');return Math.abs(dates[0].getBoundingClientRect().left-dates[1].getBoundingClientRect().left)<1;}));
+   assert(await page.locator('.history-list').evaluate(list=>{
+     const heights=[...list.querySelectorAll('.history-item')].map(el=>el.getBoundingClientRect().height);
+     return Math.max(...heights)-Math.min(...heights)<1&&list.scrollHeight>list.clientHeight&&list.clientHeight===320;
+   }));
+   await page.locator('.reward-history').screenshot({path:path.join(require('node:os').tmpdir(),`btcback-history-dates-${width}.png`)});
+ }
+ await refresh([shopping('invalid-date',24400,658,{confirm_eligible_at:'not-a-date'})]);
+ assert.equal(await page.locator('.history-dates time').count(),1);
  await refresh([row('1','CONFIRMED',100)]);
  assert.equal(await value('total_sats_earned'),'100');assert.equal(await value('btc_amount'),'0.00000100');assert.match(await value('reward_history'),/출석 Reward/);
  assert.ok(await noScroll());

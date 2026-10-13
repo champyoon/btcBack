@@ -6,3 +6,8 @@ verify_jwt = false
 # Public market data only; no user data or database access.
 [functions.btc-krw-price]
 verify_jwt = false
+
+# Dedicated scheduler endpoint verifies its own scoped secret; not a public sync API.
+# Manual sync/orders/cancellations retain the default gateway JWT check.
+[functions.coupang-reward-daily]
+verify_jwt = false

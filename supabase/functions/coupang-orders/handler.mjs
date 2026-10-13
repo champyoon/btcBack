@@ -33,7 +33,7 @@ export async function authorization(accessKey, secretKey, query, now = new Date(
   return `CEA algorithm=HmacSHA256, access-key=${accessKey}, signed-date=${signedDate}, signature=${signature}`;
 }
 
-export function createHandler({ env, fetcher = fetch, now = () => new Date() }) {
+export function createHandler({ env, fetcher = fetch, now = () => new Date(), internalAdminId }) {
   const json = (body, status = 200) => Response.json(body, {
     status, headers: { 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' },
   });
@@ -45,15 +45,17 @@ export function createHandler({ env, fetcher = fetch, now = () => new Date() }) 
     const bearer = req.headers.get('Authorization');
     if (!bearer || !/^Bearer \S+$/i.test(bearer)) return json({ error: 'authentication_required' }, 401);
     const base = env('SUPABASE_URL');
-    const apiKey = env('SUPABASE_ANON_KEY');
+    const apiKey = env(internalAdminId ? 'SUPABASE_SERVICE_ROLE_KEY' : 'SUPABASE_ANON_KEY');
     if (!base || !apiKey) return json({ error: 'server_configuration_missing' }, 503);
     try {
-      // Verify the user with Auth, then query membership under that user's RLS.
-      // A public API key alone is never sufficient; no service_role is used.
-      const headers = { apikey: apiKey, Authorization: bearer };
-      const userResponse = await request(`${base}/auth/v1/user`, { headers });
-      if (!userResponse.ok) return json({ error: 'invalid_session' }, 401);
-      const user = await userResponse.json();
+      // HTTP entry points never set internalAdminId. Only the authenticated daily wrapper does.
+      const headers = { apikey: apiKey, Authorization: internalAdminId ? `Bearer ${apiKey}` : bearer };
+      let user = { id: internalAdminId };
+      if (!internalAdminId) {
+        const userResponse = await request(`${base}/auth/v1/user`, { headers });
+        if (!userResponse.ok) return json({ error: 'invalid_session' }, 401);
+        user = await userResponse.json();
+      }
       if (!user.id) return json({ error: 'invalid_session' }, 401);
       const memberQuery = new URLSearchParams({ select: 'user_id', user_id: `eq.${user.id}`, limit: '1' });
       const memberResponse = await request(`${base}/rest/v1/admin_users?${memberQuery}`, { headers });
@@ -84,7 +86,7 @@ export function createHandler({ env, fetcher = fetch, now = () => new Date() }) 
       const result = { ...range, count: orders.length, orders };
       if (new URL(req.url).searchParams.get('debug') === 'true') {
         // Values are allowlisted scalars only; never return raw objects/headers.
-        const protectedValues = [accessKey, secretKey, auth, bearer, auth.split('signature=')[1]];
+        const protectedValues = [accessKey, secretKey, auth, bearer, apiKey, auth.split('signature=')[1]];
         const safeValue = value => {
           if (value === null || typeof value === 'number' || typeof value === 'boolean') return value;
           if (typeof value !== 'string') return '[omitted: non-scalar]';

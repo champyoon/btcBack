@@ -6,18 +6,19 @@ import { fetchRewardQuote } from '../supabase/functions/_shared/btc-krw-quote.mj
 
 const request = () => new Request('https://btcback.test/functions/v1/btc-krw-price');
 const logger = { error() {} };
+const instant = Date.parse('2026-10-23T13:15:00Z');
 test('public price: fixed Upbit GET, no credentials, minimal response and CORS', async () => {
-  const handler = createHandler({ logger, fetcher: async (url, options) => {
+  const handler = createHandler({ logger, now: () => new Date(instant), fetcher: async (url, options) => {
     assert.equal(url, 'https://api.upbit.com/v1/ticker?markets=KRW-BTC');
     assert.equal(options.method, 'GET'); assert.equal(options.redirect, 'error');
     assert.deepEqual(options.headers, { Accept: 'application/json' });
     assert.ok(options.signal instanceof AbortSignal);
-    return Response.json([{ market:'KRW-BTC',trade_price:150000000,extra:'not forwarded' }]);
+    return Response.json([{ market:'KRW-BTC',trade_price:150000000,timestamp:instant,extra:'not forwarded' }]);
   }});
   const response = await handler(request());
   assert.equal(response.status,200); assert.equal(response.headers.get('Access-Control-Allow-Origin'),'*');
   assert.equal(response.headers.get('Cache-Control'),'no-store');
-  assert.deepEqual(await response.json(),{success:true,market:'KRW-BTC',price:150000000});
+  assert.deepEqual(await response.json(),{success:true,market:'KRW-BTC',price:150000000,price_at:new Date(instant).toISOString()});
   assert.match(readFileSync(new URL('../supabase/config.toml',import.meta.url),'utf8'),/\[functions\.btc-krw-price\]\s*verify_jwt\s*=\s*false/);
 });
 test('price preflight and invalid requests never reach Upbit', async () => {
@@ -27,6 +28,15 @@ test('price preflight and invalid requests never reach Upbit', async () => {
   assert.equal((await handler(new Request(request(),{method:'POST'}))).status,405);
   assert.equal((await handler(new Request(request().url+'?url=https://example.com'))).status,400);
   assert.equal(calls,0);
+});
+
+test('public price rejects missing, stale and future exchange timestamps', async () => {
+  for (const timestamp of [undefined, null, instant-300001, instant+30001]) {
+    const response = await createHandler({ logger, now: () => new Date(instant),
+      fetcher: async () => Response.json([{market:'KRW-BTC',trade_price:150000000,timestamp}]) })(request());
+    assert.equal(response.status,502);
+    assert.deepEqual(await response.json(),{success:false,error:'price_unavailable'});
+  }
 });
 test('price rejects invalid schemas and nonpositive/nonfinite/nonnumeric prices', async () => {
   for(const body of [null,{},[],[{}],[{market:'KRW-ETH',trade_price:150000000}],

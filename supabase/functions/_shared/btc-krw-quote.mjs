@@ -14,8 +14,8 @@ export async function fetchBtcKrwTicker({ fetcher = fetch, timeoutMs = 8000 } = 
   return { price, timestamp: data[0].timestamp };
 }
 
-export async function fetchRewardQuote({ fetcher = fetch, now = () => new Date() } = {}) {
-  const { price, timestamp } = await fetchBtcKrwTicker({ fetcher });
+export async function fetchRewardQuote({ fetcher = fetch, now = () => new Date(), timeoutMs = 8000 } = {}) {
+  const { price, timestamp } = await fetchBtcKrwTicker({ fetcher, timeoutMs });
   const fetchedAt = now().getTime();
   // Upbit timestamp is ticker update time, not our fetch time or trade_timestamp.
   if (!Number.isSafeInteger(timestamp) || timestamp <= 0 || !Number.isFinite(fetchedAt)

@@ -1,6 +1,6 @@
-import { fetchBtcKrwTicker } from '../_shared/btc-krw-quote.mjs';
+import { fetchRewardQuote } from '../_shared/btc-krw-quote.mjs';
 
-export function createHandler({ fetcher = fetch, logger = console, timeoutMs = 8000 } = {}) {
+export function createHandler({ fetcher = fetch, logger = console, timeoutMs = 8000, now = () => new Date() } = {}) {
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, OPTIONS',
@@ -13,8 +13,8 @@ export function createHandler({ fetcher = fetch, logger = console, timeoutMs = 8
     if (req.method !== 'GET') return json({ success: false, error: 'method_not_allowed' }, 405);
     if (new URL(req.url).search) return json({ success: false, error: 'invalid_request' }, 400);
     try {
-      const { price } = await fetchBtcKrwTicker({ fetcher, timeoutMs });
-      return json({ success: true, market: 'KRW-BTC', price });
+      const quote = await fetchRewardQuote({ fetcher, timeoutMs, now });
+      return json({ success: true, market: 'KRW-BTC', price: quote.rate, price_at: quote.rateAt });
     } catch (error) {
       const timeout = error?.name === 'TimeoutError' || error?.name === 'AbortError';
       // Do not echo upstream bodies, request headers or raw exception messages.

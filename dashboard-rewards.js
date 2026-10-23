@@ -5,16 +5,24 @@
   const field = name => dashboard.querySelector(`[data-field="${name}"]`);
   const message = document.getElementById('rewards-message');
   const retry = document.getElementById('rewards-retry');
-  const labels = { CONFIRMED: '지급 확정', PENDING: '확인 중', CANCELLED: '취소됨' };
+  const labels = { CONFIRMED: '지급 확정', PENDING: '확인 중', PAID: '지급 완료', CANCELLED: '취소됨' };
   const merchants = { COUPANG: 'Coupang', IHERB: 'iHerb', TRIPCOM: 'Trip.com' };
   let revision = 0;
   let priceController;
   const format = value => value.toLocaleString('en-US');
+  function clearQuote() {
+    field('btc_krw_price').textContent = '-';
+    const time = field('price_time');
+    time.textContent = ''; time.hidden = true;
+    time.removeAttribute('datetime'); time.removeAttribute('title');
+  }
   function reset() {
     ++revision;
     priceController?.abort();
-    field('current_value_krw').textContent = '현재 가치 · -';
-    for (const name of ['total_sats_earned','btc_amount','confirmed_sats','pending_sats']) field(name).textContent = '-';
+    field('current_value_krw').textContent = '-';
+    field('current_value_krw').classList.remove('is-message');
+    clearQuote();
+    for (const name of ['total_sats_earned','btc_amount']) field(name).textContent = '-';
     field('reward_history').replaceChildren();
     message.textContent = 'Reward를 불러오고 있습니다.';
     message.classList.remove('error');
@@ -26,20 +34,21 @@
     if (!['number','string'].includes(typeof value) || !/^\d+$/.test(String(value))) throw new Error('Invalid amount');
     return BigInt(value);
   }
-  function currentWon(confirmed, price) {
+  function currentWon(earned, price) {
     // Preserve bigint sats precision; round the final positive KRW value half-up.
     const [mantissa, exponent = '0'] = String(price).split('e');
     const [whole, fraction = ''] = mantissa.split('.');
     const scale = fraction.length - Number(exponent);
-    let numerator = confirmed * BigInt(whole + fraction), denominator = 100000000n;
+    let numerator = earned * BigInt(whole + fraction), denominator = 100000000n;
     if (scale >= 0) denominator *= 10n ** BigInt(scale);
     else numerator *= 10n ** BigInt(-scale);
     return (numerator + denominator / 2n) / denominator;
   }
-  async function loadCurrentValue(confirmed, current) {
+  async function loadCurrentValue(earned, current) {
     const value = field('current_value_krw');
-    if (confirmed === 0n) { value.textContent = '현재 가치 · 약 ₩0'; return; }
-    value.textContent = '현재 가치 · 불러오는 중...';
+    if (earned === 0n) { value.textContent = '약 ₩0'; return; }
+    value.textContent = '불러오는 중...';
+    value.classList.add('is-message');
     const controller = new AbortController();
     priceController = controller;
     const timer = setTimeout(() => controller.abort(), 10000);
@@ -52,12 +61,24 @@
       const data = await response.json();
       if (data?.success !== true || data.market !== 'KRW-BTC' || typeof data.price !== 'number' ||
           !Number.isFinite(data.price) || data.price <= 0 || data.price > Number.MAX_SAFE_INTEGER) throw new Error('Invalid price');
+      const priceAt = typeof data.price_at === 'string' ? Date.parse(data.price_at) : NaN;
+      const age = Date.now() - priceAt;
+      if (!Number.isFinite(priceAt) || age > 300000 || age < -30000) throw new Error('Stale price');
       if (current !== revision) return;
-      value.textContent = `현재 가치 · 약 ₩${format(currentWon(confirmed, data.price))}`;
+      value.textContent = `약 ₩${format(currentWon(earned, data.price))}`;
+      value.classList.remove('is-message');
+      field('btc_krw_price').textContent = `₩${data.price.toLocaleString('en-US', { maximumFractionDigits: 2 })}`;
+      const time = field('price_time');
+      time.dateTime = data.price_at;
+      time.textContent = `${new Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Seoul', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(new Date(priceAt))} 기준 (KST)`;
+      time.title = new Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Seoul', dateStyle: 'medium', timeStyle: 'medium' }).format(new Date(priceAt));
+      time.hidden = false;
     } catch {
       if (current !== revision) return;
       console.error('[BTCBack price] Current value unavailable');
       value.textContent = '현재 가치를 불러올 수 없습니다.';
+      value.classList.add('is-message');
+      clearQuote();
     } finally {
       clearTimeout(timer);
       if (priceController === controller) priceController = undefined;
@@ -88,12 +109,10 @@
         if (rows.length > total) throw new Error('Inconsistent response');
       } while (rows.length < total);
       if (current !== revision) return;
-      const confirmed = rows.filter(row => row.status === 'CONFIRMED').reduce((sum,row) => sum + row.amount, 0n);
-      const pending = rows.filter(row => row.status === 'PENDING').reduce((sum,row) => sum + row.amount, 0n);
-      field('total_sats_earned').textContent = format(confirmed);
-      field('confirmed_sats').textContent = format(confirmed);
-      field('pending_sats').textContent = format(pending);
-      field('btc_amount').textContent = `${confirmed / 100000000n}.${String(confirmed % 100000000n).padStart(8,'0')}`;
+      // Current reward rows already contain net sats after partial cancellations.
+      const earned = rows.filter(row => ['PENDING','CONFIRMED','PAID'].includes(row.status)).reduce((sum,row) => sum + row.amount, 0n);
+      field('total_sats_earned').textContent = format(earned);
+      field('btc_amount').textContent = `${earned / 100000000n}.${String(earned % 100000000n).padStart(8,'0')}`;
       const list = document.createDocumentFragment();
       const historyDate = new Intl.DateTimeFormat('ko-KR', { timeZone:'Asia/Seoul', year:'numeric', month:'2-digit', day:'2-digit' });
       for (const row of rows) {
@@ -127,7 +146,7 @@
       if (!rows.length) { const empty = document.createElement('li'); empty.textContent = '아직 Reward 기록이 없습니다.'; list.append(empty); }
       field('reward_history').replaceChildren(list);
       message.textContent = '';
-      void loadCurrentValue(confirmed, current);
+      void loadCurrentValue(earned, current);
     } catch (error) {
       if (current !== revision) return;
       // Never log raw server messages, row data, session details or credentials.

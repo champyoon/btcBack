@@ -20,9 +20,23 @@
     .metric-label { font-size:12px; font-weight:400; line-height:1.6; color:var(--muted); margin:0 0 12px; }
     .sats-total { margin:0; color:var(--orange); font-size:56px; font-weight:800; line-height:1.2; font-variant-numeric:tabular-nums; }
     .sats-total .unit { font-size:24px; font-weight:600; }
-    .btc-total { font-size:20px; margin:14px 0 26px; }
-    .btc-total small { display:block; font-size:11px; color:var(--muted); margin-top:6px; }
+    .btc-total { font-size:20px; margin:14px 0 0; }
+    .earned { border:1px solid var(--line); border-radius:8px; }
+    .earned-overview { display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,1fr); gap:32px; }
+    .earned-balance,.earned-valuation { min-width:0; }
+    .earned-valuation { padding-left:32px; border-left:1px solid var(--line); }
+    .valuation-total { margin:0; font-size:32px; font-weight:700; line-height:1.35; font-variant-numeric:tabular-nums; }
+    .valuation-total.is-message { font-size:14px; font-weight:400; color:var(--muted); }
+    .market-quote { margin-top:24px; }
+    .market-label { margin:0 0 6px; color:var(--muted); font-size:12px; }
+    .market-price { margin:0 0 4px; font-size:18px; font-weight:600; font-variant-numeric:tabular-nums; }
+    .satoshi-note { margin-top:28px; padding:20px 0 0; border-top:1px solid #443321; display:flex; align-items:flex-start; gap:14px; background:linear-gradient(180deg,rgba(247,147,26,.04),transparent); }
+    .bitcoin-symbol { flex:0 0 36px; height:36px; display:grid; place-items:center; border-radius:50%; background:var(--orange); color:#16100a; font-size:24px; font-weight:700; }
+    .satoshi-note > div { min-width:0; }
+    .satoshi-equation { margin:0 0 8px; font-size:16px; line-height:1.5; font-weight:600; color:#f5b565; overflow-wrap:anywhere; }
+    .satoshi-description { margin:0; font-size:12px; line-height:1.8; color:var(--muted); word-break:keep-all; overflow-wrap:anywhere; }
     .current-value { margin:0; color:var(--muted); font-size:13px; line-height:1.7; overflow-wrap:anywhere; }
+    .reward-history { margin-top:24px; }
     h2 { font-size:15px; font-weight:600; margin:0; }
     .history-list { list-style:none; padding:0; margin:14px 0 0; max-height:320px; overflow-y:auto; }
     .history-list:focus-visible { outline:2px solid var(--orange); outline-offset:4px; }
@@ -35,12 +49,6 @@
     .history-item > .history-purchase { grid-row:3; grid-column:1; }
     .history-item > strong { grid-row:3; grid-column:2; text-align:right; }
     .history-purchase { color:var(--muted); }
-    .reward-status { display:grid; grid-template-columns:1fr 1fr; gap:20px; padding-block:24px; }
-    .status-item { border:1px solid #34373d; border-radius:8px; background:#131519; padding:20px 24px; }
-    .status-item h2 { color:#b7cfc1; font-size:12px; font-weight:400; }
-    .status-item.pending h2 { color:#c7c1ae; }
-    .status-item strong { display:block; margin-top:9px; font-size:22px; font-weight:600; }
-    .status-item p { color:var(--muted); font-size:11px; margin:8px 0 0; }
     [data-field], .history-list li { overflow-wrap:anywhere; }
     .history-list strong { white-space:normal; }
     .history-list [data-status="CANCELLED"] strong { color:var(--muted); }
@@ -63,7 +71,11 @@
       .earned,.reward-history { padding:24px 18px; }
       .sats-total { font-size:42px; }
       .sats-total .unit { font-size:20px; }
-      .reward-status { grid-template-columns:1fr; gap:12px; }
+      .earned-overview { grid-template-columns:minmax(0,1fr); gap:24px; }
+      .earned-valuation { padding:24px 0 0; border-left:0; border-top:1px solid var(--line); }
+      .valuation-total { font-size:28px; }
+      .satoshi-note { gap:10px; }
+      .satoshi-equation { font-size:14px; }
       .footer-inner { font-size:10px; }
     }
   </style>
@@ -103,14 +115,29 @@
     <p id="rewards-message" role="status" aria-live="polite">Reward를 불러오고 있습니다.</p>
     <button id="rewards-retry" type="button" hidden>다시 시도</button>
     <section class="earned" aria-labelledby="earned-title">
+      <div class="earned-overview">
+      <div class="earned-balance">
         <h2 class="metric-label" id="earned-title">Bitcoin Earned</h2>
         <p class="sats-total"><span data-field="total_sats_earned">-</span> <span class="unit">sats</span></p>
-        <p class="btc-total"><span data-field="btc_amount">-</span> BTC<small>Bitcoin Earned</small></p>
-        <p class="current-value" data-field="current_value_krw" role="status" aria-live="polite">현재 가치 · -</p>
-    </section>
-    <section class="reward-status" aria-label="리워드 상태 요약">
-      <div class="status-item"><h2>Confirmed rewards</h2><strong><span data-field="confirmed_sats">-</span> sats</strong><p>확정된 Reward</p></div>
-      <div class="status-item pending"><h2>Pending rewards</h2><strong><span data-field="pending_sats">-</span> sats</strong><p>구매 및 정산 확인 중</p></div>
+        <p class="btc-total"><span data-field="btc_amount">-</span> BTC</p>
+      </div>
+      <div class="earned-valuation" aria-labelledby="valuation-title">
+        <h2 class="metric-label" id="valuation-title">현재 가치 (KRW)</h2>
+        <p class="valuation-total" data-field="current_value_krw" role="status" aria-live="polite">-</p>
+        <div class="market-quote">
+          <p class="market-label">BTC/KRW (Upbit)</p>
+          <p class="market-price" data-field="btc_krw_price">-</p>
+          <time class="current-value" data-field="price_time" hidden></time>
+        </div>
+      </div>
+      </div>
+      <div class="satoshi-note">
+        <span class="bitcoin-symbol" aria-hidden="true">₿</span>
+        <div>
+          <p class="satoshi-equation">1 BTC = 100,000,000 sats</p>
+          <p class="satoshi-description">Bitcoin은 1 BTC를 1억 개의 사토시(sats)로 나눌 수 있습니다.<br>작은 금액도 사토시 단위로 모아 누구나 쉽게 시작할 수 있어요.</p>
+        </div>
+      </div>
     </section>
     <section class="reward-history" aria-labelledby="history-title">
       <h2 id="history-title">Reward History</h2>

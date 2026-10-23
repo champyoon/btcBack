@@ -17,11 +17,15 @@ const defaults = {
 };
 function fixture({ config = {}, member = true, fail = '', now = () => new Date('2026-10-05T09:00:00Z') } = {}) {
   const values = { ...defaults, ...config }, calls = [], logs = [];
+  const quoteTime = new Date().toISOString();
   const env = key => values[key];
   const fetcher = async (url, options) => {
     calls.push({ url, options });
     assert.ok(!JSON.stringify({ url, options }).includes(secret));
     assert.equal(options.redirect, 'error');
+    if (url === 'https://api.upbit.com/v1/ticker?markets=KRW-BTC') {
+      return Response.json([{ market: 'KRW-BTC', trade_price: 150000000, timestamp: Date.parse(quoteTime) }]);
+    }
     if (url.includes('/auth/v1/user')) return Response.json({}, { status: 401 });
     if (url.includes('/admin_users?')) {
       assert.equal(options.headers.Authorization, 'Bearer mock-server-secret');
@@ -38,7 +42,8 @@ function fixture({ config = {}, member = true, fail = '', now = () => new Date('
     assert.equal(url, values.SUPABASE_URL + '/rest/v1/rpc/sync_coupang_rewards');
     assert.equal(options.method, 'POST');
     assert.equal(options.headers.Authorization, 'Bearer mock-server-secret');
-    assert.deepEqual(JSON.parse(options.body), { p_admin_id: id, p_events: [] });
+    assert.deepEqual(JSON.parse(options.body), { p_admin_id: id, p_events: [],
+      p_btc_krw_rate: 150000000, p_btc_rate_at: quoteTime, p_btc_rate_source: 'upbit' });
     if (fail === 'rpc') return Response.json({ detail: 'mock-server-secret' }, { status: 400 });
     return Response.json({ created_rewards: 0, inserted_events: 0, duplicate_events: 0, updated_rewards: 0, skipped: [] });
   };

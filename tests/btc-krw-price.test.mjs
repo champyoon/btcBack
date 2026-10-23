@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { createHandler } from '../supabase/functions/btc-krw-price/handler.mjs';
+import { fetchRewardQuote } from '../supabase/functions/_shared/btc-krw-quote.mjs';
 
 const request = () => new Request('https://btcback.test/functions/v1/btc-krw-price');
 const logger = { error() {} };
@@ -48,4 +49,23 @@ test('Upbit timeout is bounded and reported independently', async () => {
     await new Promise(resolve=>setTimeout(resolve,20));signal.throwIfAborted();throw Error('Expected timeout');
   }})(request());
   assert.equal(response.status,504);assert.deepEqual(await response.json(),{success:false,error:'price_timeout'});
+});
+
+test('reward quote uses ticker timestamp, checks freshness and precision without fallback', async () => {
+  const instant = Date.parse('2026-10-21T09:00:00Z');
+  const now = () => new Date(instant);
+  let calls = 0;
+  const fetcher = async () => { calls++; return Response.json([{ market: 'KRW-BTC',
+    trade_price: 150000000, timestamp: instant - 10000, trade_timestamp: instant - 20000 }]); };
+  assert.deepEqual(await fetchRewardQuote({ fetcher, now }),
+    { rate: 150000000, rateAt: new Date(instant - 10000).toISOString(), source: 'upbit' });
+  assert.equal(calls, 1);
+  for (const timestamp of [undefined, null, '123', 0, instant-300001, instant+30001, instant+0.5]) {
+    await assert.rejects(fetchRewardQuote({ now, fetcher: async () => Response.json([
+      { market: 'KRW-BTC', trade_price: 150000000, timestamp },
+    ]) }), /Invalid or stale/);
+  }
+  await assert.rejects(fetchRewardQuote({ now, fetcher: async () => Response.json([
+    { market: 'KRW-BTC', trade_price: 1.001, timestamp: instant },
+  ]) }), /Invalid or stale/);
 });

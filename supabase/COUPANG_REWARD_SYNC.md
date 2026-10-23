@@ -1,5 +1,9 @@
 # Coupang Reward Sync v1 (manual, historical test policy)
 
+Historical baseline documentation. For the current live-rate implementation and
+coordinated RPC/Edge rollout, use [COUPANG_REWARD_LIVE_RATE.md](COUPANG_REWARD_LIVE_RATE.md).
+Do not apply/deploy this old baseline alone over the live-rate implementation.
+
 ## Scope and prerequisites
 
 New `coupang-reward-sync` calls the existing orders and cancellations handlers
@@ -48,7 +52,7 @@ Existing rewards/profile/attendance grants and RLS are untouched.
   profiles.coupang_sub_id. Ambiguous/conflicting mappings abort the batch.
 - History key: `{PURCHASE|CANCEL}:{orderId}:{productId}:{YYYYMMDD}:{gmv}:{commission}`.
   Numeric amounts use canonical decimal text (no trailing fractional zeros).
-- Each event's sats = PostgreSQL `floor(commission * 0.90)` using exact numeric
+- Each historical event's sats = PostgreSQL `sign(commission) * floor(abs(commission) * 0.90)` using exact numeric
   arithmetic. This is the FIXED historical test quote of 100,000,000 KRW/BTC,
   not a live exchange rate. No BTC/KRW price function is called.
 - Sum history gmv/sats into rewards. Partial cancellation stays PENDING/PARTIAL.
@@ -140,8 +144,8 @@ mocks and an isolated PGlite PostgreSQL database, not production data.
   Reconciliation/snapshot replacement is not implemented.
 - Channel reassignment is not a historical identity map. Keep beta assignments
   stable. Missing/ambiguous ownership must be reviewed, not guessed.
-- Floor is per event: +357 -> +321 but -357 -> -322. This follows the requested
-  rule and is not symmetric cancellation rounding. Full cancellation clamps to
+- Floor is per event with symmetric signs: +357 -> +321 and -357 -> -321.
+  Full cancellation clamps to
   zero; a negative remaining sats on a positive net purchase fails for review.
 - Provider API freshness and corrections are outside this manual importer.
   No finality guarantee, live quote policy, reward confirmation or payouts.

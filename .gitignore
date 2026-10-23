@@ -4,3 +4,13 @@
 *.secret
 *.secrets
 node_modules/
+
+
+# Supabase database backups
+/backups/
+
+# Local logs
+debug.log
+
+# Supabase CLI temporary files
+/supabase/.temp/

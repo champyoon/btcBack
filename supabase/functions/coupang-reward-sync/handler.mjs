@@ -1,5 +1,6 @@
 import { createHandler as ordersHandler, dateRange } from '../coupang-orders/handler.mjs';
 import { createHandler as cancellationsHandler } from '../coupang-cancellations/handler.mjs';
+import { fetchRewardQuote } from '../_shared/btc-krw-quote.mjs';
 
 function identifier(value) {
   if (typeof value === 'number' && !Number.isSafeInteger(value)) throw Error('invalid_report');
@@ -88,9 +89,14 @@ export function createHandler({ env, fetcher = fetch, now = () => new Date(), in
         if (events.length > 5000) return fail('sync_scope_too_large', 422);
         if (body.orderId) events = events.filter(row => row.order_id === body.orderId);
       } catch { return fail('invalid_report', 502); }
+      let quote;
+      // Daily freezes `now` for report dates; freshness must use the actual fetch time.
+      try { quote = await fetchRewardQuote({ fetcher }); }
+      catch { return fail('reward_price_unavailable', 502); }
       const response = await request(`${base}/rest/v1/rpc/sync_coupang_rewards`, {
         method: 'POST', headers: { apikey: serviceKey, Authorization: `Bearer ${serviceKey}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ p_admin_id: user.id, p_events: events }),
+        body: JSON.stringify({ p_admin_id: user.id, p_events: events,
+          p_btc_krw_rate: quote.rate, p_btc_rate_at: quote.rateAt, p_btc_rate_source: quote.source }),
       });
       // Never expose PostgREST exception details, request bodies or credentials.
       if (!response.ok) return fail('sync_database_rejected', 409);

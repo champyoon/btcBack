@@ -58,8 +58,7 @@ window.supabase={createClient:()=>({auth:{
  assert.equal(await page.locator('[data-field="price_time"]').isHidden(),true);
  assert.equal(await value('btc_krw_price'),'-');
  assert.equal(await page.locator('.satoshi-equation').innerText(),'1 BTC = 100,000,000 sats');
- const noScroll=()=>page.locator('.history-list').evaluate(el=>el.scrollHeight<=el.clientHeight&&el.clientHeight<320);
- assert.ok(await noScroll());
+ const noScroll=()=>page.locator('.history-list').evaluate(el=>getComputedStyle(el).overflowY!=='auto');
  const shopping=(id,price,amount,extra={})=>row(id,'PENDING',amount,{source_type:'SHOPPING',merchant:'COUPANG',purchase_amount:price,purchase_currency:'KRW',...extra});
  await refresh([shopping('s1',24400,658),shopping('s2',15100,407),row('a','CONFIRMED',100,{purchase_amount:null,purchase_currency:null}),shopping('s3',null,25),shopping('s4','9223372036854775807','1234567890123456789',{status:'CANCELLED'}),shopping('s5',100,1,{purchase_currency:'USD'})]);
  assert.equal(await page.locator('.history-purchase').count(),3);
@@ -69,10 +68,6 @@ window.supabase={createClient:()=>({auth:{
  for(const width of [320,390,768,1440]){
    await page.setViewportSize({width,height:900});
    assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
-   for(const item of await page.locator('.has-purchase').all()) assert(await item.evaluate(el=>{
-     const p=el.querySelector('.history-purchase').getBoundingClientRect(),s=el.querySelector('strong').getBoundingClientRect(),r=el.getBoundingClientRect();
-     return p.right<=s.left&&Math.abs(p.top-s.top)<1&&p.left>=r.left&&s.right<=r.right;
-   }));
    await page.locator('.reward-history').screenshot({path:path.join(require('node:os').tmpdir(),`btcback-purchase-history-${width}.png`)});
  }
  const planned='2026-11-17T00:00:00Z';
@@ -84,34 +79,27 @@ window.supabase={createClient:()=>({auth:{
    shopping('cancelled',13000,0,{status:'CANCELLED',confirm_eligible_at:planned})
  ]);
  const plannedRow=page.locator('.history-item').filter({hasText:'+1,347 sats'});
- assert.match(await plannedRow.innerText(),/구매 및 정산 확인 중/);
- assert.match(await plannedRow.innerText(),/확정 예정/);
+ assert.match(await plannedRow.innerText(),/확인 중/);
+ assert.doesNotMatch(await plannedRow.innerText(),/확정 예정/);
  assert.match(await plannedRow.innerText(),/₩49,900/);
- assert.equal(await plannedRow.locator('time').nth(0).innerText(),'2026. 09. 18.');
- assert.equal(await plannedRow.locator('time').nth(1).innerText(),'2026. 11. 17.');
- assert.equal(await page.locator('.history-dates').filter({hasText:'확정 예정'}).count(),1);
+ assert.equal(await plannedRow.locator('time').innerText(),'2026.09.18');
  assert.equal(await value('total_sats_earned'),'1,597');
  assert.equal(await page.locator('.history-item').filter({hasText:'출석 Reward'}).locator('.history-purchase').count(),0);
- assert.match(await page.locator('.history-item').filter({hasText:'출석 Reward'}).innerText(),/지급 확정/);
+ assert.match(await page.locator('.history-item').filter({hasText:'출석 Reward'}).innerText(),/적립 완료/);
  assert(await page.evaluate(()=>queries.at(-1).columns.includes('confirm_eligible_at')));
  for(const width of [320,390,768,1440]){
    await page.setViewportSize({width,height:900});
    assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
-   assert(await plannedRow.evaluate(el=>{const dates=el.querySelectorAll('time');return Math.abs(dates[0].getBoundingClientRect().left-dates[1].getBoundingClientRect().left)<1;}));
-   assert(await page.locator('.history-list').evaluate(list=>{
-     const heights=[...list.querySelectorAll('.history-item')].map(el=>el.getBoundingClientRect().height);
-     return Math.max(...heights)-Math.min(...heights)<1&&list.scrollHeight>list.clientHeight&&list.clientHeight===320;
-   }));
    await page.locator('.reward-history').screenshot({path:path.join(require('node:os').tmpdir(),`btcback-history-dates-${width}.png`)});
  }
  await refresh([shopping('invalid-date',24400,658,{confirm_eligible_at:'not-a-date'})]);
- assert.equal(await page.locator('.history-dates time').count(),1);
+ assert.equal(await page.locator('.history-item time').count(),1);
  await refresh([row('1','CONFIRMED',100)]);
  assert.equal(await value('total_sats_earned'),'100');assert.equal(await value('btc_amount'),'0.00000100');assert.match(await value('reward_history'),/출석 Reward/);
  assert.ok(await noScroll());
  await refresh([row('1','CONFIRMED',100),row('2','PENDING',2150,{source_type:'SHOPPING',merchant:'COUPANG',created_at:'2026-09-15T00:00:00Z'}),row('3','CANCELLED',900),row('other','CONFIRMED',999999,{user_id:'member-b'})]);
  assert.equal(await value('total_sats_earned'),'2,250');
- assert.equal(await page.locator('.history-list li').count(),3);assert.match(await page.locator('.history-list li').first().innerText(),/Coupang/);
+ assert.equal(await page.locator('.history-list tbody tr').count(),3);assert.match(await page.locator('.history-list tbody tr').first().innerText(),/쿠팡 쇼핑/);
  assert.match(await page.locator('[data-status="CANCELLED"]').innerText(),/취소됨/);assert.equal(await page.locator('[data-status="CANCELLED"] strong').innerText(),'900 sats');
  assert.doesNotMatch(await value('reward_history'),/999,999/);
  const valueIs=text=>page.waitForFunction(s=>document.querySelector('[data-field="current_value_krw"]').textContent===s,text);
@@ -157,7 +145,7 @@ window.supabase={createClient:()=>({auth:{
  for(const bad of [{success:true,market:'KRW-BTC',price:0},{success:true,market:'KRW-BTC',price:-1},{success:true,market:'KRW-BTC',price:'150000000'},{success:true,market:'KRW-ETH',price:100},{}]){
    priceBody=bad;await refresh(pricingRows);await valueIs('현재 가치를 불러올 수 없습니다.');
    assert.equal(await value('total_sats_earned'),'2,000');
-   assert.equal(await page.locator('.history-list li').count(),3);assert.equal(await page.locator('#rewards-message.error').count(),0);
+   assert.equal(await page.locator('.history-list tbody tr').count(),3);assert.equal(await page.locator('#rewards-message.error').count(),0);
  }
  priceStatus=502;await refresh(pricingRows);await valueIs('현재 가치를 불러올 수 없습니다.');assert.equal(await value('btc_amount'),'0.00002000');
  assert.equal(await page.locator('[data-field="price_time"]').isHidden(),true);
@@ -177,8 +165,8 @@ window.supabase={createClient:()=>({auth:{
  holdPrice=true;await refresh(pricingRows);while(!releasePrice)await new Promise(resolve=>setTimeout(resolve,10));
  await refresh([]);releasePrice();releasePrice=undefined;await valueIs('약 ₩0');
  const many=Array.from({length:505},(_,i)=>row(String(i).padStart(4,'0'),'CONFIRMED',100,{source_type:'SHOPPING',merchant:i===0?'<img src=x onerror=alert(1)>':i===1?'IHERB':'TRIPCOM'}));
- await refresh(many);assert.equal(await value('total_sats_earned'),'50,500');assert.equal(await page.locator('.history-list li').count(),505);assert.equal(await page.locator('.history-list img').count(),0);
- assert.match(await value('reward_history'),/iHerb/);assert.match(await value('reward_history'),/Trip.com/);
+ await refresh(many);assert.equal(await value('total_sats_earned'),'50,500');assert.equal(await page.locator('.history-list tbody tr').count(),10);assert.equal(await page.locator('.history-list img').count(),0);
+ assert.match(await value('reward_history'),/Trip.com/);
  await valueIs('약 ₩75,750');
  for(const width of [320,390,768,1440]){
  await page.setViewportSize({width,height:900});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
@@ -188,22 +176,24 @@ window.supabase={createClient:()=>({auth:{
    const aligned=r=>Math.abs(r.left-main.left)<1&&Math.abs(r.right-main.right)<1;
    return aligned(earned)&&aligned(history)&&earned.bottom<=history.top;
  }),`layout order/width at ${width}`);
- assert.ok(await page.locator('.history-list').evaluate(el=>getComputedStyle(el).overflowY==='auto'&&el.clientHeight===320&&el.scrollHeight>el.clientHeight));
- const before=await page.evaluate(()=>({y:scrollY,height:document.documentElement.scrollHeight}));
- await page.locator('.history-list').evaluate(el=>el.scrollTop=200);
- assert.equal(await page.locator('.history-list').evaluate(el=>el.scrollTop),200);
- assert.deepEqual(await page.evaluate(()=>({y:scrollY,height:document.documentElement.scrollHeight})),before);
- await page.locator('.history-list').evaluate(el=>el.scrollTop=0);
  await page.screenshot({path:path.join(require('node:os').tmpdir(),`btcback-rewards-${width}.png`)});
  }
- await page.locator('.history-list').focus();await page.keyboard.press('ArrowDown');
- await page.waitForFunction(()=>document.querySelector('.history-list').scrollTop>0);
+ await page.click('#history-more');assert.equal(await page.locator('.history-item').count(),20);
+ await page.click('#history-attendance');assert.equal(await page.locator('.history-item').count(),0);assert.match(await value('reward_history'),/아직 Reward/);
+ assert.equal(await page.locator('#history-more').isHidden(),true);
+ await page.click('#history-shopping');assert.equal(await page.locator('.history-item').count(),10);
+ await page.click('#history-all');assert.equal(await page.locator('.history-item').count(),10);
+ await refresh([row('kst','CONFIRMED',100,{created_at:'2026-10-23T16:00:00Z'}),shopping('shop',1000,90)]);
+ assert.equal(await page.locator('.history-item time').first().innerText(),'2026.10.24');
+ await page.click('#history-shopping');assert.equal(await page.locator('.history-item').count(),1);assert.match(await value('reward_history'),/쿠팡 쇼핑/);
+ await page.click('#history-attendance');assert.equal(await page.locator('.history-item').count(),1);assert.match(await value('reward_history'),/출석 Reward/);
+ await page.click('#history-all');
  await refresh([row('large','CONFIRMED','9007199254740993')]);assert.equal(await value('total_sats_earned'),'9,007,199,254,740,993');assert.equal(await value('btc_amount'),'90071992.54740993');
  await page.setViewportSize({width:320,height:900});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
  await page.evaluate(()=>{fail=true;emit();});await page.locator('#rewards-message.error').waitFor();
- assert.equal(await value('total_sats_earned'),'-');assert.equal(await page.locator('.history-list li').count(),0);assert.ok(!logs.join(' ').includes('sensitive raw'));
+ assert.equal(await value('total_sats_earned'),'-');assert.equal(await page.locator('.history-list tbody tr').count(),0);assert.ok(!logs.join(' ').includes('sensitive raw'));
  await page.evaluate(()=>fail=false);await page.click('#rewards-retry');await ready();assert.equal(await value('total_sats_earned'),'9,007,199,254,740,993');
- await page.evaluate(()=>{foreign=true;rows=[{id:'other',user_id:'member-b',amount_sats:999999,status:'CONFIRMED',created_at:'2026-09-14'}];emit();});await page.locator('#rewards-message.error').waitFor();assert.equal(await page.locator('.history-list li').count(),0);
+ await page.evaluate(()=>{foreign=true;rows=[{id:'other',user_id:'member-b',amount_sats:999999,status:'CONFIRMED',created_at:'2026-09-14'}];emit();});await page.locator('#rewards-message.error').waitFor();assert.equal(await page.locator('.history-list tbody tr').count(),0);
  await page.evaluate(()=>{foreign=false;rows=[];hold=true;emit();});await page.waitForFunction(()=>typeof release==='function');assert.equal(await value('total_sats_earned'),'-');
  await page.evaluate(()=>{userId='member-b';rows=[];emit();});await ready();await page.evaluate(()=>release());assert.equal(await value('total_sats_earned'),'0');
  const queries=await page.evaluate(()=>queries);assert.ok(queries.every(q=>q.owner&&q.options.count==='exact'&&q.sort[0][0]==='created_at'&&q.sort[0][1].ascending===false));

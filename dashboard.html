@@ -38,20 +38,28 @@
     .current-value { margin:0; color:var(--muted); font-size:13px; line-height:1.7; overflow-wrap:anywhere; }
     .reward-history { margin-top:24px; }
     h2 { font-size:15px; font-weight:600; margin:0; }
-    .history-list { list-style:none; padding:0; margin:14px 0 0; max-height:320px; overflow-y:auto; }
-    .history-list:focus-visible { outline:2px solid var(--orange); outline-offset:4px; }
-    .history-list li { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; padding:20px 0; border-bottom:1px solid var(--line); font-size:13px; }
-    .history-list strong { color:#b7d1c3; font-weight:500; white-space:nowrap; }
-    .history-list small { display:block; margin-top:6px; font-size:10px; color:var(--muted); }
-    .history-list li.history-item { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); grid-template-rows:minmax(20px,auto) minmax(40px,auto) minmax(20px,auto); align-items:start; gap:6px 12px; line-height:20px; }
-    .history-item > span:first-child { grid-column:1 / -1; }
-    .history-list .history-dates { display:grid; grid-column:1 / -1; grid-template-columns:11em minmax(0,1fr); grid-auto-rows:minmax(20px,auto); gap:0 6px; align-content:start; margin:0; }
-    .history-item > .history-purchase { grid-row:3; grid-column:1; }
-    .history-item > strong { grid-row:3; grid-column:2; text-align:right; }
-    .history-purchase { color:var(--muted); }
-    [data-field], .history-list li { overflow-wrap:anywhere; }
-    .history-list strong { white-space:normal; }
+    .history-tabs { display:flex; gap:8px; margin:16px 0; }
+    .history-tabs button,#history-more { padding:10px 18px; border:1px solid var(--line); border-radius:6px; background:#17191d; color:var(--muted); cursor:pointer; font:inherit; }
+    .history-tabs [aria-selected="true"] { color:var(--orange); border-color:var(--orange); }
+    .history-tabs button:focus-visible,#history-more:focus-visible { outline:2px solid var(--orange); outline-offset:3px; }
+    .history-list { width:100%; border-collapse:collapse; table-layout:fixed; font-size:13px; }
+    .history-list th,.history-list td { padding:16px 8px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; overflow-wrap:anywhere; }
+    .history-list th { font-weight:500; color:var(--muted); }
+    .history-list th:first-child { width:26%; }
+    .history-list th:last-child { width:28%; }
+    .history-list td:last-child,.history-list th:last-child { text-align:right; }
+    .history-list small { display:block; margin-top:6px; color:var(--muted); font-size:11px; }
+    .history-list strong { color:var(--orange); font-weight:500; font-variant-numeric:tabular-nums; }
     .history-list [data-status="CANCELLED"] strong { color:var(--muted); }
+    #history-more { display:block; margin:20px auto 0; }
+    #history-more[hidden] { display:none; }
+    [data-field] { overflow-wrap:anywhere; }
+    @media(max-width:400px) {
+      .history-list { font-size:11px; }
+      .history-list th,.history-list td { padding:14px 3px; }
+      .history-list th:first-child { width:27%; }
+      .history-list th:last-child { width:29%; }
+    }
     #rewards-message { color:var(--muted); font-size:13px; line-height:1.7; }
     #rewards-message:empty { display:none; }
     #rewards-message.error { color:#f3aaa3; }
@@ -141,7 +149,18 @@
     </section>
     <section class="reward-history" aria-labelledby="history-title">
       <h2 id="history-title">Reward History</h2>
-      <ul class="history-list" data-field="reward_history" tabindex="0" aria-labelledby="history-title"></ul>
+      <div class="history-tabs" role="tablist" aria-label="Reward 유형">
+        <button type="button" role="tab" id="history-all" data-history-type="ALL" aria-selected="true" aria-controls="history-panel">전체</button>
+        <button type="button" role="tab" id="history-shopping" data-history-type="SHOPPING" aria-selected="false" aria-controls="history-panel" tabindex="-1">쇼핑</button>
+        <button type="button" role="tab" id="history-attendance" data-history-type="ATTENDANCE" aria-selected="false" aria-controls="history-panel" tabindex="-1">출석</button>
+      </div>
+      <div id="history-panel" role="tabpanel" aria-label="Reward 내역">
+        <table class="history-list" aria-labelledby="history-title">
+          <thead><tr><th scope="col">날짜</th><th scope="col">적립 내역</th><th scope="col">Bitcoin</th></tr></thead>
+          <tbody data-field="reward_history"></tbody>
+        </table>
+        <button type="button" id="history-more" hidden>더 보기</button>
+      </div>
     </section>
   </main>
 <footer><div class="container footer-inner"><span>© 2026 BTCBack. All rights reserved.</span><span>Shop Today. Stack Tomorrow.</span></div><div class="footer-center"><nav class="policy-links" aria-label="정책 메뉴"><a href="terms.html">이용약관</a><a href="privacy.html">개인정보처리방침</a><a href="reward-policy.html">Reward Policy</a><a href="affiliate-disclosure.html">Affiliate Disclosure</a></nav><p class="footer-support">문의 <a href="mailto:support@btcback.kr">support@btcback.kr</a></p></div></footer>

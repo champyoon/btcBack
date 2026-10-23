@@ -5,8 +5,56 @@
   const field = name => dashboard.querySelector(`[data-field="${name}"]`);
   const message = document.getElementById('rewards-message');
   const retry = document.getElementById('rewards-retry');
-  const labels = { CONFIRMED: '지급 확정', PENDING: '확인 중', PAID: '지급 완료', CANCELLED: '취소됨' };
+  const labels = { CONFIRMED: '적립 완료', PENDING: '확인 중', PAID: '지급 완료', CANCELLED: '취소됨' };
   const merchants = { COUPANG: 'Coupang', IHERB: 'iHerb', TRIPCOM: 'Trip.com' };
+  let historyRows = [], selectedType = 'ALL', visibleCount = 10;
+  const more = document.getElementById('history-more');
+  const tabs = [...dashboard.querySelectorAll('[data-history-type]')];
+  function renderHistory() {
+    const rows = historyRows.filter(row => selectedType === 'ALL' || row.source_type === selectedType);
+    const fragment = document.createDocumentFragment();
+    const dateFormat = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit' });
+    for (const row of rows.slice(0, visibleCount)) {
+      const item = document.createElement('tr'), dateCell = document.createElement('td'), detail = document.createElement('td'), amountCell = document.createElement('td');
+      item.className = 'history-item'; item.dataset.status = row.status;
+      const date = document.createElement('time');
+      date.dateTime = row.created_at; date.textContent = dateFormat.format(new Date(row.created_at)).replaceAll('-', '.');
+      dateCell.append(date);
+      const name = document.createElement('span'), status = document.createElement('small');
+      const merchant = row.merchant === 'COUPANG' ? '쿠팡' : (merchants[row.merchant] || row.merchant || '');
+      name.textContent = row.source_type === 'ATTENDANCE' ? '출석 Reward' : row.source_type === 'SHOPPING' ? `${merchant || '쇼핑'}${merchant ? ' 쇼핑' : ' Reward'}` : 'Reward';
+      status.textContent = labels[row.status];
+      detail.append(name, status);
+      if (row.source_type === 'SHOPPING' && row.purchase_currency === 'KRW' && row.purchase_amount != null) {
+        try {
+          const purchase = document.createElement('small');
+          purchase.className = 'history-purchase'; purchase.textContent = `₩${format(sats(row.purchase_amount))}`;
+          detail.append(purchase);
+        } catch { /* Optional purchase amounts must not hide history. */ }
+      }
+      const amount = document.createElement('strong');
+      amount.textContent = `${row.status === 'CANCELLED' ? '' : '+'}${format(row.amount)} sats`;
+      amountCell.append(amount); item.append(dateCell, detail, amountCell); fragment.append(item);
+    }
+    if (!rows.length) {
+      const item = document.createElement('tr'), cell = document.createElement('td');
+      cell.colSpan = 3; cell.textContent = '아직 Reward 기록이 없습니다.'; item.append(cell); fragment.append(item);
+    }
+    field('reward_history').replaceChildren(fragment);
+    more.hidden = rows.length <= visibleCount;
+  }
+  tabs.forEach((tab, index) => {
+    tab.addEventListener('click', () => {
+      selectedType = tab.dataset.historyType; visibleCount = 10;
+      tabs.forEach(button => { const active = button === tab; button.setAttribute('aria-selected', String(active)); button.tabIndex = active ? 0 : -1; });
+      renderHistory();
+    });
+    tab.addEventListener('keydown', event => {
+      const next = event.key === 'ArrowRight' ? (index + 1) % tabs.length : event.key === 'ArrowLeft' ? (index + tabs.length - 1) % tabs.length : event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : null;
+      if (next !== null) { event.preventDefault(); tabs[next].focus(); tabs[next].click(); }
+    });
+  });
+  more.addEventListener('click', () => { visibleCount += 10; renderHistory(); });
   let revision = 0;
   let priceController;
   const format = value => value.toLocaleString('en-US');
@@ -18,6 +66,7 @@
   }
   function reset() {
     ++revision;
+    historyRows = []; visibleCount = 10; more.hidden = true;
     priceController?.abort();
     field('current_value_krw').textContent = '-';
     field('current_value_krw').classList.remove('is-message');
@@ -113,38 +162,8 @@
       const earned = rows.filter(row => ['PENDING','CONFIRMED','PAID'].includes(row.status)).reduce((sum,row) => sum + row.amount, 0n);
       field('total_sats_earned').textContent = format(earned);
       field('btc_amount').textContent = `${earned / 100000000n}.${String(earned % 100000000n).padStart(8,'0')}`;
-      const list = document.createDocumentFragment();
-      const historyDate = new Intl.DateTimeFormat('ko-KR', { timeZone:'Asia/Seoul', year:'numeric', month:'2-digit', day:'2-digit' });
-      for (const row of rows) {
-        const item = document.createElement('li'), name = document.createElement('span'), detail = document.createElement('small'), amount = document.createElement('strong');
-        item.dataset.status = row.status;
-        item.className = 'history-item'; detail.className = 'history-dates';
-        name.textContent = row.source_type === 'ATTENDANCE' ? '출석 Reward' : (Object.hasOwn(merchants,row.merchant) ? merchants[row.merchant] : (typeof row.merchant === 'string' && row.merchant ? row.merchant : 'Reward'));
-        const shoppingPending = row.source_type === 'SHOPPING' && row.status === 'PENDING';
-        const statusLabel = document.createElement('span'), createdDate = document.createElement('time');
-        statusLabel.textContent = `${shoppingPending ? '구매 및 정산 확인 중' : labels[row.status]} ·`;
-        createdDate.dateTime = row.created_at; createdDate.textContent = historyDate.format(new Date(row.created_at));
-        detail.append(statusLabel,createdDate);
-        if (shoppingPending && typeof row.confirm_eligible_at === 'string' && Number.isFinite(Date.parse(row.confirm_eligible_at))) {
-          const eligibleLabel = document.createElement('span'), eligibleDate = document.createElement('time');
-          eligibleLabel.textContent = '확정 예정 ·'; eligibleDate.dateTime = row.confirm_eligible_at;
-          eligibleDate.textContent = historyDate.format(new Date(row.confirm_eligible_at));
-          detail.append(eligibleLabel,eligibleDate);
-        }
-        amount.textContent = `${row.status === 'CANCELLED' ? '' : '+'}${format(row.amount)} sats`;
-        item.append(name,detail);
-        if (row.source_type === 'SHOPPING' && row.purchase_currency === 'KRW' && row.purchase_amount != null) {
-          try {
-            const purchase = document.createElement('span');
-            purchase.className = 'history-purchase';
-            purchase.textContent = `₩${format(sats(row.purchase_amount))}`;
-            item.classList.add('has-purchase'); item.append(purchase);
-          } catch { /* Invalid optional purchase amounts must not hide reward history. */ }
-        }
-        item.append(amount); list.append(item);
-      }
-      if (!rows.length) { const empty = document.createElement('li'); empty.textContent = '아직 Reward 기록이 없습니다.'; list.append(empty); }
-      field('reward_history').replaceChildren(list);
+      historyRows = rows;
+      renderHistory();
       message.textContent = '';
       void loadCurrentValue(earned, current);
     } catch (error) {

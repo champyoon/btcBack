@@ -64,7 +64,7 @@ node --env-file=.env.coupang scripts/diagnose-coupang-deeplink.mjs
 ```
 
 These scripts retain their own fixed test subId contract, separate from the current
-timestamp-based Edge Function. Review output privately before sharing.
+member-channel and legacy timestamp Edge Functions. Review output privately before sharing.
 
 ## Deployment contracts (manual only)
 
@@ -78,21 +78,32 @@ repeatable deployment, approve/record its version and use `npx supabase@<version
 No previously verified CLI version is assumed. Existing documented commands:
 
 ```powershell
-npx supabase functions deploy coupang-deeplink --project-ref YOUR_PROJECT_REF --no-verify-jwt
+npx supabase functions deploy coupang-deeplink --project-ref YOUR_PROJECT_REF
+npx supabase functions deploy coupang-deeplink-no-subid --project-ref YOUR_PROJECT_REF
 npx supabase functions deploy coupang-orders --project-ref YOUR_PROJECT_REF
 ```
 
 | Function | Configuration | Post-deploy check |
 | --- | --- | --- |
-| coupang-deeplink | PUBLIC, `--no-verify-jwt`; three COUPANG_* secrets above | POST `{ "coupangUrl": "https://www.coupang.com/" }`; success/HTTPS shortenUrl, KST `YYMMDDHHmmss` subid in landingUrl; external URL rejection |
+| coupang-deeplink | Handler verifies JWT, APPROVED profile and valid channel; COUPANG_* secrets and runtime SUPABASE_URL / SUPABASE_ANON_KEY | Authenticated POST with coupangUrl; legacy KST timestamp subId preserved; anonymous/unapproved denial |
+| coupang-deeplink-no-subid | Same handler checks; gateway verify_jwt=false does not bypass authentication | Current CTA sends Bearer access_token; server uses Profile channel1 through channel10 |
 | coupang-orders | Default JWT verification ON; same secrets; runtime SUPABASE_URL / SUPABASE_ANON_KEY | Unauthenticated/non-admin denial; admin session GET with date range; debug opt-in |
 
-Both require the intended project ref. Never disable JWT for orders. Current
-deeplink code is public, not member-authorized or rate-limited.
-See [orders and masked PowerShell calls](supabase/COUPANG_ORDERS.md) and
-[deeplink deployment history](supabase/COUPANG_DEEPLINK.md). The latter retains older
-fixed-subId/manual-URL UI notes: current shopping uses the Coupang home CTA and a
-server-generated KST timestamp. Do not restore historical UI from those notes.
+All commands require the intended project ref. Never disable JWT for orders.
+Both deeplink handlers require a verified user JWT, an APPROVED Profile and a valid
+coupang_sub_id. No durable rate limiter is implemented. Production deployment must
+be checked separately; local code/tests do not establish the deployed version.
+
+Hidden TEST A/B remain legacy tests in shopping.html. coupang-attribution.js and
+coupang-anchor-test.js send no Authorization header, so valid requests receive 401
+after this authorization update, even if the browser is logged in. Their mocked
+browser tests do not prove compatibility with the real handler.
+The visible CTA uses coupang-no-subid-test.js and sends the existing session token.
+Current shopping uses the Profile channel, not the legacy timestamp subId.
+
+See [orders and masked PowerShell calls](supabase/COUPANG_ORDERS.md),
+[deeplink authorization and legacy tests](supabase/COUPANG_DEEPLINK.md), and
+[operator checks](supabase/COUPANG_MEMBER_ACCESS.md).
 
 ## Database and records
 

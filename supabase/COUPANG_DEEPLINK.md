@@ -1,73 +1,83 @@
-# Fixed-subId attribution test
+# Coupang deeplink authorization and legacy tests
 
-## Final purchase verification checklist
+## Current server contract
 
-- Open the development test section on shopping.html, enter a currently available
-  product URL, then generate a link and use its orange "쿠팡으로 이동" button.
-  This button uses the returned shortenUrl, not landingUrl. Existing banners and
-  search links do not form this fixed-subId test path.
-- After the next day's report refresh, call coupang-orders with the purchase date
-  range and debug=true using the existing admin procedure in COUPANG_ORDERS.md.
-- Check the SAME order item for subId == "btcback_test_001", date, productId,
-  gmv and commission. debug[index] corresponds to orders[index]. Field presence
-  alone is not enough: compare the actual subId value and purchase context.
-- Missing or delayed rows are inconclusive. Reported commission is not a promised
-  Bitcoin reward, and a shared fixed ID does not identify a particular customer.
-- After the test, remove/disable the development UI and its coupang-attribution.js
-  script inclusion, and disable/delete the public coupang-deeplink function.
-  Hiding the UI alone does not prevent API calls. Keep credentials private and do
-  not disable coupang-orders or remove Secrets required by other functions.
+Both coupang-deeplink and coupang-deeplink-no-subid require:
 
-Deploy from the repository root:
+1. A Bearer access_token verified through Supabase Auth /auth/v1/user.
+2. The verified user's own Profile, read with that token under RLS.
+3. member_status = APPROVED.
+4. A valid coupang_sub_id: exactly channel1 through channel10.
 
-```powershell
-supabase functions deploy coupang-deeplink --project-ref pqlombgqscbacjkudirl --no-verify-jwt
-```
+Client-provided user_id, member status and subId cannot override these checks.
+Missing/invalid authentication returns 401; missing/unapproved profiles or invalid
+channels return 403. Lookup failures return 5xx. Approved profiles with null/empty
+channels retain coupang_access_unassigned. No token or secret is returned.
 
-This endpoint intentionally has no login and permits browser CORS. It is PUBLIC,
-not admin-protected. Collapsing the development UI is not access control. Anyone
-can call it and consume the account's Coupang API quota. Limit the test window,
-monitor invocation volume, and disable/delete the function after testing. No
-durable rate limiter is implemented. Do not expose it as a production service.
-JWT verification is disabled for this function only, not coupang-orders.
+OPTIONS remains available for CORS. The current function's gateway verify_jwt=false
+does not bypass handler authentication. Neither handler is an anonymous link API.
+No durable rate limiter is implemented. Verify production deployment separately;
+local code is not proof of the deployed version.
 
-Existing Secrets required: COUPANG_ACCESS_KEY, COUPANG_SECRET_KEY,
-COUPANG_TRACKING_CODE. No values are copied to the frontend. trackingCode is
-checked for configuration only and not added to the documented API body.
+## Current and legacy callers
 
-POST /functions/v1/coupang-deeplink accepts:
+| Caller | Function | Behavior |
+| --- | --- | --- |
+| Visible CTA: coupang-no-subid-test.js | coupang-deeplink-no-subid | Sends existing session access_token; server uses Profile channel |
+| Hidden TEST A: coupang-attribution.js | coupang-deeplink | No JWT; valid requests receive 401 after authorization update |
+| Hidden TEST B: coupang-anchor-test.js | coupang-deeplink | No JWT; valid requests receive 401 after authorization update |
+
+TEST A/B remain hidden legacy comparison UI; their scripts are still loaded.
+Logging in does not automatically attach a JWT to their fetch requests. Do not
+restore anonymous server access to make these tests work. Their browser tests
+mock API responses and are not live client/server integration tests.
+
+The legacy coupang-deeplink handler retains KST YYMMDDHHmmss subId generation after
+authorization. It validates the Profile channel but does not use it as the outgoing
+subId. The current member function uses the Profile channel unchanged.
+Earlier fixed btcback_test_001 and manual product URL UI instructions are obsolete.
+Local diagnostic scripts have a separate fixed test contract.
+
+## Request and deployment
+
+Both functions accept POST JSON with Authorization: Bearer <access_token>:
 
 ```json
-{"coupangUrl":"https://www.coupang.com/vp/products/123"}
+{"coupangUrl":"https://www.coupang.com/"}
 ```
 
-Use a currently available product URL, not the example ID. Only HTTPS
-www.coupang.com and coupang.com without credentials/custom ports are accepted.
-The server calls POST /v2/providers/affiliate_open_api/apis/openapi/v1/deeplink
-with coupangUrls and the fixed body field subId="btcback_test_001". It uses the
-same tested HMAC algorithm as the local diagnostic. No additional API parameters.
+Only HTTPS www.coupang.com and coupang.com URLs without credentials or custom ports
+are accepted. Existing Coupang HMAC signing, API parameters and response URL
+validation remain unchanged. The visible CTA uses shortenUrl, not landingUrl.
 
-## Browser test
+Required environment: COUPANG_ACCESS_KEY, COUPANG_SECRET_KEY, COUPANG_TRACKING_CODE,
+and runtime SUPABASE_URL / SUPABASE_ANON_KEY. Never copy secrets or tokens into
+frontend code, logs or documentation. trackingCode is not added to the API body.
 
-1. Deploy the function and publish the updated shopping.html and coupang-attribution.js.
-2. Expand the development attribution test area at the bottom of shopping.html.
-3. Enter a current Coupang product URL and generate the link.
-4. Click the generated move button; it uses shortenUrl, never landingUrl.
-5. Arrange the intended third-party purchase test according to partner policies.
-   Record the test time and product privately. Do not claim reward eligibility.
-6. On the next day, after the report refresh, query coupang-orders with the purchase
-   date range and debug=true using the existing administrator-only procedure.
-7. Look for orders[].subId (or debug[].identifiers.subId) equal to btcback_test_001.
-   Also compare date/productId and purchase context. Missing results may reflect
-   report delays, attribution conditions or other links; they do not alone prove
-   failure. All test clicks share one ID, so it cannot identify individual users.
-
-Successful link generation is not proof of purchase attribution, permission to
-use subId for member identification, or approved Bitcoin rewards. No purchase
-matching, database changes, automatic rewards or user accounts are added.
+Manual deployment only, after review:
 
 ```powershell
-node --test tests/coupang-deeplink-edge.test.mjs tests/coupang-deeplink.test.mjs tests/coupang-orders.test.mjs
+npx supabase functions deploy coupang-deeplink --project-ref pqlombgqscbacjkudirl
+npx supabase functions deploy coupang-deeplink-no-subid --project-ref pqlombgqscbacjkudirl
 ```
 
-These are mocked tests; no purchase or live Coupang request is made by them.
+Deploy both handlers to close the legacy anonymous path. Do not disable JWT
+verification on admin report functions. No DB migration is required.
+
+## Verification
+
+- APPROVED channel1/channel2 users: current CTA succeeds using their own channel.
+- PENDING/BLOCKED users, even with a channel: denied before calling Coupang.
+- Missing/expired JWT, missing Profile/channel or lookup failure: no link generated.
+- Hidden TEST A/B without JWT: 401, not a successful anonymous test.
+- OPTIONS/CORS and current CTA error handling remain compatible.
+
+```powershell
+node --test tests/coupang-member-access.test.mjs tests/coupang-no-subid-edge.test.mjs tests/coupang-deeplink-edge.test.mjs
+```
+
+These are mock tests, not production purchases or live Coupang requests. Existing
+member purchase attribution has been user-verified; this authorization change
+still requires production account checks after deployment. It does not revoke
+previously issued affiliate URLs or change reward calculation or synchronization.
+See [COUPANG_MEMBER_ACCESS.md](COUPANG_MEMBER_ACCESS.md) for operator checks.

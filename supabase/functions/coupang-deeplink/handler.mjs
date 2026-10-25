@@ -1,3 +1,4 @@
+import { checkCoupangMember } from '../_shared/coupang-member.mjs';
 import { sign } from './sign.mjs';
 
 const ENDPOINT = 'https://api-gateway.coupang.com/v2/providers/affiliate_open_api/apis/openapi/v1/deeplink';
@@ -61,6 +62,9 @@ export function createHandler({ env, fetcher = fetch, logger = console, now = ()
     } catch (error) { diagnostic(error); return fail('invalid_request', 400); }
     stage = 'input-validation';
     if (!validUrl(input?.coupangUrl, ['www.coupang.com', 'coupang.com'])) return fail('invalid_coupang_url', 400);
+    stage = 'authentication';
+    const member = await checkCoupangMember(req, env, fetcher);
+    if (member.error) { stage = member.stage; return fail(member.error, member.status); }
     stage = 'configuration';
     const access = env('COUPANG_ACCESS_KEY'), secret = env('COUPANG_SECRET_KEY');
     if (!access || !secret || !env('COUPANG_TRACKING_CODE')) return fail('configuration_missing', 503);
@@ -91,7 +95,8 @@ export function createHandler({ env, fetcher = fetch, logger = console, now = ()
       const landing = new URL(landingUrl);
       if (landing.hostname === 'link.coupang.com' && !['/re/AFFSDP', '/re/AFFHOME'].includes(landing.pathname)) return fail('invalid_link_response', 502);
       stage = 'credential-leak-check';
-      const protectedValues = [access, secret, auth, auth.split('signature=')[1]];
+      const bearer = req.headers.get('Authorization');
+      const protectedValues = [access, secret, auth, auth.split('signature=')[1], bearer, bearer.slice(7), env('SUPABASE_ANON_KEY')];
       for (const value of [shortenUrl, landingUrl]) {
         const decoded = decodeURIComponent(value);
         if (protectedValues.some(key => decoded.includes(key)) || /authorization|signature|secret|access[_-]?key/i.test(decoded)) return fail('unsafe_link_response', 502);

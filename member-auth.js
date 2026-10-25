@@ -6,6 +6,8 @@
   const logout = document.getElementById('member-logout');
   const retry = document.getElementById('member-retry');
   const submit = document.getElementById('login-submit');
+  const shoppingStart = document.getElementById('shopping-start');
+  const shoppingNotice = document.getElementById('shopping-start-status');
   const headerEntry = document.querySelector('.site-auth-entry');
   const headerOnly = !status;
   const nav = document.querySelector('.site-header .site-nav');
@@ -45,11 +47,17 @@
     if (error?.code === 'invalid_credentials') return '이메일 또는 비밀번호를 확인해 주세요.';
     return '로그인을 완료하지 못했습니다. 연결을 확인하고 잠시 후 다시 시도해 주세요.';
   }
-  async function refresh() {
+  async function refresh(goShopping = false) {
+    const showNotice = (text, error = false) => {
+      if (goShopping && shoppingNotice) {
+        shoppingNotice.textContent = text;
+        shoppingNotice.classList.toggle('error', error);
+      } else notice(text, error);
+    };
     const current = ++revision;
     let sessionKnown = false;
     hideContent(); if (retry) retry.hidden = true;
-    notice('회원 상태를 확인하고 있습니다.');
+    showNotice('회원 상태를 확인하고 있습니다.');
     try {
       const session = await client.auth.getSession();
       if (current !== revision) return;
@@ -59,6 +67,7 @@
       if (session.data?.session?.user?.id !== attendanceUser?.id) updateAttendance(null);
       if (!session.data?.session) {
         updateAttendance(null);
+        if (goShopping) { location.assign('login.html'); return; }
         if (headerOnly) return;
         logout.hidden = true;
         if (dashboard) { location.replace('login.html'); return; }
@@ -70,29 +79,43 @@
       if (user.error || !user.data?.user) throw new Error('User unavailable');
       if (!user.data.user.email_confirmed_at) {
         updateAttendance(null);
-        notice('이메일 인증이 필요합니다. 가입 시 받은 인증 메일을 확인해 주세요.', true); return;
+        showNotice('이메일 인증이 필요합니다. 가입 시 받은 인증 메일을 확인해 주세요.', true); return;
       }
       const profile = await client.from('profiles').select('member_status').eq('id', user.data.user.id).maybeSingle();
       if (current !== revision) return;
       if (profile.error || !profile.data) throw new Error('Profile unavailable');
       updateAttendance(profile.data.member_status === 'APPROVED' ? user.data.user : null);
-      if (headerOnly) return;
+      if (headerOnly && !goShopping) return;
       switch (profile.data.member_status) {
         case 'APPROVED':
-          if (dashboard) { dashboard.hidden = false; notice(''); void window.BTCBackRewards?.load(client, user.data.user.id); }
+          if (dashboard) { dashboard.hidden = false; showNotice(''); void window.BTCBackRewards?.load(client, user.data.user.id); }
           else location.replace('shopping.html');
           break;
         case 'PENDING':
-          notice('승인 대기 중입니다. BTCBack Closed Beta 참여 승인을 확인 중입니다. 승인 후 Shopping, Reward, My BTCBack 회원 기능을 이용할 수 있습니다.');
-          retry.hidden = false; break;
+          showNotice('승인 대기 중입니다. BTCBack Closed Beta 참여 승인을 확인 중입니다. 승인 후 Shopping, Reward, My BTCBack 회원 기능을 이용할 수 있습니다.');
+          if (retry) retry.hidden = false; break;
         case 'BLOCKED':
-          notice('현재 이용이 제한된 계정입니다. 도움이 필요한 경우 support@btcback.kr로 문의해 주세요.'); retry.hidden = false; break;
+          showNotice('현재 이용이 제한된 계정입니다. 도움이 필요한 경우 support@btcback.kr로 문의해 주세요.'); if (retry) retry.hidden = false; break;
         default: throw new Error('Unknown status');
       }
     } catch {
-      if (current === revision) { updateAttendance(null); if (headerOnly) { if (!sessionKnown) updateEntry(false); return; } notice('회원 정보를 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.', true); retry.hidden = false; }
+      if (current === revision) { updateAttendance(null); if (headerOnly && !goShopping) { if (!sessionKnown) updateEntry(false); return; } showNotice('회원 정보를 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.', true); if (retry) retry.hidden = false; }
     }
   }
+  shoppingStart?.addEventListener('click', async () => {
+    if (actionBusy) return;
+    if (!client) {
+      shoppingNotice.textContent = '회원 서비스를 불러오지 못했습니다. 페이지를 다시 열어 주세요.';
+      shoppingNotice.classList.add('error'); return;
+    }
+    actionBusy = true; shoppingStart.disabled = true;
+    shoppingStart.textContent = '회원 상태 확인 중...';
+    try { await refresh(true); }
+    finally {
+      actionBusy = false; shoppingStart.disabled = false;
+      shoppingStart.textContent = '쇼핑 시작하기 →';
+    }
+  });
   form?.addEventListener('submit', async event => {
     event.preventDefault();
     if (actionBusy || !client || !form.reportValidity()) return;

@@ -24,13 +24,13 @@ const root = path.join(__dirname, '..');
         await page.waitForSelector(name === 'index' ? '.hero-promise' : '.brand-message');
         assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
         if (name === 'index') {
-          assert.equal(await page.locator('#hero-title').textContent(),'평소처럼 쇼핑하세요 Bitcoin은 따라옵니다.');
-          assert.equal(await page.locator('.hero-promise').innerText(),'별도의 Reward 신청 없이,\n구매가 확인되면 Bitcoin Reward가 반영됩니다.');
+          assert.equal(await page.locator('#hero-title').textContent(),'평소처럼 쇼핑하세요. Bitcoin은 따라옵니다.');
+          assert.equal(await page.locator('.hero-promise').innerText(),'BTCBack에서 쿠팡으로 이동해 쇼핑하면,\n구매 확인 후 Bitcoin Reward가 자동으로 쌓입니다.');
           assert.equal(await page.locator('.home-hero .eyebrow, .home-hero .brand-message, .home-hero .beta-note').count(),0);
-          assert(!/CLOSED BETA|Shop\. Earn Bitcoin\.|자동으로|평소처럼 쇼핑하세요\.|확인·검토/.test(await page.locator('.home-hero').innerText()));
+          assert.equal(await page.locator('#shopping-start').innerText(),'쇼핑 시작하기 →');
           assert((await page.locator('header').innerText()).includes('Shop Today. Stack Tomorrow.'));
           assert((await page.locator('footer').innerText()).includes('Shop Today. Stack Tomorrow.'));
-          assert.equal(await page.locator('.step-number').nth(1).innerText(),'02 / EARN BITCOIN');
+          assert.deepEqual(await page.locator('.step-number').allTextContents(),['01 / LOGIN','02 / SHOP','03 / EARN BITCOIN']);
           assert(await page.locator('.hero-promise').evaluate(e=>{const range=document.createRange();range.selectNodeContents(e);const a=range.getBoundingClientRect(),b=e.parentElement.getBoundingClientRect();return Math.abs(a.x+a.width/2-b.x-b.width/2)<1;}));
           assert(await page.locator('.step-number').nth(1).evaluate(e=>{const range=document.createRange();range.selectNodeContents(e);const a=range.getBoundingClientRect(),b=e.parentElement.getBoundingClientRect();return a.left>=b.left && a.right<=b.right;}));
         } else {

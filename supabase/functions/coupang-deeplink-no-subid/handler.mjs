@@ -1,3 +1,4 @@
+import { checkCoupangMember } from '../_shared/coupang-member.mjs';
 import { sign } from '../coupang-deeplink/sign.mjs';
 
 const ENDPOINT = 'https://api-gateway.coupang.com/v2/providers/affiliate_open_api/apis/openapi/v1/deeplink';
@@ -57,27 +58,8 @@ export function createHandler({ env, fetcher = fetch, logger = console }) {
     stage = 'input-validation';
     if (!validUrl(input?.coupangUrl, ['www.coupang.com', 'coupang.com'])) return fail('invalid_coupang_url', 400);
     stage = 'authentication';
-    const bearer = req.headers.get('Authorization');
-    if (!bearer || !/^Bearer \S+$/i.test(bearer)) return fail('authentication_required', 401);
-    const base = env('SUPABASE_URL'), apiKey = env('SUPABASE_ANON_KEY');
-    if (!base || !apiKey) return fail('configuration_missing', 503);
-    const userHeaders = { apikey: apiKey, Authorization: bearer };
-    const userResponse = await fetcher(`${base}/auth/v1/user`, {
-      headers: userHeaders, redirect: 'error', signal: AbortSignal.timeout(15000),
-    });
-    if (!userResponse.ok) return fail('invalid_session', 401);
-    const user = await userResponse.json();
-    if (typeof user?.id !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(user.id) || user.is_anonymous === true) return fail('invalid_session', 401);
-    stage = 'profile-check';
-    const query = new URLSearchParams({ select: 'id,coupang_sub_id', id: `eq.${user.id}`, limit: '1' });
-    const profileResponse = await fetcher(`${base}/rest/v1/profiles?${query}`, {
-      headers: userHeaders, redirect: 'error', signal: AbortSignal.timeout(15000),
-    });
-    if (!profileResponse.ok) return fail('account_check_failed', 503);
-    const profiles = await profileResponse.json();
-    const profile = Array.isArray(profiles) && profiles.length === 1 ? profiles[0] : null;
-    if (profile?.id === user.id && (profile.coupang_sub_id === null || profile.coupang_sub_id === '')) return fail('coupang_access_unassigned', 403);
-    if (profile?.id !== user.id || typeof profile.coupang_sub_id !== 'string' || !/^channel(?:10|[1-9])$/.test(profile.coupang_sub_id)) return fail('coupang_access_unavailable', 403);
+    const member = await checkCoupangMember(req, env, fetcher);
+    if (member.error) { stage = member.stage; return fail(member.error, member.status); }
     stage = 'configuration';
     const access = env('COUPANG_ACCESS_KEY'), secret = env('COUPANG_SECRET_KEY');
     if (!access || !secret || !env('COUPANG_TRACKING_CODE')) return fail('configuration_missing', 503);
@@ -89,7 +71,7 @@ export function createHandler({ env, fetcher = fetch, logger = console }) {
       const response = await fetcher(ENDPOINT, {
         method: 'POST', redirect: 'error', signal: AbortSignal.timeout(15000),
         headers: { Authorization: auth, 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({ coupangUrls: [input.coupangUrl], subId: profile.coupang_sub_id }),
+        body: JSON.stringify({ coupangUrls: [input.coupangUrl], subId: member.subId }),
       });
       upstreamStatus = response.status;
       stage = 'response-parse';
@@ -108,7 +90,8 @@ export function createHandler({ env, fetcher = fetch, logger = console }) {
       const landing = new URL(landingUrl);
       if (landing.hostname === 'link.coupang.com' && !['/re/AFFSDP', '/re/AFFHOME'].includes(landing.pathname)) return fail('invalid_link_response', 502);
       stage = 'credential-leak-check';
-      const protectedValues = [access, secret, auth, auth.split('signature=')[1], bearer, bearer.slice(7), apiKey];
+      const bearer = req.headers.get('Authorization');
+      const protectedValues = [access, secret, auth, auth.split('signature=')[1], bearer, bearer.slice(7), env('SUPABASE_ANON_KEY')];
       for (const value of [shortenUrl, landingUrl]) {
         const decoded = decodeURIComponent(value);
         if (protectedValues.some(key => decoded.includes(key)) || /authorization|signature|secret|access[_-]?key/i.test(decoded)) return fail('unsafe_link_response', 502);

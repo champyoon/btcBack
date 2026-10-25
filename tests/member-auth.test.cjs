@@ -4,7 +4,7 @@ const path = require('node:path');
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const root = path.join(__dirname, '..');
 const mock = `window.supabase={createClient:(url,key,options)=>{window.options=options;window.calls=[];let cb;return {
-auth:{getSession:async()=>({data:{session:window.session?{user:{id:'u'}}:null}}),getUser:async()=>({data:{user:{id:'u',email_confirmed_at:'2026-09-09'}}}),
+auth:{getSession:async()=>{if(window.holdSession)await new Promise(resolve=>window.releaseSession=resolve);return window.sessionError?{error:{}}:{data:{session:window.session?{user:{id:'u'}}:null}}},getUser:async()=>window.userError?{error:{}}:({data:{user:{id:'u',email_confirmed_at:window.unverified?null:'2026-09-09'}}}),
 signInWithPassword:async x=>{window.calls.push(['login',x]);if(window.loginError)return {error:window.loginError};window.session=true;return {error:null}},
 signOut:async x=>{window.calls.push(['logout',x]);if(window.logoutError)return {error:{}};window.session=false;cb('SIGNED_OUT');return {error:null}},onAuthStateChange:f=>{cb=f;window.emit=f}},
 from:t=>t==='rewards'?{select:()=>{const q={eq:()=>q,order:()=>q,range:async()=>({data:[],count:0,error:null})};return q;}}:({select:cols=>({eq:(key,id)=>({maybeSingle:async()=>{window.calls.push(['profile',t,cols,key,id]);return window.profileError?{error:{}}:{data:window.member===null?null:{member_status:window.member}}}})})})}}};`;
@@ -33,7 +33,31 @@ from:t=>t==='rewards'?{select:()=>{const q={eq:()=>q,order:()=>q,range:async()=>
   for(const error of [{code:'invalid_credentials'},{code:'email_not_confirmed'},{status:429}]){await open('login');await p.waitForSelector('#login-form');await p.evaluate(e=>window.loginError=e,error);await login();await p.waitForSelector('#member-status.error');assert(await p.isVisible('#login-form'));assert.equal(await p.inputValue('#password'),'');}
   for(const width of [320,390,768,1440]){await p.setViewportSize({width,height:900});await open('login');await p.waitForSelector('#login-form');assert(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));}
   initialSession=true;member='APPROVED';await open('dashboard');await ready();await p.evaluate(()=>{window.session=false;window.emit('SIGNED_OUT');});initialSession=false;await p.waitForURL('**/login.html');
-  cdnFails=true;await open('dashboard');await p.waitForSelector('#member-status.error');assert(await p.isHidden('#member-dashboard'));
+  initialSession=false;member='APPROVED';await open('index');await p.click('#shopping-start');await p.waitForURL('**/login.html');
+  assert.equal(await p.locator('main a[href="signup.html"]').count(),1);
+  await login();await p.waitForURL('**/shopping.html');
+  for(const state of ['PENDING','BLOCKED',null,'UNKNOWN']){
+    initialSession=true;member=state;await open('index');await p.click('#shopping-start');
+    await p.waitForFunction(()=>!document.querySelector('#shopping-start').disabled);
+    assert(p.url().endsWith('/index.html'));
+    assert.match(await p.locator('#shopping-start-status').innerText(),state==='PENDING'?/승인 대기/:state==='BLOCKED'?/이용이 제한/:/회원 정보를 확인할 수 없습니다/);
+  }
+  for(const flag of ['profileError','sessionError','userError','unverified']){
+    initialSession=true;member='APPROVED';await open('index');await p.evaluate(flag=>window[flag]=true,flag);
+    await p.click('#shopping-start');await p.waitForFunction(()=>!document.querySelector('#shopping-start').disabled);
+    assert(p.url().endsWith('/index.html'));assert.match(await p.locator('#shopping-start-status').innerText(),flag==='unverified'?/이메일 인증/:/회원 정보를 확인할 수 없습니다/);
+  }
+  member='PENDING';await open('index');await p.waitForFunction(()=>calls.some(c=>c[0]==='profile'));
+  await p.evaluate(()=>{window.holdSession=true;document.querySelector('#shopping-start').click();document.querySelector('#shopping-start').click();});
+  await p.waitForFunction(()=>typeof releaseSession==='function');assert(await p.locator('#shopping-start').isDisabled());
+  const profileCount=await p.evaluate(()=>calls.filter(c=>c[0]==='profile').length);
+  await p.evaluate(()=>{window.holdSession=false;releaseSession();});await p.waitForFunction(()=>!document.querySelector('#shopping-start').disabled);
+  assert.equal(await p.evaluate(()=>calls.filter(c=>c[0]==='profile').length),profileCount+1);
+  member='APPROVED';await open('index');await p.locator('#shopping-start').focus();await p.keyboard.press('Enter');await p.waitForURL('**/shopping.html');
+  initialSession=false;await open('index');await p.evaluate(()=>window.session=false);await p.click('#shopping-start');await p.waitForURL('**/login.html');
+  initialSession=true;await p.goto('https://btcback.test/login.html?next=https://evil.example');await p.waitForURL('**/shopping.html');
+  cdnFails=true;await open('index');await p.click('#shopping-start');await p.waitForSelector('#shopping-start-status.error');assert(p.url().endsWith('/index.html'));
+  await open('dashboard');await p.waitForSelector('#member-status.error');assert(await p.isHidden('#member-dashboard'));
   const js=fs.readFileSync(path.join(root,'member-auth.js'),'utf8');assert(!/console\.|\.insert\(|\.update\(|localStorage\.setItem|sessionStorage\.setItem/.test(js));
   console.log('PASS login, UUID profile lookup, all statuses, existing sessions, logout/failure, status refresh, dashboard fail closed, responsive and signup-independent storage');
  }finally{await b.close();}

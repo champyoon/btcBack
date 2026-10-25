@@ -11,8 +11,8 @@ const withProfile = (upstream, channel = 'channel1', rows) => async (url, option
     if (url.endsWith('/auth/v1/user')) return Response.json({id:uid});
     const query = new URL(url).searchParams;
     assert.equal(query.get('id'),`eq.${uid}`);
-    assert.equal(query.get('select'),'id,coupang_sub_id');
-    return Response.json(rows ?? [{id:uid,coupang_sub_id:channel}]);
+    assert.equal(query.get('select'),'id,member_status,coupang_sub_id');
+    return Response.json(rows ?? [{id:uid,member_status:'APPROVED',coupang_sub_id:channel}]);
   }
   return upstream(url,options);
 };

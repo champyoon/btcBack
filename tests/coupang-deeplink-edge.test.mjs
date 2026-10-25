@@ -1,15 +1,22 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createHandler, timestampSubId } from '../supabase/functions/coupang-deeplink/handler.mjs';
+import { createHandler as createRawHandler, timestampSubId } from '../supabase/functions/coupang-deeplink/handler.mjs';
 import { sign } from '../supabase/functions/coupang-deeplink/sign.mjs';
 import { sign as localSign } from '../scripts/test-coupang-deeplink.mjs';
-const env = name => ({ COUPANG_ACCESS_KEY: 'fixture-access', COUPANG_SECRET_KEY: 'fixture-secret', COUPANG_TRACKING_CODE: 'fixture-code' })[name];
+const env = name => ({ SUPABASE_URL: 'https://project.test', SUPABASE_ANON_KEY: 'fixture-public', COUPANG_ACCESS_KEY: 'fixture-access', COUPANG_SECRET_KEY: 'fixture-secret', COUPANG_TRACKING_CODE: 'fixture-code' })[name];
+// Existing provider/signing tests run behind the now-required member check.
+const createHandler = options => createRawHandler({ ...options, fetcher: async (url, request) => {
+  const id = '11111111-1111-4111-8111-111111111111';
+  if (url === 'https://project.test/auth/v1/user') return Response.json({ id });
+  if (url.startsWith('https://project.test/rest/v1/profiles?')) return Response.json([{ id, member_status: 'APPROVED', coupang_sub_id: 'channel1' }]);
+  return options.fetcher(url, request);
+} });
 test('timestamp subId uses KST with zero padding and year rollover', () => {
   assert.equal(timestampSubId(new Date('2026-09-09T00:24:35Z')), '260909092435');
   assert.equal(timestampSubId(new Date('2026-09-09T00:24:36Z')), '260909092436');
   assert.equal(timestampSubId(new Date('2026-12-31T15:01:00Z')), '270101000100');
 });
-const req = url => new Request('https://test.invalid', { method: 'POST', body: JSON.stringify({ coupangUrl: url }) });
+const req = url => new Request('https://test.invalid', { method: 'POST', headers: { Authorization: 'Bearer fixture-user' }, body: JSON.stringify({ coupangUrl: url }) });
 const good = { shortenUrl: 'https://link.coupang.com/a/test', landingUrl: 'https://www.coupang.com/vp/products/123?subid=btcback_test_001' };
 const affiliateLanding = 'https://link.coupang.com/re/AFFSDP?lptag=AF7466415&subid=btcback_test_001&pageKey=123&itemId=456&vendorItemId=789&traceid=';
 test('observed Coupang home landing path is accepted', async () => {

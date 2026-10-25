@@ -223,6 +223,14 @@
     .works-grid .step-card { min-height:340px; }
     .panel-link { min-height:48px; color:var(--orange); font-weight:700; font-size:13px; }
     .panel-link:focus-visible { outline:2px solid var(--orange); outline-offset:4px; }
+    #shopping-start { margin-top:24px; min-width:220px; border:0; cursor:pointer; font-family:inherit; font-size:16px; }
+    #shopping-start:focus-visible { outline:2px solid var(--orange); outline-offset:5px; }
+    #shopping-start:disabled { opacity:.65; cursor:wait; }
+    .home-hero .shopping-note { font-size:12px; margin-top:10px; }
+    .home-hero .shopping-status { font-size:13px; max-width:650px; margin:12px auto 0; overflow-wrap:anywhere; }
+    .shopping-status:empty { display:none; }
+    .home-hero .shopping-status.error { color:#f3aaa3; }
+    .works-note { text-align:center; margin:24px 0 0; }
     @media(max-width:700px) {
       .home-hero { padding:28px 0 20px; }
       .works-grid .step-card { min-height:300px; }
@@ -237,6 +245,7 @@
   <svg class="symbols" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
     <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h16m-6-6 6 6-6 6"/></symbol>
     <symbol id="i-cart" viewBox="0 0 24 24"><path d="M2 3h3l3 13h11l3-9H6"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></symbol>
     <symbol id="i-bitcoin" viewBox="0 0 24 24"><path d="M7 5h7a4 4 0 0 1 0 8H8m0-8v15m0-8h7a4 4 0 0 1 0 8H6M10 2v3m4-3v3m-4 15v2m4-2v2"/></symbol>
     <symbol id="i-bolt" viewBox="0 0 24 24"><path d="m14 2-10 12h7l-1 8 10-12h-7z"/></symbol>
     <symbol id="i-shield" viewBox="0 0 24 24"><path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6zM8 12l3 3 5-6"/></symbol>
@@ -248,33 +257,34 @@
   </div></header>
   <main>
     <section class="hero container home-hero" aria-labelledby="hero-title">
-      <h1 id="hero-title">평소처럼 쇼핑하세요 <span><br>Bitcoin은 따라옵니다.</span></h1>
-      <p class="hero-promise">별도의 Reward 신청 없이,<br>구매가 확인되면 Bitcoin Reward가 반영됩니다.</p>
+      <h1 id="hero-title">평소처럼 쇼핑하세요. <span><br>Bitcoin은 따라옵니다.</span></h1>
+      <p class="hero-promise">BTCBack에서 쿠팡으로 이동해 쇼핑하면,<br>구매 확인 후 Bitcoin Reward가 자동으로 쌓입니다.</p>
+      <button type="button" class="button" id="shopping-start" aria-describedby="shopping-note shopping-start-status">쇼핑 시작하기 →</button>
+      <p class="shopping-note" id="shopping-note">회원가입 및 로그인 후 이용할 수 있습니다.</p>
+      <p class="shopping-status" id="shopping-start-status" role="status" aria-live="polite"></p>
     </section>
     <section class="container works" aria-label="BTCBack의 세 단계">
       <div class="works-grid">
         <article class="step-card">
-          <div class="step-number">01 / SHOP</div>
-          <h2>원하는 제휴처를 선택하세요.</h2>
-          <p>BTCBack에서 원하는 제휴처를 선택하고 평소처럼 쇼핑하면 됩니다.</p>
+          <div class="step-number">01 / LOGIN</div>
+          <h2>BTCBack에 로그인하세요.</h2>
+          <p>회원가입 또는 로그인 후 서비스를 이용합니다.</p>
+          <div class="art"><svg class="icon" aria-hidden="true"><use href="#i-user"/></svg></div>
+        </article>
+        <article class="step-card">
+          <div class="step-number">02 / SHOP</div>
+          <h2>BTCBack을 통해 쿠팡에서 쇼핑하세요.</h2>
+          <p>BTCBack의 쇼핑하기 페이지에서 쿠팡을 선택하고, 회원별 추적이 적용된 제휴 링크를 통해 이동합니다.</p>
           <div class="art"><svg class="icon" aria-hidden="true"><use href="#i-cart"/></svg></div>
-          <a class="card-foot panel-link" href="shopping.html">쇼핑하기 <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
         </article>
         <article class="step-card">
-          <div class="step-number">02 / EARN BITCOIN</div>
-          <h2>구매가 확인되면,<br>Bitcoin Reward가 쌓입니다.</h2>
-          <p>신청도, 영수증 제출도 필요 없습니다.<br>확인된 Reward는 My BTCBack에 반영됩니다.</p>
+          <div class="step-number">03 / EARN BITCOIN</div>
+          <h2>구매 확인 후 Bitcoin Reward가 쌓입니다.</h2>
+          <p>제휴사 구매 실적이 확인되면 Reward가 자동으로 반영됩니다. 신청이나 영수증 제출은 필요하지 않습니다.</p>
           <div class="art"><div class="coin"><svg class="icon" aria-hidden="true"><use href="#i-bitcoin"/></svg></div></div>
-          <div class="card-foot"><span></span><svg class="icon" aria-hidden="true"><use href="#i-bolt"/></svg></div>
-        </article>
-        <article class="step-card">
-          <div class="step-number">03 / MY BTCBACK</div>
-          <h2>모은 Bitcoin을 확인하세요.</h2>
-          <p>BTCBack을 통해 받은 Bitcoin과 Reward 기록을 My BTCBack에서 확인하세요.</p>
-          <div class="art"><svg class="icon" aria-hidden="true"><use href="#i-bitcoin"/></svg></div>
-          <a class="card-foot panel-link" href="dashboard.html">My BTCBack <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
         </article>
       </div>
+      <p class="works-note">신청도, 영수증 제출도 필요 없습니다.</p>
     </section>
   </main>
 <footer><div class="footer-inner container"><span>© 2026 BTCBack</span><span>Shop Today. Stack Tomorrow.</span></div><div class="footer-center"><nav class="policy-links" aria-label="정책 메뉴"><a href="terms.html">이용약관</a><a href="privacy.html">개인정보처리방침</a><a href="reward-policy.html">Reward Policy</a><a href="affiliate-disclosure.html">Affiliate Disclosure</a></nav><p class="footer-support">문의 <a href="mailto:support@btcback.kr">support@btcback.kr</a></p></div></footer>

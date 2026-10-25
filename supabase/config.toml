@@ -1,4 +1,5 @@
-# TEST C is public, matching the deployed A/B deeplink function.
+# Gateway JWT verification is disabled here; the handler verifies the user's
+# JWT with Supabase Auth and requires an APPROVED profile and valid channel.
 # Do not disable JWT verification on admin report functions.
 [functions.coupang-deeplink-no-subid]
 verify_jwt = false
